@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071b35">
+<meta name="description" content="Bharat Nova - Smart Search and AI Assistant">
+<title>Bharat Nova</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #071b35;
+  color: white;
+}
+
+header {
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0b2547;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: bold;
+  color: #63e6be;
+}
+
+.tagline {
+  font-size: 12px;
+  color: #c4d7ee;
+  margin-top: 5px;
+}
+
+main {
+  width: 92%;
+  max-width: 700px;
+  margin: 45px auto;
+  text-align: center;
+}
+
+h1 {
+  font-size: 35px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #c4d7ee;
+  line-height: 1.6;
+}
+
+.search-box {
+  display: flex;
+  margin-top: 25px;
+  background: white;
+  border-radius: 14px;
+  padding: 6px;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 13px 10px;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  background: #12b886;
+  color: #071b35;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.card {
+  background: #102e52;
+  padding: 22px 12px;
+  border-radius: 15px;
+  border: 1px solid #25496e;
+}
+
+.card .icon {
+  font-size: 30px;
+}
+
+.card h3 {
+  margin: 12px 0 7px;
+}
+
+.card p {
+  color: #c4d7ee;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.card button {
+  margin-top: 8px;
+  width: 100%;
+}
+
+#answer {
+  display: none;
+  background: #102e52;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  text-align: center;
+  padding: 25px 10px;
+  color: #c4d7ee;
+  font-size: 12px;
+}
+
+@media (max-width: 380px) {
+  h1 { font-size: 29px; }
+  .search-box button { padding: 10px; }
+  .features { gap: 9px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>
+    <div class="logo">🇮🇳 Bharat Nova</div>
+    <div class="tagline">One World. One Search.</div>
+  </div>
+  <button onclick="installApp()" id="installBtn" hidden>
+    Install
+  </button>
+</header>
+
+<main>
+  <h1>नमस्ते! 👋</h1>
+  <h2>दुनिया को खोजें</h2>
+  <p class="subtitle">
+    Search the web, explore apps and discover AI.
+  </p>
+
+  <form class="search-box" onsubmit="searchWeb(event)">
+    <input id="query" type="search"
+      placeholder="यहाँ कुछ भी खोजें..." required>
+    <button type="submit">खोजें 🔍</button>
+  </form>
+
+  <div id="answer"></div>
+
+  <div class="features">
+    <div class="card">
+      <div class="icon">🌐</div>
+      <h3>Web Search</h3>
+      <p>इंटरनेट पर जानकारी खोजें।</p>
+      <button onclick="searchWeb()">Search Now</button>
+    </div>
+
+    <div class="card">
+      <div class="icon">🤖</div>
+      <h3>AI Assistant</h3>
+      <p>AI से सवाल पूछने की सुविधा।</p>
+      <button onclick="openAI()">Ask AI</button>
+    </div>
+
+    <div class="card">
+      <div class="icon">🎙️</div>
+      <h3>Voice Search</h3>
+      <p>बोलकर इंटरनेट पर खोजें।</p>
+      <button onclick="voiceSearch()">Speak</button>
+    </div>
+
+    <div class="card">
+      <div class="icon">📱</div>
+      <h3>App Discovery</h3>
+      <p>नए ऐप्स खोजें।</p>
+      <button onclick="openApps()">Explore Apps</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2026 Bharat Nova · Made in India 🇮🇳
+</footer>
+
+<script>
+function searchWeb(event) {
+  if (event) event.preventDefault();
+
+  const input = document.getElementById("query");
+  const query = input.value.trim();
+
+  if (!query) {
+    input.focus();
+    return;
+  }
+
+  window.open(
+    "https://www.google.com/search?q=" + encodeURIComponent(query),
+    "_blank"
+  );
+}
+
+function openAI() {
+  window.open("https://chatgpt.com/", "_blank");
+}
+
+function openApps() {
+  window.open("https://play.google.com/store", "_blank");
+}
+
+function voiceSearch() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice Search के लिए Chrome ब्राउज़र इस्तेमाल करें।");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+
+  recognition.onresult = function(event) {
+    document.getElementById("query").value =
+      event.results[0][0].transcript;
+    searchWeb();
+  };
+
+  recognition.onerror = function() {
+    alert("Voice Search नहीं चल पाया। दोबारा कोशिश करें।");
+  };
+
+  recognition.start();
+}
+
+let installPrompt;
+
+window.addEventListener("beforeinstallprompt", function(event) {
+  event.preventDefault();
+  installPrompt = event;
+  document.getElementById("installBtn").hidden = false;
+});
+
+async function installApp() {
+  if (!installPrompt) {
+    alert("ब्राउज़र के मेन्यू में Add to Home screen विकल्प देखें।");
+    return;
+  }
+
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  document.getElementById("installBtn").hidden = true;
+}
+</script>
+
+</body>
+</html>
