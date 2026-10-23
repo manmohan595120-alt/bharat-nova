@@ -1,1 +1,196 @@
-hgfsfgvvnvcfh
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07152e">
+<meta name="description" content="Bharat Nova - Search the web, use voice search and discover apps.">
+<link rel="manifest" href="manifest.json">
+<title>Bharat Nova</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#07152e;
+  color:white;
+  text-align:center;
+}
+header{padding:35px 15px 20px}
+.logo{font-size:38px;font-weight:bold;color:#43d9ff}
+.tagline{color:#cbd5e1;font-size:14px}
+.container{max-width:600px;margin:auto;padding:15px}
+.searchbox{
+  display:flex;
+  gap:8px;
+  margin:20px 0;
+}
+input{
+  width:100%;
+  min-width:0;
+  padding:15px;
+  border-radius:25px;
+  border:1px solid #526580;
+  background:#fff;
+  color:#111;
+  font-size:16px;
+}
+button{
+  padding:12px 16px;
+  border:0;
+  border-radius:12px;
+  background:#12b8e8;
+  color:#06152c;
+  font-weight:bold;
+  cursor:pointer;
+  margin:5px;
+}
+.card{
+  background:#102442;
+  border:1px solid #243b5b;
+  border-radius:16px;
+  padding:20px;
+  margin:15px 0;
+}
+.card h3{margin-top:0}
+.actions{margin-top:15px}
+footer{padding:25px;color:#aab8ca;font-size:13px}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">🚀 Bharat Nova</div>
+  <p class="tagline">आपकी दुनिया, आपकी खोज!</p>
+</header>
+
+<main class="container">
+
+  <div class="card">
+    <h3>🔎 Google Search</h3>
+    <form id="searchForm" class="searchbox">
+      <input id="searchInput" type="search"
+        placeholder="यहाँ कुछ भी खोजें..." required>
+      <button type="submit">खोजें</button>
+    </form>
+
+    <div class="actions">
+      <button type="button" id="voiceBtn">🎤 बोलकर खोजें</button>
+    </div>
+    <p id="message" aria-live="polite"></p>
+  </div>
+
+  <div class="card">
+    <h3>🤖 AI Assistant</h3>
+    <p>AI से सवाल पूछने के लिए ChatGPT खोलें।</p>
+    <button type="button"
+      onclick="window.open('https://chatgpt.com/','_blank')">
+      AI खोलें
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>📱 App Discovery</h3>
+    <p>अपने पसंदीदा ऐप खोजें।</p>
+    <button type="button"
+      onclick="window.open('https://play.google.com/store/apps','_blank')">
+      ऐप खोजें
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>⬇️ Bharat Nova Install करें</h3>
+    <p>यदि आपका ब्राउज़र इंस्टॉल करने की सुविधा देता है, तो यहाँ से करें।</p>
+    <button type="button" id="installBtn">Install App</button>
+    <p id="installMessage" aria-live="polite"></p>
+  </div>
+
+</main>
+
+<footer>
+  © 2026 Bharat Nova | आपका डिजिटल साथी
+</footer>
+
+<script>
+const searchForm = document.getElementById("searchForm");
+const searchInput = document.getElementById("searchInput");
+const message = document.getElementById("message");
+const voiceBtn = document.getElementById("voiceBtn");
+const installBtn = document.getElementById("installBtn");
+const installMessage = document.getElementById("installMessage");
+
+searchForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+  const query = searchInput.value.trim();
+
+  if (!query) {
+    message.textContent = "पहले कुछ लिखें या बोलकर खोजें।";
+    return;
+  }
+
+  window.open(
+    "https://www.google.com/search?q=" + encodeURIComponent(query),
+    "_blank"
+  );
+});
+
+voiceBtn.addEventListener("click", function() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    message.textContent =
+      "Voice Search इस ब्राउज़र में उपलब्ध नहीं है। Chrome में कोशिश करें।";
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+
+  message.textContent = "🎤 सुन रहा हूँ... अब बोलिए।";
+
+  recognition.onresult = function(event) {
+    searchInput.value = event.results[0][0].transcript;
+    message.textContent = "आपकी बात सुन ली गई। अब खोज रहा हूँ...";
+    searchForm.requestSubmit();
+  };
+
+  recognition.onerror = function() {
+    message.textContent =
+      "आवाज़ नहीं सुनाई दी। माइक्रोफ़ोन की अनुमति जाँचें और फिर कोशिश करें।";
+  };
+
+  recognition.start();
+});
+
+let installPrompt = null;
+
+window.addEventListener("beforeinstallprompt", function(event) {
+  event.preventDefault();
+  installPrompt = event;
+  installBtn.textContent = "⬇️ अभी Install करें";
+});
+
+installBtn.addEventListener("click", async function() {
+  if (installPrompt) {
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+  } else {
+    installMessage.textContent =
+      "Chrome के मेन्यू (⋮) में जाएँ और 'Add to Home screen' या 'Install app' देखें।";
+  }
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./sw.js").catch(function(error) {
+      console.log("Service worker अभी उपलब्ध नहीं है:", error);
+    });
+  });
+}
+</script>
+</body>
+</html>
