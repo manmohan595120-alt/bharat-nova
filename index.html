@@ -285,4 +285,85 @@ window.addEventListener("appinstalled",function(){
 });
 </script>
 </body>
+  <section id="nova-admin" style="margin:20px auto;padding:20px;max-width:600px;background:#10294b;color:white;border-radius:16px;font-family:Arial,sans-serif">
+  <h2>🔐 Bharat Nova Admin Login</h2>
+  <input id="nova-email" type="email" placeholder="Admin Email" style="width:100%;padding:12px;margin:8px 0">
+  <input id="nova-password" type="password" placeholder="Password" style="width:100%;padding:12px;margin:8px 0">
+  <button id="nova-login" style="padding:12px;background:#087cf0;color:white;border:0;border-radius:8px">Login</button>
+  <button id="nova-logout" style="display:none;padding:12px;background:#b91c1c;color:white;border:0;border-radius:8px">Logout</button>
+  <p id="nova-message">Firebase Admin Login</p>
+  <div id="nova-dashboard" hidden>
+    <h3>Admin Dashboard</h3>
+    <p>आप सफलतापूर्वक लॉगिन हैं।</p>
+  </div>
+</section><script type="module">
+import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const config = {
+  apiKey: "AIzaSyA3gjWDlWRFWGTNgPK8nIPGL-2oaVTVtyo",
+  authDomain: "bharat-nova-755a8.firebaseapp.com",
+  projectId: "bharat-nova-755a8",
+  storageBucket: "bharat-nova-755a8.firebasestorage.app",
+  messagingSenderId: "68354571415",
+  appId: "1:68354571415:web:463bf88d106ca5616d7dd2"
+};
+
+const app = getApps().length ? getApp() : initializeApp(config);
+const auth = getAuth(app);
+const adminEmail = "Manmohan595120@gmail.com";
+
+const msg = document.getElementById("nova-message");
+const dashboard = document.getElementById("nova-dashboard");
+const loginBtn = document.getElementById("nova-login");
+const logoutBtn = document.getElementById("nova-logout");
+
+loginBtn.addEventListener("click", async () => {
+  const email = document.getElementById("nova-email").value.trim();
+  const password = document.getElementById("nova-password").value;
+
+  if (!email || !password) {
+    msg.textContent = "Email और password भरें।";
+    return;
+  }
+
+  if (email.toLowerCase() !== adminEmail.toLowerCase()) {
+    msg.textContent = "यह Admin email अनुमत नहीं है।";
+    return;
+  }
+
+  try {
+    msg.textContent = "Login हो रहा है...";
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    msg.textContent = "Login असफल: " + error.message;
+  }
+});
+
+logoutBtn.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    msg.textContent = error.message;
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  const isAdmin = user &&
+    user.email &&
+    user.email.toLowerCase() === adminEmail.toLowerCase();
+
+  dashboard.hidden = !isAdmin;
+  loginBtn.style.display = isAdmin ? "none" : "inline-block";
+  logoutBtn.style.display = isAdmin ? "inline-block" : "none";
+
+  if (isAdmin) {
+    msg.textContent = "Admin Login सफल: " + user.email;
+  } else if (!user) {
+    msg.textContent = "कृपया Admin Login करें।";
+  } else {
+    msg.textContent = "इस अकाउंट को Admin की अनुमति नहीं है।";
+  }
+});
+</script>
 </html>
