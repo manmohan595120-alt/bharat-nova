@@ -99,6 +99,48 @@ footer{text-align:center;padding:25px;color:#b9cce2}
 </head>
 
 <body>
+  <div style="text-align:center; margin:20px auto;">
+  <button id="installAppBtn"
+    style="background:#087cff;color:white;padding:14px 24px;
+    border:0;border-radius:12px;font-size:17px;font-weight:bold;">
+    📲 Download / Install Bharat Nova
+  </button>
+  <p id="installMessage" style="font-size:14px;color:#555;">
+    अपने मोबाइल में Bharat Nova इंस्टॉल करें।
+  </p>
+</div>
+
+<script>
+let installPrompt;
+
+const installBtn = document.getElementById("installAppBtn");
+const installMsg = document.getElementById("installMessage");
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  installPrompt = event;
+});
+
+installBtn.addEventListener("click", async () => {
+  if (installPrompt) {
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+  } else {
+    installMsg.textContent =
+      "Chrome में ⋮ दबाएँ और Install app या Add to Home screen चुनें।";
+  }
+});
+</script>
+
+### ✅ स्टेप 2: बदलाव सेव करें
+1. नीचे **Commit changes** दबाएँ।
+2. लगभग 1–3 मिनट इंतजार करें।
+3. [Bharat Nova वेबसाइट खोलें](https://manmohan595120-alt.github.io/bharat-nova/) और रिफ्रेश करें।
+
+**ध्यान दें:** यह बटन ऐप की इंस्टॉलेशन प्रक्रिया शुरू करने या निर्देश दिखाने के लिए है। यह APK फाइल डाउनलोड नहीं करता। इंस्टॉल होने का विकल्प ब्राउज़र और वेबसाइट की PWA सेटिंग पर निर्भर करता है।
+
+**भाई जी,** कोड जोड़ने के बाद मुझे बताइए—**बटन दिखाई दिया या नहीं?**
 <header>
   <div class="logo">🇮🇳 Bharat Nova</div>
   <button id="installBtn" hidden>Install App</button>
