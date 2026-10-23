@@ -3,10 +3,331 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07152e">
-<meta name="description" content="Bharat Nova - Smart Search, AI Assistant and App Discovery">
-<link rel="manifest" href="manifest.json">
-<title>Bharat Nova - Smart Search</title>
+<meta name="theme-color" content="#071b35">
+<meta name="description" content="Bharat Nova - Smart Search and Hindi AI Assistant">
+<title>Bharat Nova - Smart Search & AI</title>
 
 <style>
 *{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#071b35;
+  color:white;
+}
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:15px;
+  background:#0b2548;
+  border-bottom:1px solid #24466e;
+}
+.logo{font-size:22px;font-weight:bold;color:#70d6ff}
+button,a{cursor:pointer}
+button,.btn{
+  display:inline-block;
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  background:#168cff;
+  color:white;
+  font-weight:bold;
+  text-decoration:none;
+}
+main{max-width:850px;margin:auto;padding:18px}
+.hero{text-align:center;padding:28px 0}
+.hero h1{font-size:34px;margin-bottom:10px}
+.hero p{color:#c8d8ed}
+.searchbox{
+  display:flex;
+  gap:8px;
+  margin:20px 0;
+}
+input{
+  min-width:0;
+  flex:1;
+  padding:13px;
+  border:1px solid #416080;
+  border-radius:10px;
+  background:#102b4c;
+  color:white;
+  font-size:16px;
+}
+.card{
+  background:#0d2544;
+  border:1px solid #24466e;
+  border-radius:16px;
+  padding:18px;
+  margin:18px 0;
+}
+.card h2{margin-top:0}
+.ai-answer{
+  display:none;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  line-height:1.7;
+  background:#102b4c;
+  padding:14px;
+  border-radius:10px;
+  margin-top:15px;
+}
+.small{font-size:13px;color:#c0d0e4}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.tile{
+  display:block;
+  background:#102b4c;
+  padding:16px;
+  border-radius:12px;
+  color:white;
+  text-decoration:none;
+  border:1px solid #24466e;
+}
+.tile strong{display:block;margin-bottom:7px}
+footer{text-align:center;padding:25px;color:#b9cce2}
+@media(max-width:480px){
+  .hero h1{font-size:28px}
+  .searchbox{flex-wrap:wrap}
+  .searchbox input{flex-basis:100%}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">🇮🇳 Bharat Nova</div>
+  <button id="installBtn" hidden>Install App</button>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>भारत का स्मार्ट सर्च 🇮🇳</h1>
+    <p>Google पर खोजें और Bharat Nova AI से हिंदी में सवाल पूछें।</p>
+
+    <form id="searchForm" class="searchbox">
+      <input id="searchInput" type="search"
+        placeholder="Google पर कुछ खोजें..." required>
+      <button type="submit">Search</button>
+    </form>
+
+    <button type="button" id="voiceBtn">🎤 Voice Search</button>
+  </section>
+
+  <section class="card" id="ai">
+    <h2>🤖 Bharat Nova AI</h2>
+    <p>अपना सवाल लिखें। AI आपको हिंदी में जवाब देने की कोशिश करेगा।</p>
+
+    <form id="aiForm" class="searchbox">
+      <input id="aiQuestion" type="text"
+        placeholder="जैसे: भारत की राजधानी क्या है?" required>
+      <button id="askBtn" type="submit">पूछें</button>
+    </form>
+
+    <div id="aiAnswer" class="ai-answer" aria-live="polite"></div>
+
+    <p class="small">
+      AI के जवाब गलत भी हो सकते हैं। जरूरी जानकारी की पुष्टि जरूर करें।
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>🔎 Quick Search</h2>
+    <div class="grid">
+      <a class="tile" href="#" data-search="आज की खबरें">
+        <strong>📰 समाचार</strong>ताजा खबरें खोजें
+      </a>
+      <a class="tile" href="#" data-search="मौसम आज">
+        <strong>🌦️ मौसम</strong>मौसम की जानकारी खोजें
+      </a>
+      <a class="tile" href="#" data-search="सरकारी नौकरी">
+        <strong>💼 सरकारी नौकरी</strong>नौकरी की जानकारी खोजें
+      </a>
+      <a class="tile" href="#" data-search="ऑनलाइन पढ़ाई">
+        <strong>📚 पढ़ाई</strong>पढ़ाई की सामग्री खोजें
+      </a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📱 App Discovery</h2>
+    <p>अपने पसंदीदा ऐप और गेम खोजें।</p>
+    <div class="grid">
+      <a class="tile" href="#" data-search="best Android apps">
+        <strong>📲 Apps</strong>Android ऐप खोजें
+      </a>
+      <a class="tile" href="#" data-search="best Android games">
+        <strong>🎮 Games</strong>गेम खोजें
+      </a>
+      <a class="tile" href="#" data-search="educational apps">
+        <strong>🎓 Education</strong>शिक्षा वाले ऐप
+      </a>
+      <a class="tile" href="#" data-search="useful online tools">
+        <strong>🛠️ Tools</strong>उपयोगी टूल खोजें
+      </a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📥 Bharat Nova Install करें</h2>
+    <p>यदि आपका ब्राउज़र सपोर्ट करता है, तो नीचे दिए बटन से ऐप इंस्टॉल कर सकते हैं।</p>
+    <button id="installBtn2" type="button">Install Bharat Nova</button>
+    <p class="small">इंस्टॉल विकल्प ब्राउज़र और वेबसाइट की सेटिंग पर निर्भर करता है।</p>
+  </section>
+</main>
+
+<footer>
+  <p>🇮🇳 Bharat Nova — Smart Search & AI Assistant</p>
+</footer>
+
+<script>
+const AI_API = "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+function searchGoogle(query) {
+  const q = String(query || "").trim();
+  if (!q) return;
+  window.open(
+    "https://www.google.com/search?q=" + encodeURIComponent(q),
+    "_blank",
+    "noopener"
+  );
+}
+
+document.getElementById("searchForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  searchGoogle(document.getElementById("searchInput").value);
+});
+
+document.querySelectorAll("[data-search]").forEach(function(item) {
+  item.addEventListener("click", function(e) {
+    e.preventDefault();
+    searchGoogle(item.dataset.search);
+  });
+});
+
+document.getElementById("voiceBtn").addEventListener("click", function() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice Search आपके ब्राउज़र में उपलब्ध नहीं है। कृपया Chrome में कोशिश करें।");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    document.getElementById("searchInput").value = text;
+    searchGoogle(text);
+  };
+  recognition.onerror = function() {
+    alert("आवाज़ पहचान नहीं पाए। माइक्रोफोन की अनुमति जाँचें और फिर कोशिश करें।");
+  };
+  recognition.start();
+});
+
+const aiForm = document.getElementById("aiForm");
+const aiQuestion = document.getElementById("aiQuestion");
+const aiAnswer = document.getElementById("aiAnswer");
+const askBtn = document.getElementById("askBtn");
+
+aiForm.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const question = aiQuestion.value.trim();
+  if (!question) {
+    aiQuestion.focus();
+    return;
+  }
+
+  aiAnswer.style.display = "block";
+  aiAnswer.textContent = "⏳ Bharat Nova AI जवाब तैयार कर रहा है...";
+  askBtn.disabled = true;
+  askBtn.textContent = "रुकिए...";
+
+  try {
+    const response = await fetch(AI_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ question: question })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI से जवाब नहीं मिला।");
+    }
+
+    aiAnswer.textContent = data.answer || "अभी जवाब उपलब्ध नहीं है।";
+
+    const googleButton = document.createElement("button");
+    googleButton.type = "button";
+    googleButton.textContent = "इस सवाल को Google पर खोजें";
+    googleButton.style.marginTop = "12px";
+    googleButton.addEventListener("click", function() {
+      searchGoogle(question);
+    });
+
+    aiAnswer.appendChild(document.createElement("br"));
+    aiAnswer.appendChild(googleButton);
+
+  } catch (error) {
+    aiAnswer.textContent =
+      "माफ कीजिए, अभी AI से जवाब नहीं मिला। इंटरनेट कनेक्शन जाँचें और दोबारा कोशिश करें।\n\nतकनीकी संदेश: " +
+      error.message;
+
+    const googleButton = document.createElement("button");
+    googleButton.type = "button";
+    googleButton.textContent = "Google पर सवाल खोजें";
+    googleButton.style.marginTop = "12px";
+    googleButton.addEventListener("click", function() {
+      searchGoogle(question);
+    });
+
+    aiAnswer.appendChild(document.createElement("br"));
+    aiAnswer.appendChild(googleButton);
+  } finally {
+    askBtn.disabled = false;
+    askBtn.textContent = "पूछें";
+  }
+});
+
+let installPrompt = null;
+const installButtons = [
+  document.getElementById("installBtn"),
+  document.getElementById("installBtn2")
+];
+
+window.addEventListener("beforeinstallprompt", function(event) {
+  event.preventDefault();
+  installPrompt = event;
+  installButtons.forEach(function(button) {
+    button.hidden = false;
+  });
+});
+
+installButtons.forEach(function(button) {
+  button.addEventListener("click", async function() {
+    if (!installPrompt) {
+      alert("अगर Install विकल्प नहीं दिख रहा, तो Chrome के मेन्यू (⋮) में 'Add to Home screen' या 'Install app' देखें।");
+      return;
+    }
+
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    installPrompt = null;
+    installButtons.forEach(function(b) {
+      b.hidden = true;
+    });
+  });
+});
+</script>
+</body>
+</html>
