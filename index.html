@@ -440,47 +440,73 @@ async function loadUsers() {
       const statusCell = addCell(blocked ? "Blocked" : "Active");
 
       const actions = document.createElement("td");
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "btn " + (blocked ? "btn-green" : "btn-red");
-      toggle.textContent = blocked ? "Unblock" : "Block";
+      
+const actions = document.createElement("td");
 
-      toggle.addEventListener("click", async function() {
-        if (doc.id === currentUser.uid) {
-          alert("अपने Admin रिकॉर्ड को Block न करें।");
-          return;
-        }
+  const blockBtn = document.createElement("button");
+  blockBtn.type = "button";
+  blockBtn.className = "btn btn-red";
+  blockBtn.textContent = "Block";
 
-        const nextBlocked = !blocked;
-        const action = nextBlocked ? "Block" : "Unblock";
+  const unblockBtn = document.createElement("button");
+  unblockBtn.type = "button";
+  unblockBtn.className = "btn btn-green";
+  unblockBtn.textContent = "Unblock";
 
-        if (!confirm("क्या आप इस Firestore रिकॉर्ड को " + action + " करना चाहते हैं?")) {
-          return;
-        }
+  blockBtn.style.marginRight = "6px";
 
-        toggle.disabled = true;
+  blockBtn.disabled = blocked;
+  unblockBtn.disabled = !blocked;
 
-        try {
-          await db.collection("users").doc(doc.id).update({
-            blocked: nextBlocked,
-            statusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
+  async function updateUserBlockStatus(nextBlocked) {
+    if (doc.id === currentUser.uid) {
+      alert("अपने Admin रिकॉर्ड को Block न करें।");
+      return;
+    }
 
-          await loadUsers();
-          adminStatus.textContent =
-            "Firestore रिकॉर्ड का स्टेटस " + (nextBlocked ? "Blocked" : "Active") + " किया गया।";
-        } catch (error) {
-          console.error(error);
-          toggle.disabled = false;
-          alert("स्टेटस अपडेट नहीं हुआ: " + error.message);
-        }
+    const action = nextBlocked ? "Block" : "Unblock";
+
+    if (!confirm("क्या आप इस रिकॉर्ड को " + action + " करना चाहते हैं?")) {
+      return;
+    }
+
+    blockBtn.disabled = true;
+    unblockBtn.disabled = true;
+
+    try {
+      await db.collection("users").doc(doc.id).update({
+        blocked: nextBlocked,
+        statusUpdatedAt:
+          firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      actions.appendChild(toggle);
-      row.appendChild(actions);
-      tbody.appendChild(row);
-    });
+      await loadUsers();
 
+      adminStatus.textContent =
+        "रिकॉर्ड का स्टेटस: " +
+        (nextBlocked ? "Blocked" : "Active");
+    } catch (error) {
+      console.error("Status update error:", error);
+      alert("स्टेटस अपडेट नहीं हुआ: " + error.message);
+
+      blockBtn.disabled = blocked;
+      unblockBtn.disabled = !blocked;
+    }
+  }
+
+  blockBtn.addEventListener("click", function() {
+    updateUserBlockStatus(true);
+  });
+
+  unblockBtn.addEventListener("click", function() {
+    updateUserBlockStatus(false);
+  });
+
+  actions.appendChild(blockBtn);
+  actions.appendChild(unblockBtn);
+
+  row.appendChild(actions);
+  tbody.appendChild(row);
     adminStatus.textContent = "User list लोड हो गई। कुल रिकॉर्ड: " + snapshot.size;
   } catch (error) {
     console.error("Load users error:", error);
