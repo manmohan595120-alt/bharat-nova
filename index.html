@@ -842,7 +842,47 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+// Bharat Nova Email Registration and Login
+window.bnRegister = async function () {
+  const email = document.getElementById("bnEmail").value.trim();
+  const password = document.getElementById("bnPassword").value;
+  const output = document.getElementById("bnAuthMessage");
 
+  try {
+    if (!email || !password) {
+      output.textContent = "Please enter your email and password.";
+      return;
+    }
+
+    if (password.length < 6) {
+      output.textContent = "Password must be at least 6 characters.";
+      return;
+    }
+
+    await createUserWithEmailAndPassword(auth, email, password);
+    output.textContent = "Registration successful!";
+  } catch (error) {
+    output.textContent = error.message;
+  }
+};
+
+window.bnLogin = async function () {
+  const email = document.getElementById("bnEmail").value.trim();
+  const password = document.getElementById("bnPassword").value;
+  const output = document.getElementById("bnAuthMessage");
+
+  try {
+    if (!email || !password) {
+      output.textContent = "Please enter your email and password.";
+      return;
+    }
+
+    await signInWithEmailAndPassword(auth, email, password);
+    output.textContent = "Login successful!";
+  } catch (error) {
+    output.textContent = error.message;
+  }
+};
   let currentAdmin = null;
   let installPrompt = null;
   let lastAIAnswer = "";
