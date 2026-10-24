@@ -1655,5 +1655,610 @@
     });
   }
 </script>
+  <!-- BHARAT NOVA: ADVANCED SETTINGS -->
+<style>
+#bnSettingsBtn {
+  position: fixed;
+  right: 16px;
+  bottom: 20px;
+  z-index: 9998;
+  border: 0;
+  border-radius: 50px;
+  padding: 13px 18px;
+  background: #f4c542;
+  color: #07152e;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 4px 18px #0005;
+  cursor: pointer;
+}
+#bnSettingsPanel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow-y: auto;
+  background: #07152e;
+  color: #fff;
+  padding: 18px;
+  font-family: Arial, sans-serif;
+}
+#bnSettingsPanel.bn-light {
+  background: #f4f6fb;
+  color: #172033;
+}
+.bn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: -18px;
+  padding: 14px 0;
+  background: inherit;
+  z-index: 2;
+}
+.bn-head h2 { margin: 0; font-size: 23px; }
+.bn-close {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 18px;
+  cursor: pointer;
+}
+.bn-settings-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #8995aa;
+  margin: 8px 0 18px;
+  font-size: 16px;
+}
+.bn-group {
+  border: 1px solid #64748b55;
+  border-radius: 15px;
+  margin-bottom: 13px;
+  overflow: hidden;
+}
+.bn-group-title {
+  padding: 13px 15px;
+  background: #64748b22;
+  font-weight: bold;
+  color: #f4c542;
+}
+.bn-row {
+  padding: 13px 15px;
+  border-top: 1px solid #64748b33;
+}
+.bn-row label, .bn-row .bn-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+.bn-row small {
+  display: block;
+  opacity: .78;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+.bn-row select, .bn-row input[type="text"],
+.bn-row input[type="url"], .bn-row input[type="range"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1px solid #8995aa;
+  background: transparent;
+  color: inherit;
+  font-size: 15px;
+  margin-top: 4px;
+}
+.bn-row select option { color: #111; background: #fff; }
+.bn-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+.bn-action {
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 13px;
+  margin: 5px 5px 5px 0;
+  background: #f4c542;
+  color: #07152e;
+  font-weight: bold;
+  cursor: pointer;
+}
+.bn-status {
+  padding: 12px;
+  background: #64748b22;
+  border-radius: 10px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+#bnSettingsPanel.bn-large { font-size: 1.15em; }
+#bnSettingsPanel.bn-reduced-motion *,
+#bnSettingsPanel.bn-reduced-motion *::before,
+#bnSettingsPanel.bn-reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+</style>
+
+<button id="bnSettingsBtn" type="button">⚙️ Settings</button>
+
+<section id="bnSettingsPanel" role="dialog"
+         aria-modal="true" aria-label="Bharat Nova Settings">
+  <div class="bn-head">
+    <h2>⚙️ Bharat Nova Settings</h2>
+    <button class="bn-close" id="bnSettingsClose" type="button"
+            aria-label="Close settings">✕</button>
+  </div>
+
+  <p>Apne Bharat Nova experience ko customize karein.</p>
+
+  <input id="bnSettingSearch" class="bn-settings-search"
+         type="search" placeholder="🔎 Search settings...">
+
+  <div id="bnSettingsContent">
+
+    <div class="bn-group" data-search="search engine address bar suggestions">
+      <div class="bn-group-title">🔎 Search & Address Bar</div>
+
+      <div class="bn-row">
+        <label for="bnEngine">Default Search Engine</label>
+        <select id="bnEngine">
+          <option value="google">Google</option>
+          <option value="youtube">YouTube</option>
+          <option value="wikipedia">Wikipedia</option>
+          <option value="bing">Bing</option>
+          <option value="duckduckgo">DuckDuckGo</option>
+        </select>
+        <small>Yeh preference save hogi. Existing search code ko is setting se connect karna zaroori hai.</small>
+      </div>
+
+      <div class="bn-row">
+        <label><input type="checkbox" id="bnSuggestions">
+          Search Suggestions</label>
+        <small>Suggestions enable ya disable karne ki preference.</small>
+      </div>
+
+      <div class="bn-row">
+        <label><input type="checkbox" id="bnNewTab">
+          Search Results New Tab Mein Kholein</label>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="privacy security browsing data history clear">
+      <div class="bn-group-title">🔐 Privacy & Security</div>
+
+      <div class="bn-row">
+        <span class="bn-label">Recent Search History</span>
+        <button class="bn-action" id="bnClearHistory" type="button">
+          Clear Nova History
+        </button>
+        <small>Yeh sirf Bharat Nova ke bn_history naam wale local history record ko clear karega, agar woh use ho raha ho.</small>
+      </div>
+
+      <div class="bn-row">
+        <span class="bn-label">Reset Bharat Nova Settings</span>
+        <button class="bn-action" id="bnResetSettings" type="button">
+          Reset Settings
+        </button>
+        <small>Sirf is Settings panel ki saved preferences reset hongi. Firebase account ya Chrome history delete nahi hogi.</small>
+      </div>
+
+      <div class="bn-row">
+        <span class="bn-label">Privacy Information</span>
+        <div class="bn-status">
+          Bharat Nova website ke settings Chrome ya Android ki poori privacy settings ko control nahi kar sakte.
+          Passwords aur sensitive information ko local history mein save na karein.
+        </div>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="safety check website https connection">
+      <div class="bn-group-title">🛡️ Safety Check</div>
+      <div class="bn-row">
+        <button class="bn-action" id="bnSafetyCheck" type="button">
+          Run Basic Check
+        </button>
+        <div id="bnSafetyResult" class="bn-status" aria-live="polite">
+          Check chalane ke liye button dabayein.
+        </div>
+        <small>Yeh basic browser checks hain, complete security audit nahi.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="default browser chrome android">
+      <div class="bn-group-title">🌐 Default Browser</div>
+      <div class="bn-row">
+        <span class="bn-label">Browser Settings</span>
+        <p>Website khud ko Android ka default browser set nahi kar sakti.</p>
+        <small>Android Settings → Apps → Default apps → Browser app mein available option check karein.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="autofill passwords password manager">
+      <div class="bn-group-title">🔑 Autofill & Passwords</div>
+      <div class="bn-row">
+        <span class="bn-label">Password Manager</span>
+        <button class="bn-action" id="bnPasswordManager" type="button">
+          Open Google Password Manager
+        </button>
+        <small>Bharat Nova aapke saved Chrome passwords ko directly access nahi karta.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="tabs tab groups new tab">
+      <div class="bn-group-title">🗂️ Tabs & Tab Groups</div>
+      <div class="bn-row">
+        <span class="bn-label">Tab Management</span>
+        <div class="bn-status">
+          Browser tabs aur tab groups ko Chrome ya aapka current browser manage karta hai.
+          Bharat Nova website browser ke tabs ko poori tarah control nahi kar sakti.
+        </div>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="homepage home page website url">
+      <div class="bn-group-title">🏠 Homepage</div>
+      <div class="bn-row">
+        <label><input type="checkbox" id="bnHomeEnabled">
+          Custom Homepage Enable Karein</label>
+        <label for="bnHomeUrl">Homepage URL</label>
+        <input id="bnHomeUrl" type="url"
+               placeholder="https://example.com">
+        <button class="bn-action" id="bnSaveHome" type="button">
+          Save Homepage
+        </button>
+        <small>Yeh Bharat Nova ki preference hai; Chrome ki actual homepage setting nahi badlegi.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="notifications permission alerts">
+      <div class="bn-group-title">🔔 Notifications</div>
+      <div class="bn-row">
+        <span class="bn-label">Browser Notification Permission</span>
+        <div id="bnNotificationStatus" class="bn-status">Status check ho raha hai...</div>
+        <button class="bn-action" id="bnEnableNotifications" type="button">
+          Allow Notifications
+        </button>
+        <small>Permission sirf aapke button dabane par request hogi.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="appearance theme dark light">
+      <div class="bn-group-title">🎨 Appearance</div>
+      <div class="bn-row">
+        <label for="bnTheme">Theme</label>
+        <select id="bnTheme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
+        <small>Is option se Settings panel ka theme badlega.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="accessibility text size font animation">
+      <div class="bn-group-title">♿ Accessibility</div>
+      <div class="bn-row">
+        <label for="bnTextSize">Settings Text Size</label>
+        <input type="range" id="bnTextSize" min="14" max="22" value="16">
+        <small>Text size: <span id="bnTextSizeValue">16</span> px</small>
+      </div>
+      <div class="bn-row">
+        <label><input type="checkbox" id="bnReducedMotion">
+          Reduce Animations</label>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="site settings microphone permission">
+      <div class="bn-group-title">🎙️ Site Settings & Permissions</div>
+      <div class="bn-row">
+        <span class="bn-label">Microphone Permission</span>
+        <div id="bnMicStatus" class="bn-status">Permission status check karein.</div>
+        <button class="bn-action" id="bnCheckMic" type="button">
+          Check Microphone
+        </button>
+        <button class="bn-action" id="bnRequestMic" type="button">
+          Request Permission
+        </button>
+        <small>Microphone test mein audio record ya upload nahi ki jayegi. HTTPS aur browser support zaroori hai.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="languages hindi english language">
+      <div class="bn-group-title">🌐 Languages</div>
+      <div class="bn-row">
+        <label for="bnLanguage">Preferred Language</label>
+        <select id="bnLanguage">
+          <option value="hi">हिन्दी</option>
+          <option value="en">English</option>
+        </select>
+        <small>Yeh preference save hogi. Poore app ki language badalne ke liye existing UI ko is setting se connect karna hoga.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="downloads export history">
+      <div class="bn-group-title">📥 Downloads</div>
+      <div class="bn-row">
+        <span class="bn-label">Export Nova Settings</span>
+        <button class="bn-action" id="bnExportSettings" type="button">
+          Download Settings Backup
+        </button>
+        <small>Backup mein is panel ki preferences hongi, passwords ya Firebase credentials nahi.</small>
+      </div>
+    </div>
+
+    <div class="bn-group" data-search="about version bharat nova">
+      <div class="bn-group-title">ℹ️ About Bharat Nova</div>
+      <div class="bn-row">
+        <div class="bn-status">
+          <strong>Bharat Nova</strong><br>
+          Version: 1.0.0<br>
+          Smart Search & AI Assistant<br>
+          Website:
+          <a href="https://manmohan595120-alt.github.io/bharat-nova/"
+             target="_blank" rel="noopener noreferrer"
+             style="color:#f4c542">Open Bharat Nova</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bn-row">
+    <button class="bn-action" id="bnSaveSettings" type="button">
+      💾 Save Settings
+    </button>
+    <button class="bn-action" id="bnCloseBottom" type="button">
+      Close
+    </button>
+    <div id="bnSettingsMessage" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const panel = document.getElementById("bnSettingsPanel");
+  const $ = id => document.getElementById(id);
+  const KEY = "bn_settings_v1";
+
+  const defaults = {
+    engine: "google",
+    suggestions: true,
+    newTab: false,
+    theme: "dark",
+    textSize: 16,
+    reducedMotion: false,
+    language: "hi",
+    homeEnabled: false,
+    homeUrl: ""
+  };
+
+  let settings = { ...defaults };
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    settings = { ...defaults, ...saved };
+  } catch (_) {}
+
+  function showMessage(message) {
+    $("bnSettingsMessage").textContent = message;
+  }
+
+  function applySettings() {
+    panel.classList.toggle("bn-light", settings.theme === "light");
+    panel.classList.toggle("bn-large", Number(settings.textSize) >= 19);
+    panel.style.fontSize = Number(settings.textSize) + "px";
+    panel.classList.toggle("bn-reduced-motion", settings.reducedMotion);
+    $("bnTextSizeValue").textContent = settings.textSize;
+  }
+
+  function fillControls() {
+    $("bnEngine").value = settings.engine;
+    $("bnSuggestions").checked = !!settings.suggestions;
+    $("bnNewTab").checked = !!settings.newTab;
+    $("bnTheme").value = settings.theme;
+    $("bnTextSize").value = settings.textSize;
+    $("bnReducedMotion").checked = !!settings.reducedMotion;
+    $("bnLanguage").value = settings.language;
+    $("bnHomeEnabled").checked = !!settings.homeEnabled;
+    $("bnHomeUrl").value = settings.homeUrl || "";
+    applySettings();
+  }
+
+  function readControls() {
+    settings.engine = $("bnEngine").value;
+    settings.suggestions = $("bnSuggestions").checked;
+    settings.newTab = $("bnNewTab").checked;
+    settings.theme = $("bnTheme").value;
+    settings.textSize = Number($("bnTextSize").value);
+    settings.reducedMotion = $("bnReducedMotion").checked;
+    settings.language = $("bnLanguage").value;
+    settings.homeEnabled = $("bnHomeEnabled").checked;
+    settings.homeUrl = $("bnHomeUrl").value.trim();
+  }
+
+  function saveSettings() {
+    readControls();
+
+    if (settings.homeUrl) {
+      try {
+        const u = new URL(settings.homeUrl);
+        if (!["http:", "https:"].includes(u.protocol)) {
+          throw new Error("Invalid protocol");
+        }
+      } catch (_) {
+        showMessage("Homepage URL sahi enter karein, jaise https://example.com");
+        return false;
+      }
+    }
+
+    try {
+      localStorage.setItem(KEY, JSON.stringify(settings));
+    } catch (_) {
+      showMessage("Settings save nahi ho payi. Browser storage check karein.");
+      return false;
+    }
+
+    applySettings();
+
+    // Other Bharat Nova code can listen for these updated preferences.
+    window.dispatchEvent(new CustomEvent("bharatnova:settingschanged", {
+      detail: { ...settings }
+    }));
+
+    showMessage("✅ Settings save ho gayi!");
+    return true;
+  }
+
+  function openSettings() {
+    panel.style.display = "block";
+    fillControls();
+    updateNotificationStatus();
+    $("bnSettingsBtn").style.display = "none";
+    $("bnSettingsSearch").focus();
+  }
+
+  function closeSettings() {
+    panel.style.display = "none";
+    $("bnSettingsBtn").style.display = "block";
+  }
+
+  $("bnSettingsBtn").addEventListener("click", openSettings);
+  $("bnSettingsClose").addEventListener("click", closeSettings);
+  $("bnCloseBottom").addEventListener("click", closeSettings);
+  $("bnSaveSettings").addEventListener("click", saveSettings);
+
+  ["bnTheme", "bnTextSize", "bnReducedMotion"].forEach(id => {
+    $(id).addEventListener("input", () => {
+      readControls();
+      applySettings();
+    });
+  });
+
+  $("bnSettingsSearch").addEventListener("input", function () {
+    const q = this.value.trim().toLowerCase();
+    panel.querySelectorAll(".bn-group").forEach(group => {
+      const text = (group.innerText + " " + group.dataset.search).toLowerCase();
+      group.style.display = text.includes(q) ? "" : "none";
+    });
+  });
+
+  $("bnClearHistory").addEventListener("click", function () {
+    if (!confirm("Bharat Nova ki local search history clear karein?")) return;
+    localStorage.removeItem("bn_history");
+    showMessage("Nova history key clear kar di gayi. Agar aapka app doosri key use karta hai, us history ko alag clear karna hoga.");
+  });
+
+  $("bnResetSettings").addEventListener("click", function () {
+    if (!confirm("Sirf is Settings panel ki preferences reset karein?")) return;
+    settings = { ...defaults };
+    localStorage.setItem(KEY, JSON.stringify(settings));
+    fillControls();
+    showMessage("Settings reset ho gayi.");
+  });
+
+  $("bnSaveHome").addEventListener("click", function () {
+    if (saveSettings()) {
+      showMessage("Homepage preference save ho gayi. Yeh Chrome ki actual homepage nahi badalti.");
+    }
+  });
+
+  $("bnSafetyCheck").addEventListener("click", async function () {
+    const lines = [];
+    lines.push("HTTPS: " + (location.protocol === "https:" ? "Secure connection" : "HTTPS nahi hai"));
+    lines.push("Microphone API: " + (navigator.mediaDevices?.getUserMedia ? "Supported" : "Not available"));
+    lines.push("Notifications: " + ("Notification" in window ? Notification.permission : "Not supported"));
+    lines.push("Service Worker: " + ("serviceWorker" in navigator ? "Browser support available" : "Not supported"));
+    $("bnSafetyResult").textContent = lines.join("\n");
+    $("bnSafetyResult").style.whiteSpace = "pre-line";
+  });
+
+  $("bnPasswordManager").addEventListener("click", function () {
+    window.open("https://passwords.google.com/", "_blank", "noopener,noreferrer");
+  });
+
+  function updateNotificationStatus() {
+    $("bnNotificationStatus").textContent =
+      "Status: " + ("Notification" in window ? Notification.permission : "Browser notifications supported nahi hain.");
+  }
+
+  $("bnEnableNotifications").addEventListener("click", async function () {
+    if (!("Notification" in window)) {
+      $("bnNotificationStatus").textContent = "Is browser mein notifications supported nahi hain.";
+      return;
+    }
+    try {
+      const result = await Notification.requestPermission();
+      updateNotificationStatus();
+      if (result === "granted") {
+        $("bnNotificationStatus").textContent = "Permission granted. Bharat Nova abhi koi notification send nahi kar raha.";
+      }
+    } catch (_) {
+      $("bnNotificationStatus").textContent = "Permission request nahi ho saki.";
+    }
+  });
+
+  $("bnCheckMic").addEventListener("click", async function () {
+    if (!navigator.permissions?.query) {
+      $("bnMicStatus").textContent = "Browser permission status directly check nahi kar sakta. Request Permission try karein.";
+      return;
+    }
+    try {
+      const result = await navigator.permissions.query({ name: "microphone" });
+      $("bnMicStatus").textContent = "Microphone permission: " + result.state;
+    } catch (_) {
+      $("bnMicStatus").textContent = "Permission status unavailable. Request Permission try karein.";
+    }
+  });
+
+  $("bnRequestMic").addEventListener("click", async function () {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      $("bnMicStatus").textContent = "Microphone access unavailable. HTTPS aur supported browser zaroori hai.";
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
+      $("bnMicStatus").textContent = "Microphone permission granted. Audio record ya upload nahi ki gayi.";
+    } catch (error) {
+      $("bnMicStatus").textContent = "Permission nahi mili: " + (error.message || error.name);
+    }
+  });
+
+  $("bnExportSettings").addEventListener("click", function () {
+    readControls();
+    const blob = new Blob(
+      [JSON.stringify(settings, null, 2)],
+      { type: "application/json" }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bharat-nova-settings.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    showMessage("Settings backup download request bhej di gayi.");
+  });
+
+  fillControls();
+})();
+</script>
+<!-- END BHARAT NOVA ADVANCED SETTINGS -->
+
+Android फोन से जोड़ने का तरीका
+
+1. "GitHub Editor" (https://reference-url-citation.invalid/0) खोलें।
+2. "index.html" में सबसे नीचे जाएँ।
+3. आखिरी "</body>" टैग खोजें और उससे ठीक पहले पूरा कोड पेस्ट करें।
+4. Commit changes दबाएँ।
+5. वेबसाइट खोलकर Settings बटन जाँचें: "Bharat Nova Website" (https://reference-url-citation.invalid/1)
+
+ध्यान दें: यह कोड Settings का नया पैनल जोड़ता है। कुछ विकल्प अभी केवल preference सेव करते हैं; उन्हें मौजूदा search bar, language और homepage के व्यवहार से जोड़ने के लिए पुराने कोड में भी बदलाव करना होगा।
 </body>
 </html>
