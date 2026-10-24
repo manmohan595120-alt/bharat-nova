@@ -2564,5 +2564,162 @@ function shareBharatNova() {
   }
 }
 </script>
+  <!-- BHARAT NOVA USER LOGIN -->
+<div id="bnUserAuth" style="
+  max-width:380px;
+  margin:25px auto;
+  padding:22px;
+  background:#0d1d38;
+  color:white;
+  border-radius:15px;
+  font-family:Arial,sans-serif;
+  text-align:center;
+">
+  <h2 style="color:#f4c542;">Bharat Nova Account</h2>
+
+  <p>Email से Register करें या Login करें।</p>
+
+  <input id="bnEmail"
+    type="email"
+    placeholder="Enter Email"
+    autocomplete="email"
+    style="box-sizing:border-box;width:100%;padding:12px;
+    margin:8px 0;border-radius:8px;border:1px solid #aaa;">
+
+  <input id="bnPassword"
+    type="password"
+    placeholder="Enter Password"
+    autocomplete="current-password"
+    style="box-sizing:border-box;width:100%;padding:12px;
+    margin:8px 0;border-radius:8px;border:1px solid #aaa;">
+
+  <button onclick="bnRegister()" style="
+    width:100%;padding:12px;margin-top:10px;
+    background:#f4c542;color:#07152e;
+    border:0;border-radius:8px;font-weight:bold;">
+    Register with Email
+  </button>
+
+  <button onclick="bnLogin()" style="
+    width:100%;padding:12px;margin-top:10px;
+    background:#ffffff;color:#07152e;
+    border:0;border-radius:8px;font-weight:bold;">
+    Login with Email
+  </button>
+
+  <button onclick="bnLogout()" id="bnLogoutBtn"
+    style="display:none;width:100%;padding:12px;margin-top:10px;">
+    Logout
+  </button>
+
+  <p id="bnAuthMessage" role="status"></p>
+</div>
+
+<script>
+(function () {
+  const ADMIN_EMAIL = "manmohan595120@gmail.com";
+
+  function message(text) {
+    document.getElementById("bnAuthMessage").textContent = text;
+  }
+
+  window.bnRegister = async function () {
+    const email = document.getElementById("bnEmail").value.trim();
+    const password = document.getElementById("bnPassword").value;
+
+    if (!email || !password) {
+      message("Email aur password dono bharein.");
+      return;
+    }
+
+    if (password.length < 6) {
+      message("Password kam se kam 6 characters ka hona chahiye.");
+      return;
+    }
+
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(email, password);
+      message("Registration successful!");
+    } catch (error) {
+      message(error.message);
+    }
+  };
+
+  window.bnLogin = async function () {
+    const email = document.getElementById("bnEmail").value.trim();
+    const password = document.getElementById("bnPassword").value;
+
+    if (!email || !password) {
+      message("Email aur password bharein.");
+      return;
+    }
+
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      message("Login successful!");
+    } catch (error) {
+      message("Login nahi hua: " + error.message);
+    }
+  };
+
+  window.bnLogout = async function () {
+    try {
+      await firebase.auth().signOut();
+      message("Aap logout ho gaye hain.");
+    } catch (error) {
+      message(error.message);
+    }
+  };
+
+  firebase.auth().onAuthStateChanged(function (user) {
+    const emailInput = document.getElementById("bnEmail");
+    const passwordInput = document.getElementById("bnPassword");
+    const registerButton = document.querySelector(
+      '#bnUserAuth button[onclick="bnRegister()"]'
+    );
+    const loginButton = document.querySelector(
+      '#bnUserAuth button[onclick="bnLogin()"]'
+    );
+    const logoutButton = document.getElementById("bnLogoutBtn");
+
+    if (user) {
+      emailInput.value = user.email || "";
+      passwordInput.value = "";
+      passwordInput.style.display = "none";
+      emailInput.readOnly = true;
+      registerButton.style.display = "none";
+      loginButton.style.display = "none";
+      logoutButton.style.display = "block";
+      message("Logged in: " + (user.email || ""));
+    } else {
+      passwordInput.style.display = "block";
+      emailInput.readOnly = false;
+      registerButton.style.display = "block";
+      loginButton.style.display = "block";
+      logoutButton.style.display = "none";
+    }
+
+    // Admin panel ko aam users se hide karein.
+    // Existing Admin Panel ke wrapper ko id="adminPanel" dein.
+    const panel = document.getElementById("adminPanel");
+
+    if (panel) {
+      panel.style.display =
+        user && user.email &&
+        user.email.toLowerCase() === ADMIN_EMAIL
+          ? "block"
+          : "none";
+    }
+
+    // Agar aapke code mein purana Admin Login box hai,
+    // uske actual ID ko yahan set karein.
+    const oldAdminLogin = document.getElementById("adminLogin");
+
+    if (oldAdminLogin) {
+      oldAdminLogin.style.display = "none";
+    }
+  });
+})();
+</script>
 </body>
 </html>
