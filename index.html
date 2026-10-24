@@ -1440,15 +1440,21 @@ window.bnLogin = async function () {
       user.uid === ADMIN_UID
     );
   }
+function showAdminState(isAdmin) {
+  const dashboard = $("usersDashboard");
+  const lockedNote = $("adminLockedNote");
+  const loginButton = $("adminLoginBtn");
+  const logoutButton = $("adminLogoutBtn");
+  const emailInput = $("adminEmail");
+  const passwordInput = $("adminPassword");
 
-  function showAdminState(isAdmin) {
-    $("usersDashboard").classList.toggle("hidden", !isAdmin);
-    $("adminLockedNote").classList.toggle("hidden", isAdmin);
-    $("adminLoginBtn").classList.toggle("hidden", isAdmin);
-    $("adminLogoutBtn").classList.toggle("hidden", !isAdmin);
-    $("adminEmail").disabled = isAdmin;
-    $("adminPassword").disabled = isAdmin;
-  }
+  if (dashboard) dashboard.classList.toggle("hidden", !isAdmin);
+  if (lockedNote) lockedNote.classList.toggle("hidden", isAdmin);
+  if (loginButton) loginButton.classList.toggle("hidden", isAdmin);
+  if (logoutButton) logoutButton.classList.toggle("hidden", !isAdmin);
+  if (emailInput) emailInput.disabled = isAdmin;
+  if (passwordInput) passwordInput.disabled = isAdmin;
+}
 
   $("adminLoginForm").addEventListener("submit", async event => {
     event.preventDefault();
