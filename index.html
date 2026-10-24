@@ -1442,21 +1442,28 @@ window.bnLogin = async function () {
   }
 
   function showAdminState(isAdmin) {
+  const adminSection = $("adminSection");
   const dashboard = $("usersDashboard");
-  const lockedNote = $("adminLockedNote");
   const loginButton = $("adminLoginBtn");
   const logoutButton = $("adminLogoutBtn");
   const emailInput = $("adminEmail");
   const passwordInput = $("adminPassword");
 
-  if (dashboard) dashboard.classList.toggle("hidden", !isAdmin);
-  if (lockedNote) lockedNote.classList.toggle("hidden", isAdmin);
+  if (adminSection) {
+    adminSection.classList.toggle("hidden", !isAdmin);
+  }
+
+  if (dashboard) {
+    dashboard.classList.toggle("hidden", !isAdmin);
+  }
+
   if (loginButton) loginButton.classList.toggle("hidden", isAdmin);
   if (logoutButton) logoutButton.classList.toggle("hidden", !isAdmin);
+
   if (emailInput) emailInput.disabled = isAdmin;
   if (passwordInput) passwordInput.disabled = isAdmin;
-}
-
+  }
+  
   $("adminLoginForm").addEventListener("submit", async event => {
     event.preventDefault();
 
