@@ -103,7 +103,18 @@ footer {
   <section class="card">
     <h2>🤖 Bharat Nova AI</h2>
     <form id="aiForm">
-      <input id="aiInput" placeholder="AI से सवाल पूछें..." required>
+<div style="display:flex;gap:8px;align-items:center">
+  <input id="aiInput"
+    placeholder="AI से सवाल लिखें या बोलें..."
+    style="flex:1;min-width:0"
+    required>
+
+  <button id="aiVoiceBtn"
+    type="button"
+    style="width:auto;min-width:55px;background:#ff9933;color:#222">
+    🎤
+  </button>
+</div>
       <button class="purple" type="submit">AI से पूछें</button>
     </form>
     <div id="aiStatus" class="status hidden"></div>
