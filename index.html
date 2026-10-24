@@ -193,39 +193,57 @@ document.getElementById("ask-btn").addEventListener("click", async function(){
   }
 });
 </script>
-  let deferredInstallPrompt;
+  /* Bharat Nova Install App */
+let deferredInstallPrompt = null;
+
 const installBtn = document.getElementById("install-app-btn");
 const installStatus = document.getElementById("install-status");
 
-window.addEventListener("beforeinstallprompt", (event) => {
+window.addEventListener("beforeinstallprompt", function(event) {
   event.preventDefault();
   deferredInstallPrompt = event;
-  installBtn.hidden = false;
-});
 
-installBtn.addEventListener("click", async () => {
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const result = await deferredInstallPrompt.userChoice;
-
-    installStatus.textContent =
-      result.outcome === "accepted"
-        ? "App install करने की प्रक्रिया शुरू हो गई।"
-        : "आपने अभी Install नहीं किया।";
-
-    deferredInstallPrompt = null;
-    installBtn.hidden = true;
-  } else {
-    installStatus.textContent =
-      "Chrome में ⋮ मेनू खोलें और Add to Home screen या Install app चुनें।";
+  if (installBtn) {
+    installBtn.hidden = false;
   }
 });
 
-window.addEventListener("appinstalled", () => {
-  installStatus.textContent = "Bharat Nova सफलतापूर्वक Install हो गया!";
-  installBtn.hidden = true;
-});
+if (installBtn) {
+  installBtn.addEventListener("click", async function() {
+    if (!deferredInstallPrompt) {
+      if (installStatus) {
+        installStatus.textContent =
+          "Chrome के ⋮ मेनू में Install app या Add to Home screen चुनें।";
+      }
+      return;
+    }
 
+    deferredInstallPrompt.prompt();
+
+    const result = await deferredInstallPrompt.userChoice;
+
+    if (installStatus) {
+      installStatus.textContent =
+        result.outcome === "accepted"
+          ? "Install प्रक्रिया शुरू हो गई।"
+          : "आपने अभी Install नहीं किया।";
+    }
+
+    deferredInstallPrompt = null;
+    installBtn.hidden = true;
+  });
+}
+
+window.addEventListener("appinstalled", function() {
+  if (installStatus) {
+    installStatus.textContent =
+      "Bharat Nova सफलतापूर्वक Install हो गया!";
+  }
+
+  if (installBtn) {
+    installBtn.hidden = true;
+  }
+});
 <script type="module">
 import { initializeApp, getApps, getApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
