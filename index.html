@@ -2533,5 +2533,36 @@
   </a>
   <p style="font-size:12px;">© 2026 Bharat Nova. All rights reserved.</p>
 </footer>
+  <div style="text-align:center;padding:20px;">
+  <h3>📲 Share Bharat Nova</h3>
+  <p>Share Bharat Nova with your friends!</p>
+
+  <button onclick="shareBharatNova()"
+    style="background:#f4c542;color:#07152e;
+    padding:13px 22px;border:0;border-radius:10px;
+    font-size:16px;font-weight:bold;cursor:pointer;">
+    🔗 Share App
+  </button>
+</div>
+
+<script>
+function shareBharatNova() {
+  const appLink =
+    "https://manmohan595120-alt.github.io/bharat-nova/";
+
+  if (navigator.share) {
+    navigator.share({
+      title: "Bharat Nova",
+      text: "Try Bharat Nova — Smart Search and AI Assistant!",
+      url: appLink
+    }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(appLink)
+      .then(() => alert("Bharat Nova link copied! Share it with friends."));
+  } else {
+    prompt("Copy Bharat Nova link:", appLink);
+  }
+}
+</script>
 </body>
 </html>
