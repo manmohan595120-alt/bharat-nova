@@ -1440,7 +1440,8 @@ window.bnLogin = async function () {
       user.uid === ADMIN_UID
     );
   }
-function showAdminState(isAdmin) {
+
+  function showAdminState(isAdmin) {
   const dashboard = $("usersDashboard");
   const lockedNote = $("adminLockedNote");
   const loginButton = $("adminLoginBtn");
