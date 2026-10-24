@@ -841,6 +841,21 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  // Require login before using Bharat Nova
+onAuthStateChanged(auth, (user) => {
+  const loginBox = document.getElementById("bnUserAuth");
+
+  // Add the ID "bnAppContent" to the main app content container.
+  const appContent = document.getElementById("bnAppContent");
+
+  if (user) {
+    if (loginBox) loginBox.style.display = "none";
+    if (appContent) appContent.style.display = "";
+  } else {
+    if (loginBox) loginBox.style.display = "block";
+    if (appContent) appContent.style.display = "none";
+  }
+});
   const db = getFirestore(app);
 // Bharat Nova Email Registration and Login
 window.bnRegister = async function () {
