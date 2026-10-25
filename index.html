@@ -536,3 +536,182 @@ function novaClearChat() {
 
 /* ========== END STEP 3 ========== */
 </script>
+  <!-- ========== STEP 4: IMAGE AND FILE UPLOAD ========== -->
+
+<section class="section card" id="fileAssistant">
+  <h2>📁 Bharat Nova File Assistant</h2>
+
+  <p>🖼️ Image चुनें</p>
+  <input
+    type="file"
+    id="novaImage"
+    accept="image/*"
+    capture="environment"
+    style="width:100%"
+  >
+
+  <div id="imagePreview" style="margin-top:12px"></div>
+
+  <p>📄 PDF या TXT फ़ाइल चुनें</p>
+  <input
+    type="file"
+    id="novaFile"
+    accept=".pdf,.txt,text/plain,application/pdf"
+    style="width:100%"
+  >
+
+  <div class="buttons">
+    <button class="gold" onclick="novaPreviewFile()">
+      👁️ Preview File
+    </button>
+
+    <button class="blue" onclick="novaReadTextFile()">
+      📖 Read TXT
+    </button>
+
+    <button class="gray" onclick="novaClearFiles()">
+      🗑️ Clear Files
+    </button>
+  </div>
+
+  <p id="fileStatus" role="status" aria-live="polite"></p>
+
+  <div id="filePreview"
+       style="white-space:pre-wrap;overflow-wrap:anywhere;
+       max-height:350px;overflow:auto"></div>
+</section>
+
+<script>
+/* ===== BHARAT NOVA FILE ASSISTANT ===== */
+
+const NOVA_MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+function novaFileStatus(message) {
+  document.getElementById("fileStatus").textContent = message;
+}
+
+function novaPreviewFile() {
+  const imageInput = document.getElementById("novaImage");
+  const fileInput = document.getElementById("novaFile");
+  const image = imageInput.files[0];
+  const file = fileInput.files[0];
+
+  const preview = document.getElementById("filePreview");
+  const imagePreview = document.getElementById("imagePreview");
+
+  preview.replaceChildren();
+  imagePreview.replaceChildren();
+
+  if (image) {
+    if (image.size > NOVA_MAX_FILE_SIZE) {
+      novaFileStatus("Image का आकार 10 MB से कम रखें।");
+      return;
+    }
+
+    if (!image.type.startsWith("image/")) {
+      novaFileStatus("कृपया सही Image चुनें।");
+      return;
+    }
+
+    const img = document.createElement("img");
+    img.alt = "Selected image preview";
+    img.style.maxWidth = "100%";
+    img.style.maxHeight = "300px";
+    img.style.borderRadius = "10px";
+
+    const url = URL.createObjectURL(image);
+    img.src = url;
+    imagePreview.appendChild(img);
+
+    novaFileStatus(
+      "Image चुनी गई: " + image.name +
+      "। अभी यह केवल Preview है, AI Analysis नहीं।"
+    );
+    return;
+  }
+
+  if (file) {
+    if (file.size > NOVA_MAX_FILE_SIZE) {
+      novaFileStatus("फ़ाइल का आकार 10 MB से कम रखें।");
+      return;
+    }
+
+    const isPDF =
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
+
+    const isTXT =
+      file.type === "text/plain" ||
+      file.name.toLowerCase().endsWith(".txt");
+
+    if (!isPDF && !isTXT) {
+      novaFileStatus("केवल PDF या TXT फ़ाइल चुनें।");
+      return;
+    }
+
+    novaFileStatus(
+      "फ़ाइल चुनी गई: " + file.name +
+      (isPDF
+        ? "। PDF Preview/Analysis के लिए PDF Parser या Backend चाहिए।"
+        : "। TXT पढ़ने के लिए Read TXT दबाएँ।")
+    );
+    return;
+  }
+
+  novaFileStatus("पहले Image या PDF/TXT फ़ाइल चुनें।");
+}
+
+async function novaReadTextFile() {
+  const input = document.getElementById("novaFile");
+  const file = input.files[0];
+  const preview = document.getElementById("filePreview");
+
+  preview.replaceChildren();
+
+  if (!file) {
+    novaFileStatus("पहले TXT फ़ाइल चुनें।");
+    return;
+  }
+
+  if (!file.name.toLowerCase().endsWith(".txt") &&
+      file.type !== "text/plain") {
+    novaFileStatus(
+      "यह सुविधा अभी केवल TXT पढ़ती है। PDF के लिए Parser चाहिए।"
+    );
+    return;
+  }
+
+  if (file.size > NOVA_MAX_FILE_SIZE) {
+    novaFileStatus("फ़ाइल का आकार 10 MB से कम रखें।");
+    return;
+  }
+
+  try {
+    const text = await file.text();
+
+    const output = document.createElement("div");
+    output.textContent = text.slice(0, 30000);
+    preview.appendChild(output);
+
+    novaFileStatus(
+      text.length > 30000
+        ? "TXT का पहला 30,000 अक्षरों तक का हिस्सा दिखाया गया है।"
+        : "TXT फ़ाइल पढ़ ली गई।"
+    );
+  } catch (error) {
+    novaFileStatus("फ़ाइल नहीं पढ़ी जा सकी।");
+  }
+}
+
+function novaClearFiles() {
+  document.getElementById("novaImage").value = "";
+  document.getElementById("novaFile").value = "";
+
+  document.getElementById("imagePreview").replaceChildren();
+  document.getElementById("filePreview").replaceChildren();
+
+  novaFileStatus("चुनी गई फ़ाइलें साफ़ कर दी गई हैं।");
+}
+
+/* ===== END STEP 4 ===== */
+</script>
