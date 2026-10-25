@@ -2746,5 +2746,259 @@ function shareBharatNova() {
   <button onclick="bnLogout()" id="bnLogoutBtn" style="display:none;width:100%;padding:12px;margin-top:10px;background:#fff;color:#07152e;border:0;border-radius:8px;font-weight:bold;">Logout</button>
   <p id="bnAuthMessage" role="status" aria-live="polite"></p>
 </div>
+  <!-- BHARAT NOVA LOGIN + PREMIUM -->
+<style>
+#nova-auth {
+  max-width: 420px;
+  margin: 25px auto;
+  padding: 22px;
+  background: #061429;
+  color: white;
+  border: 1px solid #f4c542;
+  border-radius: 18px;
+  font-family: Arial, sans-serif;
+}
+#nova-auth h2 {
+  color: #f4c542;
+  text-align: center;
+}
+#nova-auth input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  margin: 7px 0;
+  border-radius: 8px;
+  border: 1px solid #777;
+}
+#nova-auth button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 9px;
+  border: none;
+  border-radius: 8px;
+  background: #f4c542;
+  color: #061429;
+  font-weight: bold;
+}
+#nova-auth .plan {
+  border: 1px solid #f4c542;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 12px;
+}
+#nova-auth-status {
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+</style>
+
+<section id="nova-auth">
+  <h2>🚀 Bharat Nova</h2>
+  <p id="nova-auth-status">Login या नया अकाउंट बनाएँ</p>
+
+  <div id="nova-auth-form">
+    <input id="nova-name"
+      type="text" placeholder="आपका नाम"
+      autocomplete="name">
+
+    <input id="nova-email"
+      type="email" placeholder="Email"
+      autocomplete="email">
+
+    <input id="nova-password"
+      type="password" placeholder="Password (कम से कम 6 अक्षर)"
+      autocomplete="current-password">
+
+    <button type="button" onclick="novaSignup()">
+      📝 Create Account
+    </button>
+
+    <button type="button" onclick="novaLogin()">
+      🔐 Login
+    </button>
+
+    <button type="button" onclick="novaResetPassword()">
+      🔑 Forgot Password
+    </button>
+  </div>
+
+  <div id="nova-user-panel" hidden>
+    <h3 id="nova-welcome"></h3>
+    <p id="nova-user-plan">Plan: Free</p>
+
+    <div class="plan">
+      <h3>💎 Monthly Premium</h3>
+      <h2>₹49</h2>
+      <p>30 दिन</p>
+      <button type="button"
+        onclick="novaChoosePlan('monthly')">
+        Monthly Plan चुनें
+      </button>
+    </div>
+
+    <div class="plan">
+      <h3>👑 3 Months Premium</h3>
+      <h2>₹129</h2>
+      <p>90 दिन</p>
+      <button type="button"
+        onclick="novaChoosePlan('quarterly')">
+        3 Months Plan चुनें
+      </button>
+    </div>
+
+    <button type="button" onclick="novaLogout()">
+      Logout
+    </button>
+  </div>
+</section>
+
+<script>
+(function () {
+  const status = document.getElementById("nova-auth-status");
+
+  function message(text) {
+    status.textContent = text;
+  }
+
+  function getFirebase() {
+    if (!window.firebase ||
+        !firebase.apps ||
+        !firebase.apps.length) {
+      message("Firebase SDK पहले initialize करना होगा।");
+      return null;
+    }
+    return firebase;
+  }
+
+  window.novaSignup = async function () {
+    const fb = getFirebase();
+    if (!fb) return;
+
+    const name =
+      document.getElementById("nova-name").value.trim();
+    const email =
+      document.getElementById("nova-email").value.trim();
+    const password =
+      document.getElementById("nova-password").value;
+
+    if (!name || !email || password.length < 6) {
+      message("नाम, सही Email और कम से कम 6 अक्षर का Password भरें।");
+      return;
+    }
+
+    try {
+      message("Account बनाया जा रहा है...");
+      const credential = await fb.auth()
+        .createUserWithEmailAndPassword(email, password);
+
+      await credential.user.updateProfile({
+        displayName: name
+      });
+
+      message("Account बन गया! आपका स्वागत है।");
+    } catch (error) {
+      message("Signup Error: " + error.message);
+    }
+  };
+
+  window.novaLogin = async function () {
+    const fb = getFirebase();
+    if (!fb) return;
+
+    const email =
+      document.getElementById("nova-email").value.trim();
+    const password =
+      document.getElementById("nova-password").value;
+
+    if (!email || !password) {
+      message("Email और Password भरें।");
+      return;
+    }
+
+    try {
+      message("Login हो रहा है...");
+      await fb.auth().signInWithEmailAndPassword(
+        email, password
+      );
+      message("Login सफल हुआ।");
+    } catch (error) {
+      message("Login Error: " + error.message);
+    }
+  };
+
+  window.novaResetPassword = async function () {
+    const fb = getFirebase();
+    if (!fb) return;
+
+    const email =
+      document.getElementById("nova-email").value.trim();
+
+    if (!email) {
+      message("पहले Email भरें।");
+      return;
+    }
+
+    try {
+      await fb.auth().sendPasswordResetEmail(email);
+      message("Password reset ईमेल भेज दिया गया है।");
+    } catch (error) {
+      message("Reset Error: " + error.message);
+    }
+  };
+
+  window.novaLogout = async function () {
+    const fb = getFirebase();
+    if (!fb) return;
+
+    try {
+      await fb.auth().signOut();
+      message("आप Logout हो गए हैं।");
+    } catch (error) {
+      message("Logout Error: " + error.message);
+    }
+  };
+
+  window.novaChoosePlan = function (plan) {
+    const fb = getFirebase();
+    if (!fb || !fb.auth().currentUser) {
+      message("पहले Login करें।");
+      return;
+    }
+
+    const price = plan === "monthly" ? 49 : 129;
+    const days = plan === "monthly" ? 30 : 90;
+
+    message(
+      "आपने ₹" + price + " का " + days +
+      " दिन वाला Premium चुना है। भुगतान सत्यापन अभी सेट करना बाकी है।"
+    );
+  };
+
+  const fb = getFirebase();
+
+  if (fb) {
+    fb.auth().onAuthStateChanged(function (user) {
+      document.getElementById("nova-auth-form").hidden =
+        !!user;
+
+      document.getElementById("nova-user-panel").hidden =
+        !user;
+
+      if (user) {
+        document.getElementById("nova-welcome").textContent =
+          "नमस्ते, " + (user.displayName || user.email);
+
+        document.getElementById("nova-user-plan").textContent =
+          "Plan: Free";
+
+        message("Login सफल हुआ।");
+      } else {
+        message("Login या नया अकाउंट बनाएँ।");
+      }
+    });
+  }
+})();
+</script>
+<!-- BHARAT NOVA LOGIN + PREMIUM END -->
 </body>
 </html>
