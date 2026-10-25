@@ -977,3 +977,248 @@ window.addEventListener("load", function() {
 </script>
 
 <!-- ========== END STEP 5 ========== -->
+  <!-- ========== STEP 6: ADMIN PANEL ========== -->
+
+<section class="section card" id="novaAdmin">
+  <h2>👑 Bharat Nova Admin Panel</h2>
+
+  <p id="adminStatus" role="status">
+    Admin access की जाँच की जाएगी।
+  </p>
+
+  <button class="gold" onclick="novaLoadAdminUsers()">
+    🔄 Load Users
+  </button>
+
+  <div id="adminDashboard" class="hidden">
+    <h3>📊 Revenue Dashboard</h3>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Total Revenue</h3>
+        <p id="adminRevenue">केवल सत्यापित भुगतान</p>
+      </div>
+
+      <div class="card">
+        <h3>Premium Users</h3>
+        <p id="adminPremiumUsers">—</p>
+      </div>
+
+      <div class="card">
+        <h3>Successful Payments</h3>
+        <p id="adminSuccessfulPayments">—</p>
+      </div>
+
+      <div class="card">
+        <h3>Pending Payments</h3>
+        <p id="adminPendingPayments">—</p>
+      </div>
+    </div>
+
+    <h3 class="section">👥 Users Management</h3>
+
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="padding:8px">Name</th>
+            <th style="padding:8px">Email</th>
+            <th style="padding:8px">User ID</th>
+            <th style="padding:8px">Status</th>
+            <th style="padding:8px">Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="adminUsersTable">
+          <tr>
+            <td colspan="5" style="padding:8px">
+              Load Users दबाएँ।
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+/*
+  SECURITY NOTE:
+  Admin access के लिए केवल email check पर्याप्त नहीं है।
+  नीचे Firestore के "admins" collection में authenticated
+  user का UID document होना भी आवश्यक रखा गया है।
+
+  Firestore Security Rules से भी इसी अनुमति को enforce करें।
+*/
+
+const NOVA_ADMIN_EMAIL = "manmohan595120@gmail.com";
+
+async function novaVerifyAdmin() {
+  const status = document.getElementById("adminStatus");
+  const dashboard = document.getElementById("adminDashboard");
+
+  dashboard.classList.add("hidden");
+
+  if (!window.firebase || !firebase.apps.length) {
+    status.textContent =
+      "Firebase शुरू नहीं हुआ। पहले STEP 5 की Firebase config ठीक करें।";
+    return null;
+  }
+
+  const user = firebase.auth().currentUser;
+
+  if (!user) {
+    status.textContent =
+      "Admin Panel के लिए पहले Admin account से Login करें।";
+    return null;
+  }
+
+  if ((user.email || "").toLowerCase() !==
+      NOVA_ADMIN_EMAIL.toLowerCase()) {
+    status.textContent = "Admin access नहीं मिला।";
+    return null;
+  }
+
+  try {
+    const adminDoc = await firebase.firestore()
+      .collection("admins")
+      .doc(user.uid)
+      .get();
+
+    if (!adminDoc.exists ||
+        adminDoc.data().enabled !== true) {
+      status.textContent =
+        "Admin UID की अनुमति Firestore में नहीं मिली।";
+      return null;
+    }
+
+    dashboard.classList.remove("hidden");
+    status.textContent = "Admin access सत्यापित हुआ।";
+
+    return user;
+
+  } catch (error) {
+    status.textContent =
+      "Admin permission जाँच नहीं हो सकी। Firestore Rules जाँचें।";
+    return null;
+  }
+}
+
+async function novaLoadAdminUsers() {
+  const user = await novaVerifyAdmin();
+
+  if (!user) return;
+
+  const table = document.getElementById("adminUsersTable");
+  table.replaceChildren();
+
+  try {
+    const snapshot = await firebase.firestore()
+      .collection("users")
+      .get();
+
+    snapshot.forEach(function(doc) {
+      const data = doc.data();
+      const uid = doc.id;
+
+      const row = document.createElement("tr");
+
+      function addCell(value) {
+        const cell = document.createElement("td");
+        cell.style.padding = "8px";
+        cell.style.borderBottom = "1px solid #526175";
+        cell.textContent = value || "—";
+        row.appendChild(cell);
+      }
+
+      addCell(data.name || data.displayName || "—");
+      addCell(data.email || "—");
+      addCell(uid);
+      addCell(data.blocked === true ? "Blocked" : "Active");
+
+      const actionCell = document.createElement("td");
+      actionCell.style.padding = "8px";
+
+      const actionButton = document.createElement("button");
+      actionButton.className =
+        data.blocked === true ? "gold" : "gray";
+
+      actionButton.textContent =
+        data.blocked === true ? "Unblock" : "Block";
+
+      actionButton.addEventListener("click", function() {
+        novaToggleUserBlock(uid, data.blocked === true);
+      });
+
+      actionCell.appendChild(actionButton);
+      row.appendChild(actionCell);
+      table.appendChild(row);
+    });
+
+    if (snapshot.empty) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.colSpan = 5;
+      cell.textContent = "अभी कोई user record नहीं मिला।";
+      cell.style.padding = "8px";
+
+      row.appendChild(cell);
+      table.appendChild(row);
+    }
+
+    document.getElementById("adminStatus").textContent =
+      "Users loaded: " + snapshot.size;
+
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById("adminStatus").textContent =
+      "Users नहीं लोड हुए। Firestore Security Rules और users collection जाँचें।";
+  }
+}
+
+async function novaToggleUserBlock(uid, currentlyBlocked) {
+  const admin = await novaVerifyAdmin();
+
+  if (!admin) return;
+
+  if (uid === admin.uid) {
+    document.getElementById("adminStatus").textContent =
+      "आप अपने Admin account को Block नहीं कर सकते।";
+    return;
+  }
+
+  const confirmText = currentlyBlocked
+    ? "इस user को Unblock करना चाहते हैं?"
+    : "इस user को Block करना चाहते हैं?";
+
+  if (!window.confirm(confirmText)) return;
+
+  try {
+    await firebase.firestore()
+      .collection("users")
+      .doc(uid)
+      .update({
+        blocked: !currentlyBlocked,
+        statusUpdatedAt:
+          firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+    document.getElementById("adminStatus").textContent =
+      currentlyBlocked
+        ? "User Unblock हो गया।"
+        : "User Block हो गया।";
+
+    await novaLoadAdminUsers();
+
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById("adminStatus").textContent =
+      "Status अपडेट नहीं हुआ। Firestore Rules जाँचें।";
+  }
+}
+
+/* ========== END STEP 6 ========== */
+  </script>
