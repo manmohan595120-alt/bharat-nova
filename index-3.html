@@ -2886,5 +2886,263 @@ function shareBharatNova() {
   };
 })();
 </script>
+  <!-- BHARAT NOVA SETTINGS --><style>
+#nova-settings {
+  background: #0b1c33;
+  color: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  margin: 20px auto;
+  max-width: 650px;
+  font-family: Arial, sans-serif;
+}
+#nova-settings h2,
+#nova-settings h3 {
+  color: #f4c542;
+}
+.nova-setting-card {
+  border: 1px solid #344761;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 12px 0;
+}
+#nova-settings button,
+#nova-settings select {
+  padding: 10px;
+  margin: 5px 3px;
+  border-radius: 7px;
+  border: none;
+}
+#nova-settings button {
+  background: #f4c542;
+  color: #061429;
+  font-weight: bold;
+}
+#nova-settings-message {
+  color: #f4c542;
+  overflow-wrap: anywhere;
+}
+body.nova-light {
+  background: #f3f6fa !important;
+  color: #152238 !important;
+}
+body.nova-light #nova-settings,
+body.nova-light .nova-setting-card {
+  background: #fff !important;
+  color: #152238 !important;
+}
+</style><section id="nova-settings">
+  <h2>⚙️ Bharat Nova Settings</h2>  <div class="nova-setting-card">
+    <h3>🌐 Language / भाषा</h3>
+    <select id="nova-language">
+      <option value="hi">हिन्दी</option>
+      <option value="en">English</option>
+    </select>
+    <button type="button" onclick="novaSaveLanguage()">Save Language</button>
+    <p>यह सेटिंग आपकी चुनी हुई भाषा सेव करेगी। सभी पुराने पेजों का अनुवाद अपने आप नहीं होगा।</p>
+  </div>  <div class="nova-setting-card">
+    <h3>🌙 Theme / थीम</h3>
+    <button type="button" onclick="novaSetTheme('dark')">Dark Theme</button>
+    <button type="button" onclick="novaSetTheme('light')">Light Theme</button>
+  </div>  <div class="nova-setting-card">
+    <h3>🎤 Voice Settings</h3>
+    <label>
+      <input type="checkbox" id="nova-voice-enabled">
+      Voice Search इस्तेमाल करें
+    </label>
+    <br>
+    <button type="button" onclick="novaSaveVoice()">Save Voice Setting</button>
+    <button type="button" onclick="novaTestVoice()">Test Voice</button>
+    <p>माइक्रोफोन की अनुमति ब्राउज़र की Site Settings से भी देनी होगी।</p>
+  </div>  <div class="nova-setting-card">
+    <h3>🔐 Account & Security</h3>
+    <p id="nova-account-status">Account की स्थिति जाँची जा रही है।</p>
+    <button type="button" onclick="novaAccountStatus()">Check Login</button>
+    <button type="button" onclick="novaPasswordReset()">Reset Password</button>
+    <button type="button" onclick="novaLogout()">Logout</button>
+  </div>  <div class="nova-setting-card">
+    <h3>💎 Premium</h3>
+    <p>Monthly: ₹49 / 30 दिन</p>
+    <p>3 Months: ₹129 / 90 दिन</p>
+    <button type="button" onclick="novaOpenPremium()">Open Premium Plans</button>
+  </div>  <div class="nova-setting-card">
+    <h3>🛡️ Privacy</h3>
+    <button type="button" onclick="novaPrivacyInfo()">Privacy Information</button>
+    <button type="button" onclick="novaClearSettings()">Reset Local Settings</button>
+    <p id="nova-privacy-message" aria-live="polite"></p>
+  </div>  <div class="nova-setting-card">
+    <h3>📲 App</h3>
+    <button type="button" onclick="novaShareApp()">Share Bharat Nova</button>
+    <button type="button" onclick="novaInstallApp()">Install Bharat Nova</button>
+  </div>  <p id="nova-settings-message" role="status" aria-live="polite"></p>
+</section><script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const msg = text => {
+    if ($("nova-settings-message")) $("nova-settings-message").textContent = text;
+  };
+
+  // Load saved settings
+  try {
+    $("nova-language").value =
+      localStorage.getItem("novaLanguage") || "hi";
+    $("nova-voice-enabled").checked =
+      localStorage.getItem("novaVoiceEnabled") !== "false";
+    document.body.classList.toggle(
+      "nova-light",
+      localStorage.getItem("novaTheme") === "light"
+    );
+  } catch (e) {
+    msg("Browser settings उपलब्ध नहीं हैं।");
+  }
+
+  window.novaSaveLanguage = function () {
+    const value = $("nova-language").value;
+    localStorage.setItem("novaLanguage", value);
+    document.documentElement.lang = value;
+    msg(value === "hi" ? "भाषा सेटिंग सेव हो गई।" : "Language setting saved.");
+  };
+
+  window.novaSetTheme = function (theme) {
+    document.body.classList.toggle("nova-light", theme === "light");
+    localStorage.setItem("novaTheme", theme);
+    msg(theme === "light" ? "Light Theme चालू है।" : "Dark Theme चालू है।");
+  };
+
+  window.novaSaveVoice = function () {
+    localStorage.setItem(
+      "novaVoiceEnabled",
+      $("nova-voice-enabled").checked ? "true" : "false"
+    );
+    msg("Voice setting सेव हो गई।");
+  };
+
+  window.novaTestVoice = function () {
+    if (!$("nova-voice-enabled").checked) {
+      msg("पहले Voice Search चालू करें।");
+      return;
+    }
+    if (!("speechSynthesis" in window)) {
+      msg("इस ब्राउज़र में Voice Test उपलब्ध नहीं है।");
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(
+      $("nova-language").value === "hi"
+        ? "भारत नोवा में आपका स्वागत है।"
+        : "Welcome to Bharat Nova."
+    );
+    utterance.lang = $("nova-language").value === "hi" ? "hi-IN" : "en-IN";
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+    msg("Voice Test शुरू हुआ।");
+  };
+
+  window.novaAccountStatus = function () {
+    const el = $("nova-account-status");
+    if (!window.firebase || !firebase.apps.length) {
+      el.textContent = "Firebase Configuration उपलब्ध नहीं है।";
+      return;
+    }
+    const user = firebase.auth().currentUser;
+    el.textContent = user
+      ? "Login है: " + user.email
+      : "आप Login नहीं हैं।";
+  };
+
+  window.novaPasswordReset = async function () {
+    if (!window.firebase || !firebase.apps.length) {
+      msg("Password Reset के लिए Firebase चालू करें।");
+      return;
+    }
+    const user = firebase.auth().currentUser;
+    const email = user ? user.email : prompt("अपना Registered Email लिखें:");
+    if (!email) return;
+
+    try {
+      await firebase.auth().sendPasswordResetEmail(email);
+      msg("यदि Email registered है, तो Password Reset लिंक भेज दिया गया है।");
+    } catch (e) {
+      msg("Password Reset नहीं हो सका: " + e.message);
+    }
+  };
+
+  window.novaLogout = async function () {
+    if (!window.firebase || !firebase.apps.length) {
+      msg("Firebase Authentication उपलब्ध नहीं है।");
+      return;
+    }
+    if (!firebase.auth().currentUser) {
+      msg("आप पहले से Logout हैं।");
+      return;
+    }
+    try {
+      await firebase.auth().signOut();
+      msg("Logout सफल हुआ।");
+    } catch (e) {
+      msg("Logout नहीं हुआ: " + e.message);
+    }
+  };
+
+  window.novaOpenPremium = function () {
+    const section = $("nova-premium");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    } else {
+      msg("Premium section नहीं मिला। Premium वाला कोड जोड़ें।");
+    }
+  };
+
+  window.novaPrivacyInfo = function () {
+    $("nova-privacy-message").textContent =
+      "अपना Password किसी के साथ साझा न करें। डेटा संग्रह और उपयोग की सही जानकारी देने के लिए वेबसाइट की Privacy Policy देखें।";
+  };
+
+  window.novaClearSettings = function () {
+    if (!confirm("केवल Bharat Nova की स्थानीय Settings रीसेट करें?")) return;
+    localStorage.removeItem("novaLanguage");
+    localStorage.removeItem("novaTheme");
+    localStorage.removeItem("novaVoiceEnabled");
+    $("nova-language").value = "hi";
+    $("nova-voice-enabled").checked = true;
+    document.body.classList.remove("nova-light");
+    msg("स्थानीय Settings रीसेट हो गईं।");
+  };
+
+  window.novaShareApp = async function () {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Bharat Nova",
+          text: "Bharat Nova खोलें",
+          url: location.href
+        });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(location.href);
+        msg("App का लिंक कॉपी हो गया।");
+      } else {
+        msg("इस ब्राउज़र में Share सुविधा उपलब्ध नहीं है।");
+      }
+    } catch (e) {
+      if (e.name !== "AbortError") msg("Share नहीं हो सका।");
+    }
+  };
+
+  let installPrompt = null;
+  window.addEventListener("beforeinstallprompt", event => {
+    event.preventDefault();
+    installPrompt = event;
+  });
+
+  window.novaInstallApp = async function () {
+    if (installPrompt) {
+      installPrompt.prompt();
+      await installPrompt.userChoice;
+      installPrompt = null;
+    } else {
+      msg("अगर Install विकल्प नहीं दिखता, Chrome के ⋮ मेन्यू में Add to Home screen देखें।");
+    }
+  };
+})();
+</script>
 </body>
 </html>
