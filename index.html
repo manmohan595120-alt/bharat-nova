@@ -1,1 +1,187 @@
-hffhbcxgvcc
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#061429">
+<title>Bharat Nova AI</title>
+
+<style>
+:root {
+  --bg:#061429;
+  --card:#102442;
+  --text:#ffffff;
+  --gold:#f4c542;
+}
+body.light {
+  --bg:#f2f6fc;
+  --card:#ffffff;
+  --text:#102442;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header {
+  background:var(--card);
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+}
+.logo { font-size:22px; font-weight:bold; }
+.logo span { color:var(--gold); }
+button {
+  background:var(--gold);
+  color:#061429;
+  border:0;
+  border-radius:10px;
+  padding:12px 15px;
+  font-weight:bold;
+  cursor:pointer;
+  margin:4px;
+}
+input,textarea,select {
+  width:100%;
+  padding:13px;
+  margin:7px 0;
+  border-radius:10px;
+  border:1px solid #526783;
+  background:var(--card);
+  color:var(--text);
+  font-size:16px;
+}
+.container { max-width:850px; margin:auto; padding:16px; }
+.hero { text-align:center; padding:30px 5px; }
+.hero h1 { font-size:35px; }
+.gold { color:var(--gold); }
+.card {
+  background:var(--card);
+  border:1px solid #344762;
+  border-radius:15px;
+  padding:17px;
+  margin:14px 0;
+}
+.row {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:5px;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.hidden { display:none; }
+#aiAnswer,#status { white-space:pre-wrap; overflow-wrap:anywhere; }
+.price { font-size:30px; color:var(--gold); font-weight:bold; }
+footer { text-align:center; padding:25px; }
+@media(max-width:500px) {
+  .grid { grid-template-columns:1fr; }
+  .hero h1 { font-size:29px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🇮🇳 Bharat <span>Nova</span></div>
+  <div>
+    <button onclick="toggleTheme()">🌗</button>
+    <button onclick="toggleSettings()">⚙️</button>
+  </div>
+</header>
+
+<main class="container">
+
+<section class="hero">
+  <h1>Search Smarter.<br>
+  <span class="gold">Think Bigger.</span></h1>
+  <p>Smart Search, Voice Search और AI Assistant — एक ही जगह।</p>
+
+  <input id="query" placeholder="कुछ भी खोजें..."
+    onkeydown="if(event.key==='Enter')searchWeb()">
+
+  <div class="row">
+    <button onclick="searchWeb()">🔍 Search</button>
+    <button onclick="voiceSearch()">🎤 Voice</button>
+    <button onclick="searchEngine('google')">Google</button>
+    <button onclick="searchEngine('youtube')">YouTube</button>
+    <button onclick="searchEngine('wiki')">Wikipedia</button>
+    <button onclick="searchEngine('news')">News</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2>🤖 Bharat Nova AI</h2>
+  <p>अपना सवाल लिखें और AI से जवाब पाएँ।</p>
+
+  <textarea id="aiQuestion" rows="3"
+    placeholder="यहाँ अपना सवाल लिखें..."></textarea>
+
+  <div class="row">
+    <button onclick="askAI()">AI से पूछें</button>
+    <button onclick="clearAI()">Clear</button>
+  </div>
+
+  <p id="status" aria-live="polite"></p>
+  <div id="aiAnswer"></div>
+</section>
+
+<section class="grid">
+  <div class="card">
+    <h3>🖼️ Photo AI</h3>
+    <input id="imageFile" type="file" accept="image/*">
+    <button onclick="analyzeImage()">फोटो चुनें</button>
+    <p id="imageStatus">फोटो विश्लेषण के लिए AI backend सपोर्ट चाहिए।</p>
+  </div>
+
+  <div class="card">
+    <h3>📄 PDF / TXT AI</h3>
+    <input id="documentFile" type="file"
+      accept=".pdf,.txt,application/pdf,text/plain">
+    <button onclick="analyzeDocument()">फ़ाइल पढ़ें</button>
+    <p id="fileStatus">TXT पढ़ सकते हैं; PDF के लिए अतिरिक्त सपोर्ट चाहिए।</p>
+  </div>
+</section>
+
+<section id="settings" class="card hidden">
+  <h2>⚙️ Settings</h2>
+
+  <label for="language">Voice Language</label>
+  <select id="language">
+    <option value="hi-IN">हिन्दी</option>
+    <option value="en-US">English</option>
+  </select>
+
+  <label for="engine">Default Search Engine</label>
+  <select id="engine">
+    <option value="google">Google</option>
+    <option value="youtube">YouTube</option>
+    <option value="wiki">Wikipedia</option>
+    <option value="news">News</option>
+  </select>
+
+  <button onclick="saveSettings()">Save Settings</button>
+  <button onclick="checkMicrophone()">🎤 Mic Permission</button>
+  <p id="settingsStatus"></p>
+</section>
+
+<section class="card">
+  <h2>📱 Install Bharat Nova</h2>
+  <p>Chrome मेनू (⋮) से Add to Home screen चुनकर वेबसाइट को होम स्क्रीन पर जोड़ सकते हैं।</p>
+  <button id="installButton" class="hidden"
+    onclick="installApp()">Install App</button>
+</section>
+
+<footer>Bharat Nova • Made for India 🇮🇳</footer>
+</main>
+
+<script>
