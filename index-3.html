@@ -2746,5 +2746,145 @@ function shareBharatNova() {
   <button onclick="bnLogout()" id="bnLogoutBtn" style="display:none;width:100%;padding:12px;margin-top:10px;background:#fff;color:#07152e;border:0;border-radius:8px;font-weight:bold;">Logout</button>
   <p id="bnAuthMessage" role="status" aria-live="polite"></p>
 </div>
+  <!-- BHARAT NOVA PREMIUM SECTION --><style>
+.nova-premium {
+  background: #061429;
+  color: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  margin: 20px auto;
+  max-width: 650px;
+  font-family: Arial, sans-serif;
+}
+.nova-premium h2,
+.nova-premium h3 {
+  color: #f4c542;
+}
+.nova-plan {
+  border: 1px solid #f4c542;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 15px 0;
+  background: #102541;
+}
+.nova-premium button {
+  background: #f4c542;
+  color: #061429;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 5px 0;
+}
+.nova-premium button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+.nova-premium-status {
+  overflow-wrap: anywhere;
+  color: #f4c542;
+}
+</style><section class="nova-premium" id="nova-premium">
+  <h2>💎 Bharat Nova Premium</h2>
+  <p>अपना प्लान चुनें और उपलब्ध सुविधाएँ देखें।</p>  <div class="nova-plan">
+    <h3>🆓 Free Plan — ₹0</h3>
+    <p>AI Text Questions</p>
+    <p>Google, YouTube और Wikipedia Search</p>
+    <p>5 फोटो प्रतिदिन और 5 PDF/TXT फाइलें प्रतिदिन</p>
+    <button type="button" onclick="novaPremiumFree()">
+      Free Plan देखें
+    </button>
+  </div>  <div class="nova-plan">
+    <h3>⭐ Monthly Premium — ₹49</h3>
+    <p>अवधि: 30 दिन</p>
+    <p>Premium में निर्धारित सुविधाओं की अधिक सीमा।</p>
+    <button type="button" onclick="novaChoosePremium('monthly')">
+      Monthly Premium चुनें
+    </button>
+  </div>  <div class="nova-plan">
+    <h3>👑 3 Months Premium — ₹129</h3>
+    <p>अवधि: 90 दिन</p>
+    <p>तीन महीने के लिए Premium प्लान।</p>
+    <button type="button" onclick="novaChoosePremium('quarterly')">
+      3 Months Premium चुनें
+    </button>
+  </div>  <div class="nova-plan">
+    <h3>📋 आपका Premium Status</h3>
+    <p id="nova-premium-status" class="nova-premium-status">
+      Premium स्थिति सर्वर से सत्यापित नहीं हुई है।
+    </p>
+    <button type="button" onclick="novaCheckPremium()">
+      Status जाँचें
+    </button>
+  </div>  <p id="nova-premium-message" class="nova-premium-status"
+     role="status" aria-live="polite"></p>
+</section><script>
+(function () {
+  const plans = {
+    monthly: {
+      name: "Monthly Premium",
+      price: 49,
+      days: 30
+    },
+    quarterly: {
+      name: "3 Months Premium",
+      price: 129,
+      days: 90
+    }
+  };
+
+  function message(text) {
+    const el = document.getElementById("nova-premium-message");
+    if (el) el.textContent = text;
+  }
+
+  window.novaChoosePremium = function (planKey) {
+    const plan = plans[planKey];
+
+    if (!plan) {
+      message("कृपया सही प्लान चुनें।");
+      return;
+    }
+
+    message(
+      plan.name + " चुना गया। कीमत ₹" + plan.price +
+      " और अवधि " + plan.days +
+      " दिन है। भुगतान शुरू करने के लिए सुरक्षित Payment Gateway जोड़ना बाकी है।"
+    );
+  };
+
+  window.novaPremiumFree = function () {
+    message("Free Plan की सुविधाएँ दिखाई गई हैं।");
+  };
+
+  window.novaCheckPremium = async function () {
+    const status = document.getElementById("nova-premium-status");
+
+    if (!window.firebase || !firebase.apps.length) {
+      status.textContent =
+        "Premium Status जाँचने के लिए Firebase Configuration आवश्यक है।";
+      return;
+    }
+
+    const user = firebase.auth().currentUser;
+
+    if (!user) {
+      status.textContent =
+        "पहले Login करें। Premium Status अभी सत्यापित नहीं है।";
+      return;
+    }
+
+    status.textContent =
+      "आपका Premium Status सुरक्षित सर्वर से जाँचना आवश्यक है।";
+
+    /*
+      वास्तविक Premium status केवल trusted backend/Firestore
+      security rules से सत्यापित करें। Browser में खुद से
+      Premium सक्रिय या भुगतान सफल घोषित न करें।
+    */
+  };
+})();
+</script>
 </body>
 </html>
