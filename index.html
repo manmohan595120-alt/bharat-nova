@@ -1428,7 +1428,39 @@ async function novaResetPassword() {
     <p>3 Months: ₹129 / 90 दिन</p>
     <p>Premium चालू करने के लिए सुरक्षित भुगतान सत्यापन आवश्यक है।</p>
   </div>
+<div class="nova-setting-item">
+  <h3>💎 अपना Premium प्लान चुनें</h3>
 
+  <h3>⭐ Monthly Premium — ₹49</h3>
+  <p>30 दिन के लिए</p>
+  <button class="nova-gold" onclick="buyPremium('monthly')">
+    अभी Premium लें
+  </button>
+
+  <hr>
+
+  <h3>👑 3 Months Premium — ₹129</h3>
+  <p>90 दिन के लिए</p>
+  <button class="nova-gold" onclick="buyPremium('quarterly')">
+    अभी Premium लें
+  </button>
+
+  <p id="premium-message"></p>
+</div>
+
+<script>
+function buyPremium(plan) {
+  const message = document.getElementById("premium-message");
+
+  if (plan === "monthly") {
+    message.textContent = "आपने ₹49 का 30 दिन वाला प्लान चुना है।";
+  } else {
+    message.textContent = "आपने ₹129 का 90 दिन वाला प्लान चुना है।";
+  }
+
+  alert("प्लान चुन लिया गया है। असली भुगतान सुविधा अभी जोड़नी बाकी है।");
+}
+</script>
   <div class="nova-setting-item">
     <h3>🔒 Privacy</h3>
     <p>Microphone केवल Voice Search शुरू करने पर इस्तेमाल करने की कोशिश करेगा।</p>
