@@ -2795,5 +2795,166 @@ function shareBharatNova() {
   });
 })();
 </script>
+  <!-- Bharat Nova AI Image and File Upload -->
+
+<style>
+#novaUpload {
+  background: #0d2140;
+  color: white;
+  border: 1px solid #f4c542;
+  border-radius: 15px;
+  padding: 16px;
+  margin: 20px auto;
+  max-width: 850px;
+  font-family: Arial, sans-serif;
+}
+#novaUpload input,
+#novaUpload textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+#novaUpload button {
+  background: #f4c542;
+  color: #07152e;
+  border: 0;
+  border-radius: 8px;
+  padding: 11px;
+  margin: 4px;
+  font-weight: bold;
+}
+#novaPreview {
+  max-width: 100%;
+  max-height: 220px;
+  display: none;
+  margin: 10px 0;
+}
+#novaAnswer {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #07152e;
+  padding: 12px;
+  border-radius: 8px;
+}
+</style>
+
+<section id="novaUpload">
+  <h2>🤖 Bharat Nova AI</h2>
+  <p>तस्वीर या PDF/TXT फ़ाइल अपलोड करके सवाल पूछें।</p>
+
+  <label>🖼️ तस्वीर चुनें</label>
+  <input id="novaImage" type="file"
+    accept="image/png,image/jpeg,image/webp">
+
+  <img id="novaPreview" alt="Image preview">
+
+  <label>📎 PDF या TXT फ़ाइल चुनें</label>
+  <input id="novaFile" type="file"
+    accept=".pdf,.txt,application/pdf,text/plain">
+
+  <textarea id="novaQuestion" rows="3"
+    placeholder="अपना सवाल हिंदी या English में लिखें..."></textarea>
+
+  <button id="novaAsk" type="button">🤖 AI से पूछें</button>
+  <button id="novaCopy" type="button">📋 Copy</button>
+  <button id="novaSpeak" type="button">🔊 जवाब सुनें</button>
+  <button id="novaStop" type="button">⏹️ रोकें</button>
+  <button id="novaClear" type="button">🧹 साफ़ करें</button>
+
+  <p id="novaStatus" aria-live="polite">तस्वीर या फ़ाइल चुनें।</p>
+  <div id="novaAnswer">AI का जवाब यहाँ आएगा।</div>
+</section>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  let imageData = "";
+  let fileText = "";
+
+  $("novaImage").addEventListener("change", () => {
+    const f = $("novaImage").files[0];
+    imageData = "";
+
+    if (!f) return;
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(f.type)
+        || f.size > 3 * 1024 * 1024) {
+      $("novaStatus").textContent =
+        "JPG, PNG या WEBP तस्वीर चुनें, अधिकतम 3 MB।";
+      $("novaImage").value = "";
+      $("novaPreview").style.display = "none";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      imageData = reader.result;
+      $("novaPreview").src = imageData;
+      $("novaPreview").style.display = "block";
+      $("novaStatus").textContent = "तस्वीर तैयार है।";
+    };
+
+    reader.readAsDataURL(f);
+  });
+
+  $("novaFile").addEventListener("change", async () => {
+    const f = $("novaFile").files[0];
+    fileText = "";
+
+    if (!f) return;
+
+    if (f.size > 5 * 1024 * 1024) {
+      $("novaStatus").textContent = "फ़ाइल 5 MB से छोटी रखें।";
+      $("novaFile").value = "";
+      return;
+    }
+
+    try {
+      if (f.name.toLowerCase().endsWith(".txt")) {
+        fileText = await f.text();
+      } else if (f.name.toLowerCase().endsWith(".pdf")) {
+        $("novaStatus").textContent = "PDF पढ़ी जा रही है...";
+
+        if (!window.pdfjsLib) {
+          await new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src =
+              "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+            s.onload = resolve;
+            s.onerror = () => reject(
+              new Error("PDF reader लोड नहीं हुआ।")
+            );
+            document.head.appendChild(s);
+          });
+        }
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+        const pdf = await pdfjsLib.getDocument({
+          data: new Uint8Array(await f.arrayBuffer())
+        }).promise;
+
+        const pages = [];
+
+        for (let i = 1; i <= Math.min(pdf.numPages, 20); i++) {
+          const page = await pdf.getPage(i);
+          const text = await page.getTextContent();
+          pages.push(text.items.map(x => x.str).join(" "));
+        }
+
+        fileText = pages.join("\n");
+      } else {
+        throw new Error("केवल PDF या TXT फ़ाइल चुनें।");
+      }
+
+      fileText = fileText.slice(0, 15000);
+      $("novaStatus").textContent =
+        "फ़ाइल तैयार है। अब AI से सवाल पूछें।";
 </body>
 </html>
