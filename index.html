@@ -324,3 +324,215 @@ function voiceSearch() {
 
 /* ===== END STEP 2 ===== */
 </script>
+<!-- ========== STEP 3: BHARAT NOVA AI ========== -->
+
+<section class="section card" id="novaAI">
+  <h2>🤖 Bharat Nova AI</h2>
+  <p>हिंदी या English में अपना सवाल पूछें।</p>
+
+  <div id="aiChat"
+       style="min-height:100px;max-height:350px;overflow-y:auto;
+       padding:10px;background:var(--bg);border-radius:10px;">
+    <p>नमस्ते! मैं Bharat Nova AI हूँ। अपना सवाल पूछें।</p>
+  </div>
+
+  <textarea id="aiQuestion"
+    rows="3"
+    style="width:100%;margin-top:12px;"
+    placeholder="अपना सवाल यहाँ लिखें..."></textarea>
+
+  <div class="buttons">
+    <button class="gold" id="askAIButton" onclick="novaAskAI()">
+      🤖 Ask AI
+    </button>
+
+    <button class="blue" onclick="novaCopyAnswer()">
+      📋 Copy Answer
+    </button>
+
+    <button class="blue" onclick="novaSpeakAnswer()">
+      🔊 सुनें
+    </button>
+
+    <button class="gray" onclick="novaStopSpeaking()">
+      ⏹️ Stop
+    </button>
+
+    <button class="gray" onclick="novaClearChat()">
+      🗑️ Clear Chat
+    </button>
+  </div>
+
+  <p id="aiStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+/* Cloudflare Worker का पता */
+const BHARAT_NOVA_AI_ENDPOINT =
+  "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+let novaLastAnswer = "";
+
+async function novaAskAI() {
+  const input = document.getElementById("aiQuestion");
+  const chat = document.getElementById("aiChat");
+  const status = document.getElementById("aiStatus");
+  const button = document.getElementById("askAIButton");
+
+  const question = input.value.trim();
+
+  if (!question) {
+    status.textContent = "पहले अपना सवाल लिखें।";
+    input.focus();
+    return;
+  }
+
+  if (question.length > 5000) {
+    status.textContent =
+      "सवाल बहुत लंबा है। कृपया उसे छोटा करें।";
+    return;
+  }
+
+  const userMessage = document.createElement("p");
+  userMessage.textContent = "🧑 आप: " + question;
+  chat.appendChild(userMessage);
+
+  input.value = "";
+  button.disabled = true;
+  status.textContent = "AI उत्तर तैयार कर रहा है...";
+
+  try {
+    const response = await fetch(
+      BHARAT_NOVA_AI_ENDPOINT,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          question: question,
+          prompt: question,
+          language: "Hindi"
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    const answer =
+      data.answer ||
+      data.response ||
+      data.result ||
+      data.text ||
+      data.output ||
+      data.message;
+
+    if (typeof answer !== "string" || !answer.trim()) {
+      throw new Error(
+        "Worker ने पहचाना हुआ answer नहीं भेजा।"
+      );
+    }
+
+    novaLastAnswer = answer.trim();
+
+    const answerElement = document.createElement("p");
+    answerElement.style.whiteSpace = "pre-wrap";
+    answerElement.textContent = "🤖 Bharat Nova AI: " +
+      novaLastAnswer;
+
+    chat.appendChild(answerElement);
+    chat.scrollTop = chat.scrollHeight;
+
+    status.textContent = "उत्तर तैयार है।";
+
+  } catch (error) {
+    console.error("Bharat Nova AI error:", error);
+
+    status.textContent =
+      "AI से कनेक्शन नहीं हुआ। Worker URL, /ask endpoint, " +
+      "CORS और request format जाँचें।";
+
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function novaCopyAnswer() {
+  const status = document.getElementById("aiStatus");
+
+  if (!novaLastAnswer) {
+    status.textContent = "कॉपी करने के लिए अभी कोई उत्तर नहीं है।";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(novaLastAnswer);
+    status.textContent = "उत्तर कॉपी हो गया।";
+  } catch (error) {
+    status.textContent =
+      "कॉपी नहीं हुआ। HTTPS पर खोलकर दोबारा प्रयास करें।";
+  }
+}
+
+function novaSpeakAnswer() {
+  const status = document.getElementById("aiStatus");
+
+  if (!novaLastAnswer) {
+    status.textContent = "पहले AI से उत्तर प्राप्त करें।";
+    return;
+  }
+
+  if (!("speechSynthesis" in window)) {
+    status.textContent =
+      "इस browser में Text-to-Speech उपलब्ध नहीं है।";
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(
+    novaLastAnswer
+  );
+
+  utterance.lang = "hi-IN";
+  utterance.rate = 1;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function novaStopSpeaking() {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+
+  document.getElementById("aiStatus").textContent =
+    "आवाज़ रोक दी गई।";
+}
+
+function novaClearChat() {
+  const chat = document.getElementById("aiChat");
+
+  chat.replaceChildren();
+
+  const welcome = document.createElement("p");
+  welcome.textContent =
+    "नमस्ते! मैं Bharat Nova AI हूँ। अपना सवाल पूछें।";
+
+  chat.appendChild(welcome);
+
+  novaLastAnswer = "";
+
+  document.getElementById("aiStatus").textContent =
+    "Chat साफ़ हो गई।";
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+/* ========== END STEP 3 ========== */
+</script>
