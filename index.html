@@ -3031,5 +3031,40 @@ function shareBharatNova() {
   </div>  <p id="nova-premium-message" style="overflow-wrap:anywhere;"></p>
 </section>
 <!-- End Bharat Nova Premium Plans -->
+  <script>
+window.novaChoosePlan = async function(plan) {
+  const message = document.getElementById("nova-premium-message");
+
+  const plans = {
+    monthly: { price: 49, days: 30, name: "Monthly Premium" },
+    quarterly: { price: 129, days: 90, name: "3 Months Premium" }
+  };
+
+  const selected = plans[plan];
+
+  if (!selected) {
+    if (message) message.textContent = "Invalid plan.";
+    return;
+  }
+
+  if (!window.firebase || !firebase.apps.length) {
+    if (message) message.textContent = "Firebase अभी तैयार नहीं है।";
+    return;
+  }
+
+  const user = firebase.auth().currentUser;
+
+  if (!user) {
+    if (message) message.textContent = "पहले Login करें।";
+    return;
+  }
+
+  if (message) {
+    message.textContent =
+      selected.name + " चुना गया। कीमत ₹" + selected.price +
+      " है। Premium सक्रिय करने के लिए भुगतान सत्यापन आवश्यक है।";
+  }
+};
+  </script>
 </body>
 </html>
