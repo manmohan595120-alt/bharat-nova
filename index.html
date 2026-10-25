@@ -1222,3 +1222,132 @@ async function novaToggleUserBlock(uid, currentlyBlocked) {
 
 /* ========== END STEP 6 ========== */
   </script>
+  <!-- ========== STEP 7: SETTINGS AND FINALIZATION ========== -->
+
+<section class="section card" id="novaSettings">
+  <h2>⚙️ Bharat Nova Settings</h2>
+
+  <label for="novaLanguage">Language / भाषा</label>
+  <select id="novaLanguage" style="width:100%;margin:10px 0">
+    <option value="hi-IN">हिंदी</option>
+    <option value="en-US">English</option>
+  </select>
+
+  <div class="buttons">
+    <button class="blue" onclick="novaSaveSettings()">
+      💾 Save Settings
+    </button>
+
+    <button class="gray" onclick="novaResetSettings()">
+      Reset Settings
+    </button>
+
+    <button class="gold" onclick="novaResetPassword()">
+      🔐 Reset Password
+    </button>
+  </div>
+
+  <h3>🔒 Privacy & Security</h3>
+  <p>
+    अपने Password किसी से साझा न करें। निजी या संवेदनशील
+    जानकारी AI चैट में न डालें। फ़ाइल अपलोड करने से पहले
+    सुनिश्चित करें कि उसमें ऐसी जानकारी न हो जिसे साझा नहीं
+    करना चाहिए।
+  </p>
+
+  <p>
+    Bharat Nova का यह संस्करण शुरुआती प्रोजेक्ट है।
+    वास्तविक Premium भुगतान, Admin Revenue और user blocking
+    के लिए सुरक्षित backend तथा database rules जरूरी हैं।
+  </p>
+
+  <p id="settingsStatus" role="status"></p>
+</section>
+
+<script>
+/* ===== SETTINGS ===== */
+
+function novaSaveSettings() {
+  const language =
+    document.getElementById("novaLanguage").value;
+
+  localStorage.setItem("novaLanguage", language);
+
+  document.getElementById("settingsStatus").textContent =
+    "Settings सेव हो गईं। Voice Search की भाषा अगली बार से लागू होगी।";
+}
+
+function novaResetSettings() {
+  const confirmReset = window.confirm(
+    "क्या आप Bharat Nova की स्थानीय Settings Reset करना चाहते हैं?"
+  );
+
+  if (!confirmReset) return;
+
+  localStorage.removeItem("novaLanguage");
+  localStorage.removeItem("bharatNovaTheme");
+
+  document.getElementById("novaLanguage").value = "hi-IN";
+  document.body.classList.remove("light");
+
+  document.getElementById("settingsStatus").textContent =
+    "Settings Reset हो गईं।";
+}
+
+async function novaResetPassword() {
+  if (!window.firebase || !firebase.apps.length) {
+    document.getElementById("settingsStatus").textContent =
+      "पहले Firebase Config सेट करें।";
+    return;
+  }
+
+  const email =
+    document.getElementById("accountEmail").value.trim();
+
+  if (!email) {
+    document.getElementById("settingsStatus").textContent =
+      "पहले Email वाले बॉक्स में अपना Email लिखें।";
+    return;
+  }
+
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+
+    document.getElementById("settingsStatus").textContent =
+      "यदि Email Firebase Authentication में registered है, तो Password Reset Email भेज दिया गया है।";
+
+  } catch (error) {
+    document.getElementById("settingsStatus").textContent =
+      "Password Reset नहीं हो सका। Email और Firebase Settings जाँचें।";
+  }
+}
+
+/* Settings से चुनी गई भाषा को Voice Search में लागू करें। */
+
+(function novaApplyLanguage() {
+  const savedLanguage =
+    localStorage.getItem("novaLanguage");
+
+  if (savedLanguage === "hi-IN" || savedLanguage === "en-US") {
+    const languageSelect =
+      document.getElementById("novaLanguage");
+
+    if (languageSelect) {
+      languageSelect.value = savedLanguage;
+    }
+  }
+})();
+
+/* ========== END STEP 7 ========== */
+</script>
+
+</main>
+
+<footer>
+  <p>🇮🇳 Bharat Nova</p>
+  <p>Smart Search • Voice Search • AI Assistant</p>
+  <p>Version 1.0</p>
+</footer>
+
+</body>
+</html>
