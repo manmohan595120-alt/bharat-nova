@@ -876,7 +876,8 @@
   const $ = id => document.getElementById(id);
 
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
   // Require a valid email/password session before showing the app.
   // A blocked flag is checked in users/{uid}; Firestore Rules must also enforce access.
   onAuthStateChanged(auth, async (user) => {
