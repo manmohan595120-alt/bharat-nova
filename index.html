@@ -185,3 +185,137 @@ footer { text-align:center; padding:25px; }
 </main>
 
 <script>
+  const WORKER_URL =
+  "https://bharat-nova-ai.manmohan595120.workers.dev";
+
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  localStorage.setItem(
+    "bn-theme",
+    document.body.classList.contains("light") ? "light" : "dark"
+  );
+}
+
+if (localStorage.getItem("bn-theme") === "light") {
+  document.body.classList.add("light");
+}
+
+function searchEngine(engine) {
+  const q = document.getElementById("query").value.trim();
+
+  if (!q) {
+    alert("पहले कुछ लिखें।");
+    document.getElementById("query").focus();
+    return;
+  }
+
+  const value = encodeURIComponent(q);
+  const urls = {
+    google: "https://www.google.com/search?q=" + value,
+    youtube: "https://www.youtube.com/results?search_query=" + value,
+    wiki: "https://en.wikipedia.org/w/index.php?search=" + value,
+    news: "https://www.google.com/search?tbm=nws&q=" + value
+  };
+
+  window.open(urls[engine], "_blank", "noopener");
+}
+
+function searchWeb() {
+  const engine =
+    document.getElementById("engine").value || "google";
+  searchEngine(engine);
+}
+
+function toggleSettings() {
+  document.getElementById("settings").classList.toggle("hidden");
+}
+
+function saveSettings() {
+  localStorage.setItem(
+    "bn-language",
+    document.getElementById("language").value
+  );
+
+  localStorage.setItem(
+    "bn-engine",
+    document.getElementById("engine").value
+  );
+
+  document.getElementById("settingsStatus").textContent =
+    "सेटिंग सेव हो गई।";
+}
+
+async function checkMicrophone() {
+  const output = document.getElementById("settingsStatus");
+
+  if (!navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia) {
+    output.textContent =
+      "Chrome में वेबसाइट खोलकर माइक्रोफोन अनुमति जाँचें।";
+    return;
+  }
+
+  try {
+    const stream =
+      await navigator.mediaDevices.getUserMedia({audio:true});
+
+    stream.getTracks().forEach(track => track.stop());
+
+    output.textContent =
+      "माइक्रोफोन अनुमति मिल गई। अब Voice Search आज़माएँ।";
+  } catch (error) {
+    output.textContent =
+      "माइक्रोफोन Block है। Android Settings → Apps → Chrome → Permissions → Microphone में Allow करें। फिर Chrome की Bharat Nova Site settings में भी Microphone Allow करें।";
+  }
+}
+
+function voiceSearch() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert(
+      "Voice Search समर्थित नहीं है। Android Chrome में खोलें और Microphone permission जाँचें।"
+    );
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang =
+    localStorage.getItem("bn-language") || "hi-IN";
+
+  recognition.onresult = function(event) {
+    document.getElementById("query").value =
+      event.results[0][0].transcript;
+
+    searchWeb();
+  };
+
+  recognition.onerror = function(event) {
+    alert(
+      "Voice Search नहीं चला: " + event.error +
+      ". Chrome की Microphone permission जाँचें।"
+    );
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    alert("Voice Search शुरू नहीं हो सका। दोबारा कोशिश करें।");
+  }
+}
+
+async function askAI() {
+  const question =
+    document.getElementById("aiQuestion").value.trim();
+
+  const status = document.getElementById("status");
+  const answer = document.getElementById("aiAnswer");
+
+  if (!question) {
+    alert("पहले अपना सवाल लिखें।");
+    return;
+  }
+
