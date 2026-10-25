@@ -715,3 +715,265 @@ function novaClearFiles() {
 
 /* ===== END STEP 4 ===== */
 </script>
+  <!-- ========== STEP 5: LOGIN AND PREMIUM PLANS ========== -->
+
+<section class="section card" id="accountSection">
+  <h2>👤 Bharat Nova Account</h2>
+  <p id="accountStatus">कृपया Login या Signup करें।</p>
+
+  <label for="accountName">नाम (Signup के लिए)</label>
+  <input id="accountName" type="text"
+         placeholder="अपना नाम"
+         autocomplete="name"
+         style="width:100%;margin:8px 0">
+
+  <label for="accountEmail">Email</label>
+  <input id="accountEmail" type="email"
+         placeholder="name@example.com"
+         autocomplete="email"
+         style="width:100%;margin:8px 0">
+
+  <label for="accountPassword">Password</label>
+  <input id="accountPassword" type="password"
+         placeholder="कम से कम 6 अक्षर"
+         autocomplete="current-password"
+         style="width:100%;margin:8px 0">
+
+  <div class="buttons">
+    <button class="gold" onclick="novaSignup()">Signup</button>
+    <button class="blue" onclick="novaLogin()">Login</button>
+    <button class="gray" onclick="novaLogout()">Logout</button>
+  </div>
+</section>
+
+<section class="section" id="premiumPlans">
+  <h2>💎 Bharat Nova Plans</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h3>🆓 Free Plan</h3>
+      <h2>₹0</h2>
+      <p>AI Text Questions</p>
+      <p>Google, YouTube और Wikipedia Search</p>
+      <p>Voice Search</p>
+      <p>प्रतिदिन 5 Image की प्रस्तावित सीमा</p>
+      <p>प्रतिदिन 5 PDF/TXT की प्रस्तावित सीमा</p>
+      <button class="blue" onclick="novaChoosePlan('free')">
+        Free Plan
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>⭐ Monthly Premium</h3>
+      <h2 style="color:var(--gold)">₹49</h2>
+      <p>30 दिनों की सदस्यता</p>
+      <p>बढ़ी हुई AI और File Limits</p>
+      <p>अधिक सुविधाएँ</p>
+      <button class="gold"
+              onclick="novaChoosePlan('monthly')">
+        ₹49 / 30 Days
+      </button>
+    </div>
+
+    <div class="card">
+      <h3>👑 3 Months Premium</h3>
+      <h2 style="color:var(--gold)">₹129</h2>
+      <p>90 दिनों की सदस्यता</p>
+      <p>बढ़ी हुई AI और File Limits</p>
+      <p>अधिक सुविधाएँ</p>
+      <button class="gold"
+              onclick="novaChoosePlan('quarterly')">
+        ₹129 / 90 Days
+      </button>
+    </div>
+  </div>
+
+  <p id="planStatus" role="status"></p>
+</section>
+
+<script>
+/*
+  Firebase Authentication configuration.
+  STEP 5 में Firebase Config भरना आवश्यक है।
+  अपनी Firebase Web App की असली config लगाएँ।
+  Firebase Admin SDK या Service Account secrets यहाँ न डालें।
+*/
+
+const NOVA_FIREBASE_CONFIG = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "bharat-nova-755a8.firebaseapp.com",
+  projectId: "bharat-nova-755a8",
+  appId: "YOUR_FIREBASE_APP_ID"
+};
+
+let novaFirebaseAuth = null;
+let novaFirebaseReady = false;
+
+function novaAccountStatus(message) {
+  document.getElementById("accountStatus").textContent = message;
+}
+
+function novaPlanStatus(message) {
+  document.getElementById("planStatus").textContent = message;
+}
+
+function novaGetFirebase() {
+  if (novaFirebaseReady && novaFirebaseAuth) {
+    return novaFirebaseAuth;
+  }
+
+  if (!window.firebase ||
+      !NOVA_FIREBASE_CONFIG.apiKey ||
+      NOVA_FIREBASE_CONFIG.apiKey === "YOUR_FIREBASE_API_KEY" ||
+      !NOVA_FIREBASE_CONFIG.appId ||
+      NOVA_FIREBASE_CONFIG.appId === "YOUR_FIREBASE_APP_ID") {
+    novaAccountStatus(
+      "Firebase Web App की सही config भरना अभी बाकी है।"
+    );
+    return null;
+  }
+
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(NOVA_FIREBASE_CONFIG);
+    }
+
+    novaFirebaseAuth = firebase.auth();
+    novaFirebaseReady = true;
+
+    novaFirebaseAuth.onAuthStateChanged(function(user) {
+      if (user) {
+        novaAccountStatus("Login: " + user.email);
+      } else {
+        novaAccountStatus("आप Login नहीं हैं।");
+      }
+    });
+
+    return novaFirebaseAuth;
+  } catch (error) {
+    novaAccountStatus("Firebase शुरू नहीं हुआ: " + error.message);
+    return null;
+  }
+}
+
+async function novaSignup() {
+  const auth = novaGetFirebase();
+  if (!auth) return;
+
+  const name = document.getElementById("accountName").value.trim();
+  const email = document.getElementById("accountEmail").value.trim();
+  const password = document.getElementById("accountPassword").value;
+
+  if (!name || !email || password.length < 6) {
+    novaAccountStatus(
+      "Signup के लिए नाम, सही Email और कम से कम 6 अक्षर का Password भरें।"
+    );
+    return;
+  }
+
+  try {
+    const result = await auth.createUserWithEmailAndPassword(
+      email,
+      password
+    );
+
+    await result.user.updateProfile({ displayName: name });
+
+    novaAccountStatus("Signup सफल। आपका Email: " + result.user.email);
+  } catch (error) {
+    novaAccountStatus("Signup error: " + error.message);
+  }
+}
+
+async function novaLogin() {
+  const auth = novaGetFirebase();
+  if (!auth) return;
+
+  const email = document.getElementById("accountEmail").value.trim();
+  const password = document.getElementById("accountPassword").value;
+
+  if (!email || !password) {
+    novaAccountStatus("Email और Password भरें।");
+    return;
+  }
+
+  try {
+    const result = await auth.signInWithEmailAndPassword(
+      email,
+      password
+    );
+
+    novaAccountStatus("Login सफल: " + result.user.email);
+  } catch (error) {
+    novaAccountStatus("Login error: " + error.message);
+  }
+}
+
+async function novaLogout() {
+  const auth = novaGetFirebase();
+  if (!auth) return;
+
+  try {
+    await auth.signOut();
+    novaAccountStatus("आप Logout हो गए हैं।");
+  } catch (error) {
+    novaAccountStatus("Logout error: " + error.message);
+  }
+}
+
+/*
+  यह केवल plan selection है।
+  यह भुगतान नहीं लेता और Premium चालू नहीं करता।
+  वास्तविक activation केवल verified backend payment के बाद होनी चाहिए।
+*/
+
+function novaChoosePlan(plan) {
+  if (plan === "free") {
+    novaPlanStatus("Free Plan चुना गया।");
+    return;
+  }
+
+  const details = {
+    monthly: {
+      name: "Monthly Premium",
+      amount: 49,
+      days: 30
+    },
+    quarterly: {
+      name: "3 Months Premium",
+      amount: 129,
+      days: 90
+    }
+  };
+
+  const selected = details[plan];
+
+  if (!selected) {
+    novaPlanStatus("यह प्लान उपलब्ध नहीं है।");
+    return;
+  }
+
+  novaPlanStatus(
+    selected.name + " चुना गया: ₹" + selected.amount +
+    " / " + selected.days +
+    " दिन। सुरक्षित भुगतान सुविधा अगले backend चरण में जोड़नी होगी।"
+  );
+}
+
+/* Firebase SDK और Firebase Config सही होने पर ही Auth शुरू करें. */
+</script>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script>
+/* SDK लोड होने के बाद Firebase को initialize करें। */
+window.addEventListener("load", function() {
+  if (window.firebase) {
+    novaGetFirebase();
+  }
+});
+</script>
+
+<!-- ========== END STEP 5 ========== -->
