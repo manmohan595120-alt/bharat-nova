@@ -2956,5 +2956,38 @@ function shareBharatNova() {
       fileText = fileText.slice(0, 15000);
       $("novaStatus").textContent =
         "फ़ाइल तैयार है। अब AI से सवाल पूछें।";
+      <!-- Bharat Nova Plans -->
+<section id="novaPlans" style="margin:20px auto;padding:20px;background:#061429;color:white;border-radius:16px;max-width:900px;font-family:Arial,sans-serif">
+  <h2 style="text-align:center">🚀 Bharat Nova Plans</h2>
+  <p style="text-align:center">अपना प्लान चुनें</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+
+    <div style="padding:18px;background:#102542;border-radius:12px">
+      <h3>🆓 Free Plan</h3>
+      <h2 style="color:#f4c542">₹0</h2>
+      <p>✅ AI Text Questions</p>
+      <p>✅ Google, YouTube, Wikipedia</p>
+      <p>✅ Voice Search</p>
+      <p>✅ 5 फोटो प्रतिदिन</p>
+      <p>✅ 5 PDF/TXT फ़ाइलें प्रतिदिन</p>
+      <button type="button" onclick="document.getElementById('novaPlanMessage').textContent='आपने Free Plan चुना है।'">Free Plan चुनें</button>
+    </div>
+
+    <div style="padding:18px;background:#102542;border:2px solid #f4c542;border-radius:12px">
+      <span style="background:#f4c542;color:#061429;padding:5px 10px;border-radius:15px">⭐ PREMIUM</span>
+      <h3>👑 Premium Plan</h3>
+      <h2 style="color:#f4c542">₹49 <small>/ महीना</small></h2>
+      <p>✅ Free की सभी सुविधाएँ</p>
+      <p>✅ 20 फोटो प्रतिदिन</p>
+      <p>✅ 20 PDF/TXT फ़ाइलें प्रतिदिन</p>
+      <p>✅ AI Voice का अधिक उपयोग</p>
+      <p>✅ Premium Member बैज</p>
+      <button type="button" onclick="document.getElementById('novaPlanMessage').textContent='Premium की कीमत ₹49/महीना है। भुगतान की सुविधा अभी सक्रिय नहीं है।'">Premium लें — ₹49</button>
+    </div>
+
+  </div>
+  <p id="novaPlanMessage" role="status" style="text-align:center"></p>
+</section>
 </body>
 </html>
