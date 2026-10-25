@@ -1630,5 +1630,14 @@ function buyPremium(plan) {
   if(theme) novaSetTheme(theme);
 })();
     </script>
+  <script>
+function buyPremium(plan) {
+  const message = plan === 'monthly'
+    ? 'Monthly Premium ₹49 / 30 दिन'
+    : '3 Months Premium ₹129 / 90 दिन';
+
+  alert(message + '\nअसली भुगतान सुविधा अभी जोड़नी बाकी है।');
+}
+  </script>
 </body>
 </html>
