@@ -1,1 +1,157 @@
-jhchhccjjvcb
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#061429">
+<title>Bharat Nova — Smart Search & AI</title>
+
+<style>
+:root {
+  --bg:#061429;
+  --card:#102541;
+  --text:#ffffff;
+  --gold:#f4c542;
+  --muted:#c4d0df;
+}
+body.light {
+  --bg:#f2f5fa;
+  --card:#ffffff;
+  --text:#142238;
+  --muted:#526175;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:14px;
+  background:var(--card);
+  border-bottom:1px solid #35465b;
+}
+.logo {color:var(--gold);font-size:21px;font-weight:bold}
+button {
+  padding:11px 13px;
+  border:0;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.gold {background:var(--gold);color:#142238}
+.blue {background:#1c4778;color:white}
+.gray {background:#42536a;color:white}
+main {max-width:850px;margin:auto;padding:18px}
+.hero {text-align:center;padding:32px 5px}
+.hero h1 {font-size:clamp(30px,7vw,46px)}
+.hero h1 span {color:var(--gold)}
+.hero p {color:var(--muted);line-height:1.7}
+.searchbox {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  background:var(--card);
+  padding:10px;
+  border-radius:14px;
+}
+input,textarea,select {
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #526175;
+  background:var(--bg);
+  color:var(--text);
+  max-width:100%;
+}
+.searchbox input {flex:1;min-width:150px;font-size:16px}
+.buttons {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:9px;
+  margin:15px 0;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.card {
+  padding:17px;
+  background:var(--card);
+  border:1px solid #35465b;
+  border-radius:13px;
+}
+.card h3 {color:var(--gold)}
+.card p {color:var(--muted);line-height:1.6}
+.section {margin-top:28px}
+.hidden {display:none!important}
+#status {color:var(--muted);overflow-wrap:anywhere}
+footer {text-align:center;padding:25px;color:var(--muted)}
+@media(max-width:480px) {
+  .grid {grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">🇮🇳 Bharat Nova</div>
+  <div>
+    <button class="gray" onclick="toggleTheme()">🌙/☀️</button>
+    <button class="blue" onclick="shareApp()">Share</button>
+    <button class="gold" onclick="installApp()">Install App</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Search Smarter.<br><span>Think Bigger.</span></h1>
+    <p>एक ही जगह Smart Search, Voice Search और AI Assistant।</p>
+  </section>
+
+  <section class="searchbox">
+    <input id="query" type="search"
+      placeholder="कुछ भी खोजें..."
+      onkeydown="if(event.key==='Enter') searchGoogle()">
+    <button class="gold" onclick="searchGoogle()">🔍 Search</button>
+  </section>
+
+  <div class="buttons">
+    <button class="blue" onclick="voiceSearch()">🎤 Voice Search</button>
+    <button class="blue" onclick="searchGoogleVoice()">🎙️ Google Voice</button>
+    <button class="blue" onclick="searchGoogle()">Google</button>
+    <button class="blue" onclick="searchYouTube()">▶ YouTube</button>
+    <button class="blue" onclick="searchWiki()">📚 Wikipedia</button>
+    <button class="blue" onclick="searchNews()">📰 News</button>
+  </div>
+
+  <p id="status"></p>
+
+  <section class="grid section">
+    <div class="card">
+      <h3>🔎 Smart Search</h3>
+      <p>Google, YouTube, Wikipedia और News।</p>
+    </div>
+    <div class="card">
+      <h3>🤖 AI Assistant</h3>
+      <p>अगले स्टेप में AI चैट जोड़ी जाएगी।</p>
+    </div>
+    <div class="card">
+      <h3>📁 File Assistant</h3>
+      <p>अगले स्टेप में Image और PDF/TXT विकल्प जोड़े जाएँगे।</p>
+    </div>
+    <div class="card">
+      <h3>👤 Account</h3>
+      <p>अगले स्टेप में Login और Signup जोड़े जाएँगे।</p>
+    </div>
+  </section>
