@@ -155,3 +155,172 @@ footer {text-align:center;padding:25px;color:var(--muted)}
       <p>अगले स्टेप में Login और Signup जोड़े जाएँगे।</p>
     </div>
   </section>
+  <!-- ===== STEP 2: SEARCH AND VOICE SEARCH ===== -->
+
+<script>
+"use strict";
+
+function novaGetQuery() {
+  const box = document.getElementById("query");
+  return box ? box.value.trim() : "";
+}
+
+function novaStatus(message) {
+  const box = document.getElementById("status");
+  if (box) box.textContent = message;
+}
+
+function searchGoogle() {
+  const q = novaGetQuery();
+
+  if (!q) {
+    novaStatus("पहले अपना सवाल या खोज लिखें।");
+    document.getElementById("query")?.focus();
+    return;
+  }
+
+  window.open(
+    "https://www.google.com/search?q=" +
+    encodeURIComponent(q),
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+function searchGoogleVoice() {
+  window.open(
+    "https://www.google.com/",
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  novaStatus(
+    "Google खुल गया। Microphone icon उपलब्ध हो तो उसे दबाएँ।"
+  );
+}
+
+function searchYouTube() {
+  const q = novaGetQuery();
+
+  if (!q) {
+    novaStatus("YouTube पर खोजने के लिए पहले कुछ लिखें।");
+    document.getElementById("query")?.focus();
+    return;
+  }
+
+  window.open(
+    "https://www.youtube.com/results?search_query=" +
+    encodeURIComponent(q),
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+function searchWiki() {
+  const q = novaGetQuery();
+
+  if (!q) {
+    novaStatus("Wikipedia पर खोजने के लिए पहले कुछ लिखें।");
+    document.getElementById("query")?.focus();
+    return;
+  }
+
+  window.open(
+    "https://hi.wikipedia.org/w/index.php?search=" +
+    encodeURIComponent(q),
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+function searchNews() {
+  const q = novaGetQuery();
+
+  if (!q) {
+    novaStatus("News खोजने के लिए पहले कुछ लिखें।");
+    document.getElementById("query")?.focus();
+    return;
+  }
+
+  window.open(
+    "https://news.google.com/search?q=" +
+    encodeURIComponent(q),
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+/* Hindi and English voice search */
+
+function voiceSearch() {
+  const SpeechAPI =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechAPI) {
+    novaStatus(
+      "Voice Search उपलब्ध नहीं है। Android Chrome में वेबसाइट खोलकर प्रयास करें।"
+    );
+    return;
+  }
+
+  const recognition = new SpeechAPI();
+
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  novaStatus(
+    "🎤 Microphone चालू करें और अपना सवाल बोलें..."
+  );
+
+  recognition.onresult = function(event) {
+    const spokenText =
+      event.results[0][0].transcript;
+
+    const input = document.getElementById("query");
+
+    if (input) {
+      input.value = spokenText;
+    }
+
+    novaStatus("आपने कहा: " + spokenText);
+
+    /* बोले गए शब्द Google पर खोजें */
+    window.open(
+      "https://www.google.com/search?q=" +
+      encodeURIComponent(spokenText),
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
+
+  recognition.onerror = function(event) {
+    const errors = {
+      "not-allowed":
+        "Microphone permission बंद है। Chrome Settings में Microphone Allow करें।",
+      "audio-capture":
+        "Microphone नहीं मिल रहा। अपने फोन की Microphone setting जाँचें।",
+      "network":
+        "Voice recognition के लिए नेटवर्क जाँचें।",
+      "no-speech":
+        "आवाज़ नहीं मिली। दोबारा प्रयास करें।"
+    };
+
+    novaStatus(
+      errors[event.error] ||
+      "Voice Search में समस्या हुई: " + event.error
+    );
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    novaStatus(
+      "Voice Search शुरू नहीं हुई। कुछ सेकंड बाद दोबारा प्रयास करें।"
+    );
+  }
+}
+
+/* ===== END STEP 2 ===== */
+</script>
