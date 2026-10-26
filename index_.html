@@ -230,3 +230,101 @@ footer{
 }
 </style>
 </head>
+  <!-- STEP 2: ACCOUNT AND LOGIN -->
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">N</div>
+    <div>Bharat <span class="gold">Nova</span></div>
+  </div>
+  <div class="row">
+    <button class="btn btn-secondary" id="themeButton"
+      type="button">🌙 Theme</button>
+    <button class="btn btn-gold" id="installButton"
+      type="button" hidden>Install</button>
+  </div>
+</header>
+
+<main class="container">
+
+  <div id="message" role="status" aria-live="polite"></div>
+
+  <section id="authSection" class="card">
+    <h1>Welcome to <span class="gold">Bharat Nova AI</span></h1>
+    <p class="muted">
+      एक अकाउंट बनाएँ और अपने AI टूल इस्तेमाल करें।
+    </p>
+
+    <div class="auth-grid">
+
+      <form id="signupForm">
+        <h2>📝 Create Account</h2>
+
+        <label for="signupName">पूरा नाम</label>
+        <input id="signupName" type="text"
+          autocomplete="name" maxlength="80"
+          placeholder="अपना नाम लिखें" required>
+
+        <label for="signupEmail">ईमेल</label>
+        <input id="signupEmail" type="email"
+          autocomplete="email"
+          placeholder="अपना ईमेल लिखें" required>
+
+        <label for="signupPassword">पासवर्ड</label>
+        <input id="signupPassword" type="password"
+          autocomplete="new-password" minlength="8"
+          placeholder="कम से कम 8 अक्षर" required>
+
+        <button class="btn btn-gold" type="submit">
+          Create Account
+        </button>
+      </form>
+
+      <form id="loginForm">
+        <h2>🔐 Login</h2>
+
+        <label for="loginEmail">ईमेल</label>
+        <input id="loginEmail" type="email"
+          autocomplete="username"
+          placeholder="रजिस्टर्ड ईमेल" required>
+
+        <label for="loginPassword">पासवर्ड</label>
+        <input id="loginPassword" type="password"
+          autocomplete="current-password"
+          placeholder="अपना पासवर्ड" required>
+
+        <button class="btn btn-gold" type="submit">
+          Login
+        </button>
+
+        <button class="btn btn-secondary"
+          id="resetPassword" type="button">
+          Forgot Password?
+        </button>
+      </form>
+
+    </div>
+  </section>
+
+  <section id="appSection" class="hidden">
+
+    <section class="card">
+      <div class="row">
+        <div>
+          <h2>नमस्ते, <span id="userName">User</span> 👋</h2>
+          <p class="muted" id="userEmail"></p>
+        </div>
+        <button class="btn btn-secondary"
+          id="logoutButton" type="button">
+          Logout
+        </button>
+      </div>
+      <span id="accountStatus" class="muted">
+        Account connected
+      </span>
+    </section>
+
+    <!-- अगली स्टेप में AI Dashboard जोड़ा जाएगा -->
+
+  </section>
+</main>
