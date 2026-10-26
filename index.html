@@ -2390,3 +2390,229 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 13 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 14 */
+
+  const securityPanel = document.createElement("section");
+  securityPanel.id = "novaSecurityPanel";
+  securityPanel.style.cssText =
+    "display:none;position:fixed;inset:0;z-index:10010;" +
+    "overflow-y:auto;padding:16px;background:rgba(2,8,23,.92)";
+
+  securityPanel.innerHTML = `
+    <div style="
+      max-width:680px;margin:22px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #475569;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">🔐 Security & Privacy</h2>
+        <button type="button" id="novaSecurityClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <h3>👤 Account Information</h3>
+      <p><strong>Email:</strong> <span id="novaSecurityEmail">Guest</span></p>
+      <p><strong>User ID:</strong> <span id="novaSecurityUID">Not signed in</span></p>
+
+      <h3>🧹 Manage Local Data</h3>
+      <p>ये विकल्प इसी ब्राउज़र में सेव की गई Bharat Nova जानकारी साफ करते हैं।</p>
+      <button type="button" id="novaSecurityClearSearch"
+        style="padding:11px;border-radius:9px;margin:4px">
+        Clear Search History
+      </button>
+      <button type="button" id="novaSecurityClearPrefs"
+        style="padding:11px;border-radius:9px;margin:4px">
+        Reset Preferences
+      </button>
+
+      <h3>🚪 Account Session</h3>
+      <button type="button" id="novaSecurityLogout"
+        style="padding:11px;border-radius:9px;margin:4px">
+        Logout
+      </button>
+
+      <h3>⚠️ Delete Account</h3>
+      <p>Account deletion स्थायी हो सकती है। आगे बढ़ने से पहले अपनी
+      जानकारी सुरक्षित कर लें। Firebase user deletion के लिए दोबारा
+      sign-in करना पड़ सकता है। यह विकल्प Firebase Authentication account
+      हटाने का प्रयास करता है; Firestore के सभी user records या दूसरे
+      सेव किए गए डेटा अपने-आप नहीं हटते।</p>
+      <button type="button" id="novaSecurityDeleteAccount"
+        style="padding:11px;border-radius:9px;margin:4px;
+        background:#991b1b;color:white">
+        Delete Authentication Account
+      </button>
+
+      <p id="novaSecurityMessage" role="status" aria-live="polite"></p>
+    </div>
+  `;
+
+  document.body.appendChild(securityPanel);
+
+  const securityMessage =
+    document.getElementById("novaSecurityMessage");
+
+  function currentUser() {
+    return window.novaFirebaseAuthInstance
+      ? window.novaFirebaseAuthInstance.currentUser
+      : null;
+  }
+
+  function updateSecurityAccount() {
+    const user = currentUser();
+
+    document.getElementById("novaSecurityEmail").textContent =
+      user && user.email ? user.email : "Guest / Not signed in";
+
+    document.getElementById("novaSecurityUID").textContent =
+      user && user.uid ? user.uid : "Not signed in";
+  }
+
+  function openSecurity() {
+    securityPanel.style.display = "block";
+    updateSecurityAccount();
+    securityMessage.textContent = "";
+  }
+
+  function closeSecurity() {
+    securityPanel.style.display = "none";
+  }
+
+  document.getElementById("novaSecurityClose")
+    .addEventListener("click", closeSecurity);
+
+  securityPanel.addEventListener("click", function (event) {
+    if (event.target === securityPanel) closeSecurity();
+  });
+
+  document.getElementById("novaSecurityClearSearch")
+    .addEventListener("click", function () {
+      if (!confirm("क्या इस डिवाइस की Bharat Nova search history साफ करें?")) {
+        return;
+      }
+
+      localStorage.removeItem("nova_search_history");
+      securityMessage.textContent =
+        "इस डिवाइस की search history साफ कर दी गई है।";
+    });
+
+  document.getElementById("novaSecurityClearPrefs")
+    .addEventListener("click", function () {
+      if (!confirm("क्या theme, language और अन्य preferences reset करें?")) {
+        return;
+      }
+
+      [
+        "nova_theme",
+        "nova_language",
+        "nova_font",
+        "nova_engine",
+        "nova_voice",
+        "nova_read_aloud"
+      ].forEach(function (key) {
+        localStorage.removeItem(key);
+      });
+
+      securityMessage.textContent =
+        "Preferences reset कर दी गई हैं। बदलाव पूरी तरह लागू करने के लिए पेज reload करें।";
+    });
+
+  document.getElementById("novaSecurityLogout")
+    .addEventListener("click", async function () {
+      const auth = window.novaFirebaseAuthInstance;
+
+      if (!auth) {
+        securityMessage.textContent =
+          "Firebase Authentication उपलब्ध नहीं है।";
+        return;
+      }
+
+      try {
+        await auth.signOut();
+        securityMessage.textContent = "आप logout हो गए हैं।";
+        updateSecurityAccount();
+      } catch (error) {
+        securityMessage.textContent =
+          "Logout नहीं हुआ: " + (error.message || "कृपया पुनः प्रयास करें।");
+      }
+    });
+
+  document.getElementById("novaSecurityDeleteAccount")
+    .addEventListener("click", async function () {
+      const user = currentUser();
+
+      if (!user) {
+        securityMessage.textContent =
+          "Account हटाने के लिए पहले login करें।";
+        return;
+      }
+
+      const confirmed = confirm(
+        "चेतावनी: Firebase Authentication account हटाने का प्रयास होगा। " +
+        "यह कदम वापस नहीं लिया जा सकता। क्या आप आगे बढ़ना चाहते हैं?"
+      );
+
+      if (!confirmed) return;
+
+      const secondConfirmation = prompt(
+        "पुष्टि के लिए DELETE लिखें:"
+      );
+
+      if (secondConfirmation !== "DELETE") {
+        securityMessage.textContent = "Account deletion रद्द कर दी गई।";
+        return;
+      }
+
+      try {
+        await user.delete();
+        securityMessage.textContent =
+          "Firebase Authentication account हटाने का अनुरोध पूरा हुआ। " +
+          "अन्य Firestore data की अलग से जाँच आवश्यक है।";
+        updateSecurityAccount();
+      } catch (error) {
+        if (error.code === "auth/requires-recent-login") {
+          securityMessage.textContent =
+            "सुरक्षा के लिए दोबारा login करें, फिर account deletion दोहराएँ।";
+        } else {
+          securityMessage.textContent =
+            "Account हटाया नहीं जा सका: " +
+            (error.message || "कृपया Firebase configuration जाँचें।");
+        }
+      }
+    });
+
+  const securityButton = document.createElement("button");
+  securityButton.type = "button";
+  securityButton.id = "novaSecurityOpen";
+  securityButton.textContent = "🔐 Security";
+  securityButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;cursor:pointer";
+
+  const footer = document.querySelector(".footer");
+
+  if (footer) {
+    footer.appendChild(securityButton);
+  } else {
+    document.body.appendChild(securityButton);
+  }
+
+  securityButton.addEventListener("click", openSecurity);
+
+  window.novaOpenSecurity = openSecurity;
+
+  if (window.novaFirebaseAuthInstance) {
+    window.novaFirebaseAuthInstance.onAuthStateChanged(
+      updateSecurityAccount
+    );
+  }
+
+  console.log("Bharat Nova Step 14 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 14 -->
