@@ -1107,4 +1107,183 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 6 -->
+ <!-- BHARAT NOVA STEP 7: PHOTO AND FILE TOOLS -->
+<script>
+(function () {
+  "use strict";
+
+  const panel = document.createElement("section");
+  panel.id = "novaFileTools";
+  panel.className = "card";
+  panel.style.cssText =
+    "display:none;max-width:850px;margin:24px auto;padding:20px;";
+
+  panel.innerHTML = `
+    <h2>📁 AI Photo & File Tools</h2>
+    <p>फोटो, PDF या दूसरी फाइल चुनें।</p>
+
+    <label for="novaFilePicker">फोटो या फाइल चुनें</label>
+    <input id="novaFilePicker" type="file"
+      accept="image/*,.pdf,.txt,.csv,.json,.doc,.docx"
+      style="display:block;width:100%;margin:14px 0;padding:10px;">
+
+    <div id="novaFilePreview"
+      style="padding:12px;border:1px solid rgba(148,163,184,.4);
+      border-radius:12px;overflow-wrap:anywhere;">
+      अभी कोई फाइल नहीं चुनी गई।
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+      <button id="novaFileSendToAI" class="btn btn-primary" type="button">
+        AI में सवाल पूछें
+      </button>
+      <button id="novaFileRemove" class="btn btn-secondary" type="button">
+        फाइल हटाएँ
+      </button>
+      <button id="novaFileClose" class="btn btn-secondary" type="button">
+        बंद करें
+      </button>
+    </div>
+
+    <p id="novaFileStatus" role="status" aria-live="polite"></p>
+    <p style="font-size:13px;opacity:.8;">
+      नोट: फाइल चुनना अपने-आप AI analysis नहीं करता।
+      फाइल का वास्तविक analysis तभी होगा जब AI Worker उस प्रकार की
+      फाइल को सुरक्षित तरीके से process करने के लिए तैयार हो।
+    </p>
+  `;
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.parentNode.insertBefore(panel, footer);
+  } else {
+    document.getElementById("app").appendChild(panel);
+  }
+
+  const picker = document.getElementById("novaFilePicker");
+  const preview = document.getElementById("novaFilePreview");
+  const status = document.getElementById("novaFileStatus");
+
+  let selectedFile = null;
+  let previewUrl = null;
+
+  function showPanel() {
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  const openButton = document.getElementById("cardFilesButton");
+  if (openButton) {
+    openButton.addEventListener("click", showPanel);
+  }
+
+  document.getElementById("novaFileClose").addEventListener("click", function () {
+    panel.style.display = "none";
+  });
+
+  function clearPreview() {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+    }
+
+    preview.replaceChildren();
+  }
+
+  picker.addEventListener("change", function () {
+    clearPreview();
+    selectedFile = picker.files && picker.files[0]
+      ? picker.files[0]
+      : null;
+
+    if (!selectedFile) {
+      preview.textContent = "अभी कोई फाइल नहीं चुनी गई।";
+      status.textContent = "";
+      return;
+    }
+
+    const maxBytes = 10 * 1024 * 1024;
+
+    if (selectedFile.size > maxBytes) {
+      selectedFile = null;
+      picker.value = "";
+      preview.textContent = "फाइल 10 MB से बड़ी है। छोटी फाइल चुनें।";
+      status.textContent = "फाइल स्वीकार नहीं की गई।";
+      return;
+    }
+
+    const details = document.createElement("div");
+    const fileSize = (selectedFile.size / 1024).toFixed(1);
+
+    details.textContent =
+      "नाम: " + selectedFile.name +
+      "\nप्रकार: " + (selectedFile.type || "Unknown") +
+      "\nआकार: " + fileSize + " KB";
+
+    details.style.whiteSpace = "pre-wrap";
+    preview.appendChild(details);
+
+    if (selectedFile.type.startsWith("image/")) {
+      previewUrl = URL.createObjectURL(selectedFile);
+
+      const image = document.createElement("img");
+      image.src = previewUrl;
+      image.alt = "चुनी गई फोटो का preview";
+      image.style.cssText =
+        "display:block;max-width:100%;max-height:260px;" +
+        "object-fit:contain;margin-top:12px;border-radius:10px;";
+
+      preview.appendChild(image);
+    }
+
+    status.textContent = "फाइल चुनी गई है।";
+  });
+
+  document.getElementById("novaFileRemove").addEventListener("click", function () {
+    picker.value = "";
+    selectedFile = null;
+    clearPreview();
+    preview.textContent = "अभी कोई फाइल नहीं चुनी गई।";
+    status.textContent = "फाइल हटा दी गई।";
+  });
+
+  document.getElementById("novaFileSendToAI").addEventListener("click", function () {
+    if (!selectedFile) {
+      status.textContent = "पहले फोटो या फाइल चुनें।";
+      return;
+    }
+
+    const question = document.getElementById("novaAIQuestion");
+
+    if (question) {
+      question.value =
+        "मेरी चुनी हुई फाइल का विश्लेषण करने में मदद करें: " +
+        selectedFile.name +
+        ". फाइल का प्रकार " +
+        (selectedFile.type || "Unknown") +
+        " है। कृपया बताएं कि इस फाइल को analyse करने के लिए क्या जरूरी है।";
+
+      if (window.novaAIShow) {
+        window.novaAIShow();
+      } else {
+        const aiPanel = document.getElementById("novaAISection");
+        if (aiPanel) {
+          aiPanel.style.display = "block";
+          aiPanel.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+
+      status.textContent =
+        "फाइल का नाम AI सवाल में जोड़ा गया है। फाइल की सामग्री अभी AI को नहीं भेजी गई।";
+    } else {
+      status.textContent = "AI Assistant उपलब्ध नहीं है।";
+    }
+  });
+
+  window.novaGetSelectedFile = function () {
+    return selectedFile;
+  };
+})();
+</script>
+<!-- END BHARAT NOVA STEP 7 -->
  
