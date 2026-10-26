@@ -510,3 +510,183 @@ function novaStartVoice() {
   }
 }
  </script>
+ <script>
+(function () {
+  "use strict";
+
+  const novaAuthBox = document.createElement("section");
+  novaAuthBox.id = "novaAuthBox";
+  novaAuthBox.className = "card";
+  novaAuthBox.style.cssText =
+    "display:none;max-width:520px;margin:24px auto;padding:22px;";
+
+  novaAuthBox.innerHTML = `
+    <h2>🔐 Bharat Nova Account</h2>
+    <p>Create an account or log in using your email and password.</p>
+
+    <label for="novaName">Your Name</label>
+    <input id="novaName" type="text" autocomplete="name"
+      placeholder="Enter your name"
+      style="width:100%;padding:12px;margin:8px 0 14px;border-radius:10px;">
+
+    <label for="novaEmail">Email Address</label>
+    <input id="novaEmail" type="email" autocomplete="email"
+      placeholder="Enter your email"
+      style="width:100%;padding:12px;margin:8px 0 14px;border-radius:10px;">
+
+    <label for="novaPassword">Password</label>
+    <input id="novaPassword" type="password"
+      autocomplete="current-password" placeholder="At least 6 characters"
+      style="width:100%;padding:12px;margin:8px 0 14px;border-radius:10px;">
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn btn-primary" id="novaSignupButton" type="button">
+        Create Account
+      </button>
+      <button class="btn btn-secondary" id="novaLoginButton" type="button">
+        Log In
+      </button>
+      <button class="btn btn-secondary" id="novaLogoutButton"
+        type="button" style="display:none;">Log Out</button>
+      <button class="btn btn-secondary" id="novaCloseAuth"
+        type="button">Close</button>
+    </div>
+
+    <p id="novaAuthStatus" role="status" aria-live="polite"
+      style="margin-top:14px;"></p>
+  `;
+
+  const novaFooter = document.querySelector(".footer");
+  if (novaFooter) {
+    novaFooter.parentNode.insertBefore(novaAuthBox, novaFooter);
+  } else {
+    document.getElementById("app").appendChild(novaAuthBox);
+  }
+
+  const novaAuthStatus = document.getElementById("novaAuthStatus");
+
+  function novaAuthMessage(text, isError) {
+    novaAuthStatus.textContent = text;
+    novaAuthStatus.style.color = isError ? "#ff7777" : "#4ade80";
+  }
+
+  function novaFirebaseAuth() {
+    if (!window.firebase || !window.firebase.apps) {
+      novaAuthMessage(
+        "Firebase SDK अभी लोड नहीं हुआ। अगले स्टेप में Firebase setup जोड़ेंगे।",
+        true
+      );
+      return null;
+    }
+
+    try {
+      if (!window.firebase.apps.length) {
+        novaAuthMessage(
+          "Firebase configuration अभी जोड़नी बाकी है। अगले स्टेप में setup करेंगे।",
+          true
+        );
+        return null;
+      }
+      return window.firebase.auth();
+    } catch (error) {
+      novaAuthMessage("Firebase setup में समस्या है। Configuration जाँचें।", true);
+      return null;
+    }
+  }
+
+  function novaShowAuth() {
+    novaAuthBox.style.display = "block";
+    novaAuthBox.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  const novaHeaderLogin = document.getElementById("loginButton");
+  if (novaHeaderLogin) {
+    novaHeaderLogin.addEventListener("click", novaShowAuth);
+  }
+
+  document.getElementById("novaCloseAuth").addEventListener("click", function () {
+    novaAuthBox.style.display = "none";
+  });
+
+  document.getElementById("novaSignupButton").addEventListener("click", async function () {
+    const auth = novaFirebaseAuth();
+    if (!auth) return;
+
+    const name = document.getElementById("novaName").value.trim();
+    const email = document.getElementById("novaEmail").value.trim();
+    const password = document.getElementById("novaPassword").value;
+
+    if (!name || !email || password.length < 6) {
+      novaAuthMessage("नाम, सही ईमेल और कम-से-कम 6 अक्षर का पासवर्ड भरें।", true);
+      return;
+    }
+
+    try {
+      const credential = await auth.createUserWithEmailAndPassword(email, password);
+      await credential.user.updateProfile({ displayName: name });
+      novaAuthMessage("Account बन गया! आप लॉग इन हैं।", false);
+    } catch (error) {
+      novaAuthMessage(error.message || "Account नहीं बन पाया।", true);
+    }
+  });
+
+  document.getElementById("novaLoginButton").addEventListener("click", async function () {
+    const auth = novaFirebaseAuth();
+    if (!auth) return;
+
+    const email = document.getElementById("novaEmail").value.trim();
+    const password = document.getElementById("novaPassword").value;
+
+    if (!email || !password) {
+      novaAuthMessage("ईमेल और पासवर्ड भरें।", true);
+      return;
+    }
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      novaAuthMessage("Login सफल रहा।", false);
+    } catch (error) {
+      novaAuthMessage(error.message || "Login नहीं हो पाया।", true);
+    }
+  });
+
+  document.getElementById("novaLogoutButton").addEventListener("click", async function () {
+    const auth = novaFirebaseAuth();
+    if (!auth) return;
+
+    try {
+      await auth.signOut();
+      novaAuthMessage("आप लॉग आउट हो गए हैं।", false);
+    } catch (error) {
+      novaAuthMessage("Logout नहीं हो पाया।", true);
+    }
+  });
+
+  const novaAuth = novaFirebaseAuth();
+  if (novaAuth) {
+    novaAuth.onAuthStateChanged(function (user) {
+      const logoutButton = document.getElementById("novaLogoutButton");
+      const loginButton = document.getElementById("novaLoginButton");
+      const signupButton = document.getElementById("novaSignupButton");
+
+      logoutButton.style.display = user ? "inline-block" : "none";
+      loginButton.style.display = user ? "none" : "inline-block";
+      signupButton.style.display = user ? "none" : "inline-block";
+
+      if (user) {
+        novaAuthMessage(
+          "Logged in: " + (user.displayName || user.email),
+          false
+        );
+        const headerButton = document.getElementById("loginButton");
+        if (headerButton) headerButton.textContent = "My Account";
+      } else {
+        const headerButton = document.getElementById("loginButton");
+        if (headerButton) headerButton.textContent = "Login";
+      }
+    });
+  }
+
+  window.novaShowAuth = novaShowAuth;
+})();
+ </script>
