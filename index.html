@@ -3204,12 +3204,10 @@ window.SpeechRecognition || window.webkitSpeechRecognition;
       const spoken = event.results[0][0].transcript.trim();
       questionBox.value = spoken;
            if (spoken) {
+           if (spoken) {
         document.getElementById("novaOwnAsk").click();
-           }
-document.getElementById("novaOwnAsk").click();
-  if (spoken) {
-askButton.click();
-  }
+      }
+    };
     recognition.onerror = function () {
       alert("Microphone permission जाँचें और दोबारा कोशिश करें।");
     };
