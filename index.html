@@ -2616,3 +2616,329 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 14 -->
+ <script>
+/* =========================================
+   BHARAT NOVA — STEP 15 OF 15
+   Admin Users, Block/Unblock, Diagnostics
+   ========================================= */
+(function () {
+  "use strict";
+
+  const ADMIN_EMAIL = "Manmohan595120@gmail.com";
+  const db = () => window.novaFirebaseDatabase;
+  const auth = () => window.novaFirebaseAuthInstance;
+
+  function showNotice(message) {
+    if (typeof window.novaMessage === "function") {
+      window.novaMessage(message);
+    } else {
+      alert(message);
+    }
+  }
+
+  function createAdminPanel() {
+    if (document.getElementById("novaAdminPanel")) return;
+
+    const panel = document.createElement("section");
+    panel.id = "novaAdminPanel";
+    panel.style.cssText =
+      "display:none;position:fixed;inset:0;z-index:10050;" +
+      "overflow:auto;background:#061429;color:#fff;padding:18px;" +
+      "font-family:Arial,sans-serif";
+
+    panel.innerHTML = `
+      <div style="max-width:1000px;margin:15px auto;padding:18px;
+        border:1px solid #d6b33f;border-radius:16px;background:#0b1c35">
+        <div style="display:flex;justify-content:space-between;
+          align-items:center;gap:10px;flex-wrap:wrap">
+          <h2 style="color:#f4c542;margin:0">Bharat Nova Admin</h2>
+          <button id="novaAdminClose" type="button"
+            style="padding:10px;border-radius:8px">Close ✕</button>
+        </div>
+        <p>Users Management — users को देखें और Block/Unblock करें।</p>
+        <p id="novaAdminStatus" role="status">Admin permission जाँची जा रही है…</p>
+        <button id="novaAdminRefresh" type="button"
+          style="padding:10px;border-radius:8px;margin:8px 0">
+          Refresh Users
+        </button>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:650px">
+            <thead>
+              <tr style="color:#f4c542;text-align:left">
+                <th style="padding:9px">Name</th>
+                <th style="padding:9px">Email</th>
+                <th style="padding:9px">User ID</th>
+                <th style="padding:9px">Status</th>
+                <th style="padding:9px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="novaAdminUsers">
+              <tr><td colspan="5" style="padding:10px">
+                Admin login के बाद users लोड होंगे।
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:#d4dbea">
+          सुरक्षा नोट: केवल इस panel को छिपाना पर्याप्त सुरक्षा नहीं है।
+          Firestore Security Rules में admin access और user updates की
+          अनुमति सुरक्षित रूप से सीमित करना आवश्यक है।
+        </p>
+      </div>`;
+
+    document.body.appendChild(panel);
+
+    document.getElementById("novaAdminClose").onclick = () => {
+      panel.style.display = "none";
+    };
+
+    document.getElementById("novaAdminRefresh").onclick = loadAdminUsers;
+  }
+
+  function adminStatus(message) {
+    const el = document.getElementById("novaAdminStatus");
+    if (el) el.textContent = message;
+  }
+
+  async function verifyAdmin() {
+    const a = auth();
+    const database = db();
+
+    if (!a || !a.currentUser) {
+      throw new Error("पहले Bharat Nova में Admin account से Login करें।");
+    }
+
+    const user = a.currentUser;
+    if ((user.email || "").toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      throw new Error("इस account को Admin access नहीं मिला है।");
+    }
+
+    if (!database) {
+      throw new Error("Firebase Firestore उपलब्ध नहीं है।");
+    }
+
+    /*
+      Firestore में users/{admin UID} document होना चाहिए।
+      उसमें role: "admin" या isAdmin: true सेट करें।
+      Firestore Security Rules से भी इसे enforce करना जरूरी है।
+    */
+    const adminDoc = await database.collection("users").doc(user.uid).get();
+    const data = adminDoc.exists ? adminDoc.data() : {};
+
+    if (!(data.role === "admin" || data.isAdmin === true)) {
+      throw new Error(
+        "Admin role verify नहीं हुआ। Firestore users/" +
+        user.uid + " document में role='admin' सेट करें।"
+      );
+    }
+
+    return { user, database };
+  }
+
+  async function loadAdminUsers() {
+    const body = document.getElementById("novaAdminUsers");
+    if (!body) return;
+
+    body.innerHTML = "";
+    adminStatus("Admin permission जाँची जा रही है…");
+
+    try {
+      const { user, database } = await verifyAdmin();
+      adminStatus("Admin verified. Users लोड हो रहे हैं…");
+
+      const snapshot = await database.collection("users").get();
+
+      if (snapshot.empty) {
+        body.innerHTML =
+          '<tr><td colspan="5" style="padding:10px">कोई user record नहीं मिला।</td></tr>';
+        adminStatus("Users collection खाली है।");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data() || {};
+        const row = document.createElement("tr");
+        row.style.borderTop = "1px solid #34445d";
+
+        const name = data.name || data.displayName || "—";
+        const email = data.email || "—";
+        const isBlocked = data.blocked === true;
+        const isAdminRecord =
+          doc.id === user.uid ||
+          data.role === "admin" ||
+          data.isAdmin === true;
+
+        [name, email, doc.id, isBlocked ? "Blocked" : "Active"]
+          .forEach((value) => {
+            const cell = document.createElement("td");
+            cell.style.cssText = "padding:9px;vertical-align:top";
+            cell.textContent = String(value);
+            row.appendChild(cell);
+          });
+
+        const actionCell = document.createElement("td");
+        actionCell.style.padding = "9px";
+
+        const actionButton = document.createElement("button");
+        actionButton.type = "button";
+        actionButton.textContent = isAdminRecord
+          ? "Admin Protected"
+          : (isBlocked ? "Unblock" : "Block");
+        actionButton.disabled = isAdminRecord;
+        actionButton.style.cssText =
+          "padding:8px 10px;border-radius:7px;cursor:pointer";
+
+        actionButton.addEventListener("click", async () => {
+          if (isAdminRecord) return;
+
+          const action = isBlocked ? "Unblock" : "Block";
+          if (!confirm("क्या आप इस user को " + action + " करना चाहते हैं?")) {
+            return;
+          }
+
+          actionButton.disabled = true;
+
+          try {
+            const check = await verifyAdmin();
+            const freshDoc = await check.database
+              .collection("users").doc(doc.id).get();
+
+            if (!freshDoc.exists) {
+              throw new Error("User record अब उपलब्ध नहीं है।");
+            }
+
+            const freshData = freshDoc.data() || {};
+            if (doc.id === check.user.uid ||
+                freshData.role === "admin" ||
+                freshData.isAdmin === true) {
+              throw new Error("Admin account को Block नहीं किया जा सकता।");
+            }
+
+            await check.database.collection("users").doc(doc.id).update({
+              blocked: !isBlocked,
+              statusUpdatedAt:
+                window.firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showNotice("User status update हो गया।");
+            await loadAdminUsers();
+          } catch (error) {
+            console.error("Admin user update failed:", error);
+            showNotice("Update नहीं हुआ: " + (error.message || "Permission error"));
+          } finally {
+            actionButton.disabled = false;
+          }
+        });
+
+        actionCell.appendChild(actionButton);
+        row.appendChild(actionCell);
+        body.appendChild(row);
+      });
+
+      adminStatus("Users loaded: " + snapshot.size);
+    } catch (error) {
+      console.error("Admin panel error:", error);
+      adminStatus(error.message || "Admin panel खोलने में समस्या हुई।");
+      body.innerHTML =
+        '<tr><td colspan="5" style="padding:10px">Permission या Firebase configuration जाँचें।</td></tr>';
+    }
+  }
+
+  function addAdminButton() {
+    if (document.getElementById("novaAdminOpenButton")) return;
+
+    const button = document.createElement("button");
+    button.id = "novaAdminOpenButton";
+    button.type = "button";
+    button.textContent = "👑 Admin Panel";
+    button.style.cssText =
+      "padding:10px 13px;border-radius:9px;border:1px solid #d6b33f;" +
+      "background:#102541;color:#f4c542;font-weight:bold;cursor:pointer";
+
+    button.addEventListener("click", () => {
+      createAdminPanel();
+      const panel = document.getElementById("novaAdminPanel");
+      panel.style.display = "block";
+      loadAdminUsers();
+    });
+
+    const topbar = document.querySelector(".topbar");
+    const footer = document.querySelector(".footer");
+
+    if (topbar) topbar.appendChild(button);
+    else if (footer) footer.appendChild(button);
+    else document.body.appendChild(button);
+  }
+
+  function addDiagnostics() {
+    if (document.getElementById("novaDiagnostics")) return;
+
+    const box = document.createElement("details");
+    box.id = "novaDiagnostics";
+    box.style.cssText =
+      "margin:18px auto;max-width:900px;padding:12px;" +
+      "border:1px solid #34445d;border-radius:10px";
+
+    box.innerHTML = `
+      <summary style="cursor:pointer;font-weight:bold">
+        Bharat Nova — App Diagnostics
+      </summary>
+      <div id="novaDiagnosticsContent" style="padding-top:10px;line-height:1.8">
+        App status जाँची जा रही है…
+      </div>`;
+
+    const footer = document.querySelector(".footer");
+    if (footer && footer.parentNode) {
+      footer.parentNode.insertBefore(box, footer);
+    } else {
+      document.body.appendChild(box);
+    }
+
+    const firebaseReady = !!(window.firebase && window.novaFirebaseDatabase);
+    const workerUrl =
+      "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+    document.getElementById("novaDiagnosticsContent").innerHTML =
+      "Page: " + (location.protocol === "https:" ? "HTTPS सुरक्षित connection" : "HTTPS नहीं") +
+      "<br>Firebase SDK: " + (window.firebase ? "Loaded" : "Not detected") +
+      "<br>Firestore: " + (firebaseReady ? "Initialized" : "Not detected") +
+      "<br>AI endpoint configured: " + workerUrl +
+      "<br>Network: " + (navigator.onLine ? "Online" : "Offline") +
+      "<br>Storage available: " + (function () {
+        try {
+          localStorage.setItem("nova_test", "1");
+          localStorage.removeItem("nova_test");
+          return "Yes";
+        } catch (e) {
+          return "No";
+        }
+      })();
+
+    window.addEventListener("online", () => {
+      const content = document.getElementById("novaDiagnosticsContent");
+      if (content) content.setAttribute("data-network", "online");
+    });
+  }
+
+  function startFinalStep() {
+    addAdminButton();
+    addDiagnostics();
+
+    const currentYear = document.getElementById("currentYear");
+    if (currentYear) currentYear.textContent = String(new Date().getFullYear());
+
+    console.log("Bharat Nova Step 15 loaded successfully.");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startFinalStep);
+  } else {
+    startFinalStep();
+  }
+})();
+</script>
+<!-- END BHARAT NOVA STEP 15 -->
+
+</div>
+</body>
+</html>
