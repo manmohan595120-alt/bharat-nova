@@ -3153,26 +3153,6 @@ window.SpeechRecognition || window.webkitSpeechRecognition;
       this.disabled = false;
     }
   };
-
-  document.getElementById("novaOwnVoice").onclick = function () {
-    const Recognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!Recognition) {
-      alert("इस ब्राउज़र में Voice Recognition उपलब्ध नहीं है।");
-      return;
-    }
-
-    const recognition = new Recognition();
-    recognition.lang = "hi-IN";
-    recognition.onresult = function (event) {
-      question.value = event.results[0][0].transcript;
-    };
-    recognition.onerror = function () {
-      alert("Voice इस्तेमाल करने के लिए Microphone permission जाँचें।");
-    };
-    recognition.start();
-  };
 })();
 </script>
 <!-- END BHARAT NOVA AI SECTION -->
