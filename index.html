@@ -690,3 +690,69 @@ function novaStartVoice() {
   window.novaShowAuth = novaShowAuth;
 })();
  </script>
+ <!-- BHARAT NOVA STEP 4: FIREBASE INITIALIZATION -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const novaFirebaseConfigStep4 = {
+    apiKey: "AIzaSyA3gjWDlWRFWGTNgPK8nIPGL-2oaVTVtyo",
+    authDomain: "bharat-nova-755a8.firebaseapp.com",
+    projectId: "bharat-nova-755a8",
+    storageBucket: "bharat-nova-755a8.firebasestorage.app",
+    messagingSenderId: "68354571415",
+    appId: "1:68354571415:web:463bf88d106ca5616d7dd2",
+    measurementId: "G-1H75PJM6P6"
+  };
+
+  function initializeNovaFirebaseStep4() {
+    if (!window.firebase) {
+      console.error("Bharat Nova: Firebase SDK load नहीं हुआ।");
+      return;
+    }
+
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(novaFirebaseConfigStep4);
+      }
+
+      window.novaFirebaseApp = firebase.app();
+      window.novaFirebaseAuthInstance = firebase.auth();
+      window.novaFirebaseDatabase = firebase.firestore();
+
+      console.log("Bharat Nova: Firebase initialized successfully.");
+
+      const status = document.getElementById("novaAuthStatus");
+      if (status) {
+        status.textContent =
+          "Firebase तैयार है। Login और Signup इस्तेमाल कर सकते हैं।";
+        status.style.color = "#4ade80";
+      }
+    } catch (error) {
+      console.error("Bharat Nova Firebase initialization error:", error);
+
+      const status = document.getElementById("novaAuthStatus");
+      if (status) {
+        status.textContent =
+          "Firebase शुरू नहीं हो पाया। Console में error जाँचें।";
+        status.style.color = "#ff7777";
+      }
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeNovaFirebaseStep4,
+      { once: true }
+    );
+  } else {
+    initializeNovaFirebaseStep4();
+  }
+})();
+</script>
+<!-- END BHARAT NOVA STEP 4 -->
