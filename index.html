@@ -3161,15 +3161,9 @@ function novaStartVoice() {
       const spoken = event.results[0][0].transcript.trim();
       questionBox.value = spoken;
 
-      if (spoken) {
-        window.open(
-          "https://www.google.com/search?q=" +
-          encodeURIComponent(spoken),
-          "_blank"
-        );
-      }
-    };
-
+  if (spoken) {
+askButton.click();
+  }
     recognition.onerror = function () {
       alert("Microphone permission जाँचें और दोबारा कोशिश करें।");
     };
