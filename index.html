@@ -3158,42 +3158,53 @@ window.SpeechRecognition || window.webkitSpeechRecognition;
 <!-- END BHARAT NOVA AI SECTION -->
  <script>
 (function () {
+ <script>
+(function () {
   const voiceButton = document.getElementById("novaOwnVoice");
   const questionBox = document.getElementById("novaOwnQuestion");
+  const askButton = document.getElementById("novaOwnAsk");
 
-  if (!voiceButton || !questionBox) {
-    console.log("Bharat Nova AI voice controls not found.");
+  if (!voiceButton || !questionBox || !askButton) {
+    console.log("Bharat Nova AI controls not found.");
     return;
   }
 
-  voiceButton.addEventListener("click", function () {
+  voiceButton.onclick = function () {
     const Speech =
       window.SpeechRecognition ||
       window.webkitSpeechRecognition;
 
     if (!Speech) {
-      alert("Voice Search के लिए Android Chrome इस्तेमाल करें।");
+      alert("Voice के लिए Android Chrome इस्तेमाल करें।");
       return;
     }
 
     const recognition = new Speech();
     recognition.lang = "hi-IN";
     recognition.interimResults = false;
+    voiceButton.textContent = "🎤 सुन रहा हूँ...";
 
     recognition.onresult = function (event) {
       const spoken = event.results[0][0].transcript.trim();
       questionBox.value = spoken;
-           if (spoken) {
-           if (spoken) {
-        document.getElementById("novaOwnAsk").click();
+
+      if (spoken) {
+        askButton.click();
       }
     };
+
     recognition.onerror = function () {
       alert("Microphone permission जाँचें और दोबारा कोशिश करें।");
     };
 
+    recognition.onend = function () {
+      voiceButton.textContent = "🎤 AI Voice";
+    };
+
     recognition.start();
-  });
+  };
+})();
+</script>
 })();
  </script>
  <style>
