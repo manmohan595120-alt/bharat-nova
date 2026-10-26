@@ -2023,3 +2023,199 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 11 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 12 */
+
+  const panel = document.createElement("section");
+  panel.id = "novaAppInfoPanel";
+  panel.style.cssText =
+    "display:none;position:fixed;inset:0;z-index:10008;" +
+    "overflow-y:auto;padding:18px;background:rgba(2,8,23,.90)";
+
+  panel.innerHTML = `
+    <div style="
+      max-width:650px;margin:25px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #475569;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+        gap:12px;align-items:center;flex-wrap:wrap">
+        <h2 style="margin:0">🇮🇳 About Bharat Nova</h2>
+        <button type="button" id="novaInfoClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <div style="padding:16px;margin-top:16px;
+        border-radius:12px;background:rgba(127,127,127,.10)">
+        <h3>🔷 Bharat Nova</h3>
+        <p>Search Smarter. Think Bigger.</p>
+        <p>वेब सर्च और AI सहायता के लिए बनाया गया आपका वेब ऐप।</p>
+        <p><strong>Version:</strong> 1.0.0</p>
+        <p><strong>Network:</strong>
+          <span id="novaNetworkStatus">जाँच जारी है...</span>
+        </p>
+        <p><strong>App Mode:</strong>
+          <span id="novaAppMode">Browser</span>
+        </p>
+      </div>
+
+      <h3>📲 Install Bharat Nova</h3>
+      <p>यदि आपका ब्राउज़र PWA installation का समर्थन करता है,
+      तो Install बटन से ऐप को होम स्क्रीन पर जोड़ सकते हैं।</p>
+      <button type="button" id="novaInstallNow"
+        style="padding:12px 18px;border-radius:10px">
+        📲 Install App
+      </button>
+      <p id="novaInstallStatus" role="status"></p>
+
+      <h3>🌐 Quick Links</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" id="novaInfoGoogle"
+          style="padding:10px;border-radius:9px">Google</button>
+        <button type="button" id="novaInfoYouTube"
+          style="padding:10px;border-radius:9px">YouTube</button>
+        <button type="button" id="novaInfoWiki"
+          style="padding:10px;border-radius:9px">Wikipedia</button>
+      </div>
+
+      <p style="font-size:13px;opacity:.8;margin-top:20px">
+        Install विकल्प ब्राउज़र, HTTPS और PWA manifest/service worker
+        configuration पर निर्भर करता है।
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(panel);
+
+  let installPrompt = null;
+
+  const installStatus = document.getElementById("novaInstallStatus");
+  const networkStatus = document.getElementById("novaNetworkStatus");
+  const appMode = document.getElementById("novaAppMode");
+
+  function updateNetworkStatus() {
+    networkStatus.textContent = navigator.onLine
+      ? "Online"
+      : "Offline — इंटरनेट कनेक्शन जाँचें";
+
+    networkStatus.style.color = navigator.onLine
+      ? "#4ade80"
+      : "#f87171";
+  }
+
+  function updateAppMode() {
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    appMode.textContent = standalone
+      ? "Installed App"
+      : "Browser";
+  }
+
+  function openInfo() {
+    panel.style.display = "block";
+    updateNetworkStatus();
+    updateAppMode();
+  }
+
+  function closeInfo() {
+    panel.style.display = "none";
+  }
+
+  document.getElementById("novaInfoClose")
+    .addEventListener("click", closeInfo);
+
+  panel.addEventListener("click", function (event) {
+    if (event.target === panel) closeInfo();
+  });
+
+  window.addEventListener("online", updateNetworkStatus);
+  window.addEventListener("offline", updateNetworkStatus);
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    installPrompt = event;
+    installStatus.textContent = "ऐप इंस्टॉल करने के लिए तैयार है।";
+  });
+
+  document.getElementById("novaInstallNow")
+    .addEventListener("click", async function () {
+      if (installPrompt) {
+        installPrompt.prompt();
+
+        try {
+          const choice = await installPrompt.userChoice;
+          installStatus.textContent =
+            choice.outcome === "accepted"
+              ? "Install अनुरोध स्वीकार किया गया।"
+              : "Install अभी रद्द किया गया।";
+        } catch (error) {
+          installStatus.textContent =
+            "Install स्थिति प्राप्त नहीं हो सकी।";
+        }
+
+        installPrompt = null;
+        return;
+      }
+
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        installStatus.textContent =
+          "Bharat Nova पहले से installed mode में चल रहा है।";
+      } else {
+        installStatus.textContent =
+          "Chrome के मेनू में 'Add to Home screen' या 'Install app' देखें।";
+      }
+    });
+
+  document.getElementById("novaInfoGoogle")
+    .addEventListener("click", function () {
+      window.open("https://www.google.com/", "_blank", "noopener");
+    });
+
+  document.getElementById("novaInfoYouTube")
+    .addEventListener("click", function () {
+      window.open("https://www.youtube.com/", "_blank", "noopener");
+    });
+
+  document.getElementById("novaInfoWiki")
+    .addEventListener("click", function () {
+      window.open("https://www.wikipedia.org/", "_blank", "noopener");
+    });
+
+  const footer = document.querySelector(".footer");
+  const infoButton = document.createElement("button");
+
+  infoButton.type = "button";
+  infoButton.id = "novaAboutButton";
+  infoButton.textContent = "ℹ️ About / Install";
+  infoButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;cursor:pointer";
+
+  if (footer) {
+    footer.appendChild(infoButton);
+  } else {
+    document.body.appendChild(infoButton);
+  }
+
+  infoButton.addEventListener("click", openInfo);
+
+  const oldInstallButton = document.getElementById("installButton");
+
+  if (oldInstallButton) {
+    oldInstallButton.addEventListener("click", openInfo);
+  }
+
+  window.novaOpenAppInfo = openInfo;
+
+  updateNetworkStatus();
+  updateAppMode();
+
+  console.log("Bharat Nova Step 12 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 12 -->
