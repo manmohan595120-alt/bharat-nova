@@ -934,3 +934,236 @@ window.novaFileNotice = function() {
 
 console.log("Bharat Nova Step 5 loaded.");
   </script>
+  
+<script>
+/* BHARAT NOVA — STEP 6/10 */
+
+const NOVA_FIREBASE_CONFIG = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "bharat-nova-755a8.firebaseapp.com",
+  projectId: "bharat-nova-755a8",
+  storageBucket: "bharat-nova-755a8.firebasestorage.app",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_FIREBASE_APP_ID"
+};
+
+let novaAuth = null;
+let novaDB = null;
+let novaCurrentUser = null;
+
+function novaInitFirebase() {
+  if (!window.firebase) {
+    console.error("Firebase SDK load nahi hua.");
+    return false;
+  }
+
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(NOVA_FIREBASE_CONFIG);
+    }
+
+    novaAuth = firebase.auth();
+    novaDB = firebase.firestore();
+    novaWatchAuth();
+
+    return true;
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    alert("Firebase configuration check karein.");
+    return false;
+  }
+}
+
+function novaValue(id) {
+  const element = document.getElementById(id);
+  return element ? element.value.trim() : "";
+}
+
+function novaError(error) {
+  const messages = {
+    "auth/email-already-in-use": "Yeh email pehle se registered hai.",
+    "auth/invalid-email": "Email address sahi nahi hai.",
+    "auth/weak-password": "Password kam se kam 6 characters ka rakhein.",
+    "auth/invalid-credential": "Email ya password galat hai.",
+    "auth/user-not-found": "Account nahi mila.",
+    "auth/wrong-password": "Password galat hai.",
+    "auth/too-many-requests": "Bahut attempts hue. Baad mein try karein.",
+    "auth/network-request-failed": "Internet connection check karein."
+  };
+
+  return messages[error.code] || error.message || "Kuch galat hua.";
+}
+
+/* SIGNUP */
+
+window.novaSignup = async function() {
+  if (!novaAuth || !novaDB) {
+    alert("Firebase configuration complete karein.");
+    return;
+  }
+
+  const name = novaValue("signupName");
+  const email = novaValue("signupEmail");
+  const password = document.getElementById("signupPassword")?.value || "";
+
+  if (!name || !email || !password) {
+    alert("Naam, email aur password bharein.");
+    return;
+  }
+
+  if (password.length < 6) {
+    alert("Password kam se kam 6 characters ka hona chahiye.");
+    return;
+  }
+
+  try {
+    const credential = await novaAuth.createUserWithEmailAndPassword(
+      email,
+      password
+    );
+
+    await credential.user.updateProfile({
+      displayName: name
+    });
+
+    await novaDB.collection("users").doc(credential.user.uid).set({
+      name: name,
+      email: credential.user.email,
+      uid: credential.user.uid,
+      blocked: false,
+      status: "active",
+      plan: "free",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    alert("Account successfully ban gaya!");
+  } catch (error) {
+    alert(novaError(error));
+  }
+};
+
+/* LOGIN */
+
+window.novaLogin = async function() {
+  if (!novaAuth || !novaDB) {
+    alert("Firebase configuration complete karein.");
+    return;
+  }
+
+  const email = novaValue("loginEmail");
+  const password = document.getElementById("loginPassword")?.value || "";
+
+  if (!email || !password) {
+    alert("Email aur password bharein.");
+    return;
+  }
+
+  try {
+    await novaAuth.signInWithEmailAndPassword(email, password);
+  } catch (error) {
+    alert(novaError(error));
+  }
+};
+
+/* PASSWORD RESET */
+
+window.novaResetPassword = async function() {
+  if (!novaAuth) {
+    alert("Firebase load nahi hua.");
+    return;
+  }
+
+  const email = novaValue("loginEmail");
+
+  if (!email) {
+    alert("Pehle login box mein email likhein.");
+    return;
+  }
+
+  try {
+    await novaAuth.sendPasswordResetEmail(email);
+    alert("Password reset email bhej diya gaya hai.");
+  } catch (error) {
+    alert(novaError(error));
+  }
+};
+
+/* LOGOUT */
+
+window.novaLogout = async function() {
+  if (!novaAuth) return;
+
+  try {
+    await novaAuth.signOut();
+  } catch (error) {
+    alert(novaError(error));
+  }
+};
+
+/* AUTH STATE + USER PROFILE */
+
+function novaWatchAuth() {
+  novaAuth.onAuthStateChanged(async function(user) {
+    novaCurrentUser = user || null;
+
+    const authSection = document.getElementById("authSection");
+    const appSection = document.getElementById("appSection");
+
+    if (!user) {
+      if (authSection) authSection.classList.remove("hidden");
+      if (appSection) appSection.classList.add("hidden");
+      return;
+    }
+
+    try {
+      const ref = novaDB.collection("users").doc(user.uid);
+      const snapshot = await ref.get();
+
+      if (!snapshot.exists) {
+        await novaAuth.signOut();
+        alert("User profile nahi mila. Admin se sampark karein.");
+        return;
+      }
+
+      const profile = snapshot.data();
+
+      if (profile.blocked === true || profile.status === "blocked") {
+        await novaAuth.signOut();
+        alert("Aapka account block hai.");
+        return;
+      }
+
+      if (authSection) authSection.classList.add("hidden");
+      if (appSection) appSection.classList.remove("hidden");
+
+      const nameBox = document.getElementById("userName");
+      const emailBox = document.getElementById("userEmail");
+      const statusBox = document.getElementById("accountStatus");
+
+      if (nameBox) {
+        nameBox.textContent = user.displayName || profile.name || "User";
+      }
+
+      if (emailBox) emailBox.textContent = user.email || "";
+
+      if (statusBox) {
+        statusBox.textContent =
+          profile.plan === "premium" ? "Premium User" : "Free User";
+      }
+    } catch (error) {
+      console.error("User profile error:", error);
+      alert("User profile load nahi hua. Firebase Rules check karein.");
+    }
+  });
+}
+
+/* START FIREBASE AFTER SDK LOAD */
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", novaInitFirebase);
+} else {
+  novaInitFirebase();
+}
+
+console.log("Bharat Nova Step 6 loaded.");
+</script>
