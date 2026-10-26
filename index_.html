@@ -1167,3 +1167,66 @@ if (document.readyState === "loading") {
 
 console.log("Bharat Nova Step 6 loaded.");
 </script>
+<script>
+/* BHARAT NOVA STEP 7 */
+
+let novaInstallPrompt = null;
+
+/* INSTALL PROMPT */
+window.addEventListener("beforeinstallprompt", function(event) {
+  event.preventDefault();
+  novaInstallPrompt = event;
+
+  const btn = document.getElementById("installButton");
+  if (btn) btn.classList.remove("hidden");
+});
+
+window.novaInstallApp = async function() {
+  if (novaInstallPrompt) {
+    novaInstallPrompt.prompt();
+
+    const choice = await novaInstallPrompt.userChoice;
+    if (choice.outcome === "accepted") {
+      alert("Bharat Nova install ho raha hai.");
+    }
+
+    novaInstallPrompt = null;
+    return;
+  }
+
+  if (window.matchMedia("(display-mode: standalone)").matches) {
+    alert("Bharat Nova pehle se installed hai.");
+  } else {
+    alert(
+      "Chrome mein Bharat Nova website kholein.\n" +
+      "Upar ⋮ menu dabayein aur Install app ya Add to Home screen chunein."
+    );
+  }
+};
+
+/* SHARE APP */
+window.novaShareApp = async function() {
+  const shareData = {
+    title: "Bharat Nova",
+    text: "Bharat Nova — Smart Search aur AI Assistant",
+    url: "https://manmohan595120-alt.github.io/bharat-nova/"
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(shareData.url);
+      alert("Website link copy ho gaya. Ab share kar sakte hain.");
+    } else {
+      window.prompt("Is link ko copy karein:", shareData.url);
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      alert("Share nahi hua. Link manually copy karein.");
+    }
+  }
+};
+
+console.log("Bharat Nova Step 7 ready.");
+</script>
