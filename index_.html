@@ -576,3 +576,103 @@ footer{
   </div>
 
 </section>
+  <!-- STEP 4: VOICE SEARCH AND SPEECH -->
+
+<script>
+/* Voice Search */
+(function () {
+  const voiceButton = document.getElementById("voiceSearchButton");
+  const searchInput = document.getElementById("searchQuery");
+  const message = document.getElementById("message");
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!voiceButton) return;
+
+  voiceButton.addEventListener("click", function () {
+    if (!SpeechRecognition) {
+      if (message) {
+        message.textContent =
+          "Voice Search के लिए Chrome में microphone permission दें या समर्थित browser इस्तेमाल करें।";
+      }
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "hi-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    voiceButton.textContent = "🎙️ सुन रहा हूँ…";
+
+    recognition.onresult = function (event) {
+      const text = event.results[0][0].transcript;
+
+      if (searchInput) {
+        searchInput.value = text;
+        searchInput.focus();
+      }
+
+      if (message) {
+        message.textContent = "आपने कहा: " + text;
+      }
+    };
+
+    recognition.onerror = function (event) {
+      if (message) {
+        message.textContent =
+          "Voice Search में समस्या: " + event.error;
+      }
+    };
+
+    recognition.onend = function () {
+      voiceButton.textContent = "🎙️ Voice Search";
+    };
+
+    try {
+      recognition.start();
+    } catch (error) {
+      if (message) message.textContent =
+        "Voice Search दोबारा शुरू करने से पहले थोड़ा इंतज़ार करें।";
+      voiceButton.textContent = "🎙️ Voice Search";
+    }
+  });
+})();
+
+/* AI Answer को आवाज़ में सुनना */
+document.getElementById("speakAnswerButton")
+  ?.addEventListener("click", function () {
+    const answer = document.getElementById("aiAnswer");
+    const message = document.getElementById("message");
+
+    if (!answer || !answer.textContent.trim()) {
+      if (message) {
+        message.textContent = "पहले AI से उत्तर प्राप्त करें।";
+      }
+      return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+      if (message) {
+        message.textContent =
+          "आपका browser text-to-speech सपोर्ट नहीं करता।";
+      }
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(
+      answer.textContent
+    );
+
+    utterance.lang = "hi-IN";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    window.speechSynthesis.speak(utterance);
+  });
+})();
+</script>
