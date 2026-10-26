@@ -676,3 +676,261 @@ document.getElementById("speakAnswerButton")
   });
 })();
 </script>
+  <script>
+/* BHARAT NOVA — STEP 5: SEARCH + AI */
+
+const NOVA_AI_URL =
+"https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+window.novaOpenTool = function(tool) {
+  const workspace = document.getElementById("toolWorkspace");
+
+  if (workspace) {
+    workspace.classList.remove("hidden");
+    workspace.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  const textTool = document.getElementById("textAITool");
+  const photoTool = document.getElementById("photoAITool");
+  const fileTool = document.getElementById("fileAITool");
+
+  [textTool, photoTool, fileTool].forEach(el => {
+    if (el) el.classList.add("hidden");
+  });
+
+  if (tool === "chat" || tool === "writing" ||
+      tool === "study" || tool === "coding" ||
+      tool === "translate") {
+    if (textTool) textTool.classList.remove("hidden");
+
+    const prompt = document.getElementById("aiPrompt");
+    if (prompt) {
+      const prompts = {
+        chat: "",
+        writing: "Mere liye ek achha lekh likho: ",
+        study: "Is topic ko aasaan Hindi mein samjhao: ",
+        coding: "Is coding problem ko solve karo: ",
+        translate: "Is text ka translation karo: "
+      };
+      prompt.value = prompts[tool] || "";
+      prompt.focus();
+    }
+  }
+
+  if (tool === "photo" && photoTool)
+    photoTool.classList.remove("hidden");
+
+  if (tool === "file" && fileTool)
+    fileTool.classList.remove("hidden");
+
+  if (tool === "premium") {
+    alert("Bharat Nova Premium: ₹49 / 30 days | ₹129 / 90 days");
+  }
+
+  if (tool === "search") {
+    const searchBox = document.getElementById("searchQuery");
+    if (searchBox) searchBox.focus();
+  }
+};
+
+window.novaBackHome = function() {
+  const workspace = document.getElementById("toolWorkspace");
+  if (workspace) workspace.classList.add("hidden");
+
+  const home = document.getElementById("homeSection");
+  if (home) home.scrollIntoView({behavior:"smooth"});
+};
+
+
+/* SMART SEARCH */
+
+const novaSearchForm = document.getElementById("searchForm");
+
+if (novaSearchForm) {
+  novaSearchForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const input = document.getElementById("searchQuery");
+    const engine = document.getElementById("searchEngine");
+
+    const query = input ? input.value.trim() : "";
+    const selected = engine ? engine.value : "google";
+
+    if (!query) {
+      alert("Pehle apna sawal ya search likhein.");
+      return;
+    }
+
+    const searchURLs = {
+      google: "https://www.google.com/search?q=",
+      bing: "https://www.bing.com/search?q=",
+      duckduckgo: "https://duckduckgo.com/?q="
+    };
+
+    const baseURL = searchURLs[selected] || searchURLs.google;
+    window.open(baseURL + encodeURIComponent(query), "_blank",
+      "noopener,noreferrer");
+  });
+}
+
+
+/* YOUTUBE, WIKIPEDIA AND NEWS SEARCH */
+
+window.novaExternalSearch = function(service) {
+  const input = document.getElementById("searchQuery");
+  const query = input ? input.value.trim() : "";
+
+  if (!query) {
+    alert("Pehle search box mein kuch likhein.");
+    if (input) input.focus();
+    return;
+  }
+
+  const urls = {
+    youtube: "https://www.youtube.com/results?search_query=",
+    wikipedia: "https://en.wikipedia.org/w/index.php?search=",
+    news: "https://www.google.com/search?tbm=nws&q="
+  };
+
+  const base = urls[service];
+  if (base) {
+    window.open(base + encodeURIComponent(query), "_blank",
+      "noopener,noreferrer");
+  }
+};
+
+
+/* AI ANSWER HELPERS */
+
+function novaShowMessage(message) {
+  const box = document.getElementById("message");
+  if (box) box.textContent = message;
+}
+
+function novaExtractAnswer(data) {
+  if (typeof data === "string") return data;
+
+  if (data && typeof data === "object") {
+    return data.response ||
+      data.answer ||
+      data.result ||
+      data.output ||
+      data.text ||
+      data.message ||
+      "";
+  }
+
+  return "";
+}
+
+
+/* AI CHAT CONNECTION */
+
+const novaAskButton = document.getElementById("askAIButton");
+
+if (novaAskButton) {
+  novaAskButton.addEventListener("click", async function() {
+    const promptBox = document.getElementById("aiPrompt");
+    const answerBox = document.getElementById("aiAnswer");
+    const loading = document.getElementById("aiLoading");
+
+    const question = promptBox ? promptBox.value.trim() : "";
+
+    if (!question) {
+      alert("AI se poochhne ke liye sawal likhein.");
+      if (promptBox) promptBox.focus();
+      return;
+    }
+
+    if (loading) loading.classList.remove("hidden");
+    if (answerBox) answerBox.textContent = "Bharat Nova AI soch raha hai...";
+    novaAskButton.disabled = true;
+
+    try {
+      const response = await fetch(NOVA_AI_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: question,
+          prompt: question
+        })
+      });
+
+      const raw = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = { response: raw };
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          (data && (data.error || data.message)) ||
+          "AI server error: " + response.status
+        );
+      }
+
+      const answer = novaExtractAnswer(data);
+
+      if (!answer) {
+        throw new Error(
+          "AI ka jawab nahi mila. Cloudflare Worker ka response format check karein."
+        );
+      }
+
+      if (answerBox) answerBox.textContent = answer;
+      novaShowMessage("AI ka jawab mil gaya.");
+
+    } catch (error) {
+      if (answerBox) {
+        answerBox.textContent =
+          "AI connection mein dikkat hai.\n\n" +
+          (error.message || "Network error") +
+          "\n\nCloudflare Worker ke /ask endpoint aur request format ko check karein.";
+      }
+      novaShowMessage("AI connection check karein.");
+    } finally {
+      if (loading) loading.classList.add("hidden");
+      novaAskButton.disabled = false;
+    }
+  });
+}
+
+
+/* ENTER KEY SE AI QUESTION SEND */
+
+const novaPrompt = document.getElementById("aiPrompt");
+
+if (novaPrompt) {
+  novaPrompt.addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+
+      const button = document.getElementById("askAIButton");
+      if (button) button.click();
+    }
+  });
+}
+
+
+/* PHOTO AND FILE TOOLS — NO VOICE BUTTONS ADDED HERE */
+
+window.novaPhotoNotice = function() {
+  alert(
+    "Photo AI ke liye image-analysis capable backend zaroori hai. " +
+    "Sirf text AI endpoint image ko analyse nahi kar sakta."
+  );
+};
+
+window.novaFileNotice = function() {
+  alert(
+    "File AI ke liye PDF/DOCX/TXT extraction aur backend support zaroori hai."
+  );
+};
+
+console.log("Bharat Nova Step 5 loaded.");
+  </script>
