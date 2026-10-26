@@ -389,3 +389,124 @@ h1{
 </div>
 
 <!-- अगले स्टेप में यहाँ Login, AI, Settings और बाकी सुविधाएँ जोड़ेंगे। -->
+ <script>
+"use strict";
+
+const novaStatus = document.getElementById("appStatus");
+const novaInput = document.getElementById("searchInput");
+
+function novaMessage(message) {
+  if (novaStatus) novaStatus.textContent = message;
+}
+
+function novaGetQuery() {
+  return novaInput ? novaInput.value.trim() : "";
+}
+
+function novaSearch(engine) {
+  const query = novaGetQuery();
+
+  if (!query) {
+    novaMessage("पहले अपना सवाल या शब्द लिखें।");
+    if (novaInput) novaInput.focus();
+    return;
+  }
+
+  const urls = {
+    google: "https://www.google.com/search?q=",
+    youtube: "https://www.youtube.com/results?search_query=",
+    wiki: "https://en.wikipedia.org/w/index.php?search="
+  };
+
+  if (!urls[engine]) return;
+
+  window.open(
+    urls[engine] + encodeURIComponent(query),
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  novaMessage("आपकी खोज खोली जा रही है।");
+}
+
+document.getElementById("searchButton")
+  ?.addEventListener("click", () => novaSearch("google"));
+
+document.getElementById("googleButton")
+  ?.addEventListener("click", () => novaSearch("google"));
+
+document.getElementById("youtubeButton")
+  ?.addEventListener("click", () => novaSearch("youtube"));
+
+document.getElementById("wikiButton")
+  ?.addEventListener("click", () => novaSearch("wiki"));
+
+document.getElementById("cardSearchButton")
+  ?.addEventListener("click", () => {
+    if (novaInput) novaInput.focus();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+novaInput?.addEventListener("keydown", event => {
+  if (event.key === "Enter") novaSearch("google");
+});
+
+document.getElementById("voiceButton")
+  ?.addEventListener("click", novaStartVoice);
+
+document.getElementById("cardVoiceButton")
+  ?.addEventListener("click", novaStartVoice);
+
+function novaStartVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    novaMessage(
+      "इस ब्राउज़र में Voice Search उपलब्ध नहीं है। Chrome में प्रयास करें।"
+    );
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  novaMessage("🎙️ सुन रहा हूँ... अब बोलिए।");
+
+  recognition.onresult = event => {
+    const transcript =
+      event.results[0][0].transcript.trim();
+
+    if (novaInput) novaInput.value = transcript;
+
+    novaMessage("सुना गया: " + transcript);
+
+    if (transcript) novaSearch("google");
+  };
+
+  recognition.onerror = event => {
+    novaMessage(
+      event.error === "not-allowed"
+        ? "Microphone की अनुमति दें।"
+        : "Voice Search नहीं चला। दोबारा प्रयास करें।"
+    );
+  };
+
+  recognition.onend = () => {
+    if (novaStatus &&
+        novaStatus.textContent === "🎙️ सुन रहा हूँ... अब बोलिए।") {
+      novaMessage("Voice Search बंद हो गया।");
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    novaMessage("Voice Search शुरू नहीं हो सका। दोबारा प्रयास करें।");
+  }
+}
+ </script>
