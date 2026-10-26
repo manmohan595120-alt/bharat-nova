@@ -2797,27 +2797,34 @@ function shareBharatNova() {
   <h2>🚀 Bharat Nova</h2>
   <p id="nova-auth-status">Login या नया अकाउंट बनाएँ</p>
 
-  <div id="nova-auth-form">
-    <input id="nova-name"
-      type="text" placeholder="आपका नाम"
-      autocomplete="name">
+<div id="nova-auth-form">
+  <h3>Bharat Nova Login</h3>
 
-    <input id="nova-email"
-      type="email" placeholder="Email"
-      autocomplete="email">
+  <input
+    id="bnEmail"
+    type="email"
+    placeholder="Email"
+    autocomplete="username"
+    required
+  >
 
-  <input id="bnPassword"
-      type="password" placeholder="Password"
-      autocomplete="current-password">
+  <input
+    id="bnPassword"
+    type="password"
+    placeholder="Password"
+    autocomplete="current-password"
+    required
+  >
 
-  <button type="button" onclick="bnLogin()">
-  🔐 Login
+  <button
+    id="bnLoginButton"
+    type="button"
+    onclick="bnLogin()">
+    🔐 Login
   </button>
-  <button type="button" onclick="novaResetPassword()">
-      🔑 Forgot Password
-    </button>
-  </div>
 
+  <p id="bnAuthMessage"></p>
+</div>
   <div id="nova-user-panel" hidden>
     <h3 id="nova-welcome"></h3>
     <p id="nova-user-plan">Plan: Free</p>
