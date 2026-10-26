@@ -2190,6 +2190,49 @@ style="padding:10px;border-radius:9px">🎤 Google Voice</button>
     });
 
   const footer = document.querySelector(".footer");
+ const googleVoiceButton = document.getElementById("novaGoogleVoice");
+
+if (googleVoiceButton) {
+googleVoiceButton.addEventListener("click", function () {
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Google Voice के लिए Android Chrome इस्तेमाल करें।");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  googleVoiceButton.textContent = "🎤 सुन रहा हूँ...";
+
+  recognition.onresult = function (event) {
+    const spokenText = event.results[0][0].transcript.trim();
+
+    if (spokenText) {
+      const googleUrl =
+        "https://www.google.com/search?q=" +
+        encodeURIComponent(spokenText);
+
+      window.open(googleUrl, "_blank", "noopener");
+    }
+  };
+
+  recognition.onerror = function () {
+    alert("माइक्रोफोन की अनुमति जाँचें और दोबारा कोशिश करें।");
+  };
+
+  recognition.onend = function () {
+    googleVoiceButton.textContent = "🎤 Google Voice";
+  };
+
+  recognition.start();
+});
+
+}
   const infoButton = document.createElement("button");
 
   infoButton.type = "button";
