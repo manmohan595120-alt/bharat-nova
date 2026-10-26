@@ -1716,3 +1716,173 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 9 -->
+ <script>
+(function () {
+  "use strict";
+
+  const historyPanel = document.createElement("section");
+  historyPanel.id = "novaHistoryPanel";
+  historyPanel.style.cssText = `
+    display:none;position:fixed;inset:0;z-index:10006;
+    overflow-y:auto;padding:18px;background:rgba(2,8,23,.90);
+  `;
+
+  historyPanel.innerHTML = `
+    <div style="
+      max-width:700px;margin:25px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #344766;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+      align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="margin:0">🕘 History & Privacy</h2>
+        <button type="button" id="novaHistoryClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <p>आपकी इस डिवाइस पर सेव की गई Bharat Nova search history यहाँ दिखाई जाएगी।</p>
+
+      <h3>🔎 Search History</h3>
+      <div id="novaSearchHistoryList"
+        style="padding:10px;border-radius:10px;
+        background:rgba(127,127,127,.10)">
+        अभी कोई search history नहीं है।
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0">
+        <button type="button" id="novaClearSearchHistory"
+          style="padding:11px;border-radius:9px">
+          Clear Search History
+        </button>
+        <button type="button" id="novaRefreshHistory"
+          style="padding:11px;border-radius:9px">
+          Refresh
+        </button>
+      </div>
+
+      <h3>🤖 AI Chat</h3>
+      <p>AI chat history इस डिवाइस पर अलग से सेव नहीं की जाती।
+      मौजूदा chat साफ करने के लिए AI panel का Clear बटन इस्तेमाल करें।</p>
+
+      <button type="button" id="novaClearAIChat"
+        style="padding:11px;border-radius:9px">
+        Clear Current AI Chat
+      </button>
+
+      <h3 style="margin-top:22px">🔐 Privacy Reminder</h3>
+      <p>Search history हटाने से Google या अन्य वेबसाइटों के अपने records
+      नहीं हटते। यह विकल्प केवल Bharat Nova की इस डिवाइस पर सेव की गई
+      search history साफ करता है।</p>
+
+      <p id="novaHistoryStatus" role="status"></p>
+    </div>
+  `;
+
+  document.body.appendChild(historyPanel);
+
+  const historyList =
+    document.getElementById("novaSearchHistoryList");
+  const historyStatus =
+    document.getElementById("novaHistoryStatus");
+
+  function getSearchHistory() {
+    try {
+      const stored = localStorage.getItem("nova_search_history");
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function renderSearchHistory() {
+    const items = getSearchHistory();
+    historyList.replaceChildren();
+
+    if (!items.length) {
+      historyList.textContent = "अभी कोई search history नहीं है।";
+      return;
+    }
+
+    items.slice().reverse().forEach(function (item) {
+      const row = document.createElement("div");
+      row.style.cssText =
+        "padding:10px 4px;border-bottom:1px solid #475569;overflow-wrap:anywhere";
+
+      const query = document.createElement("div");
+      query.textContent = String(item.query || "Search");
+
+      const meta = document.createElement("small");
+      meta.style.opacity = ".75";
+      meta.textContent = String(item.engine || "google") +
+        " · " + String(item.time || "");
+
+      row.append(query, meta);
+      historyList.appendChild(row);
+    });
+  }
+
+  function openHistory() {
+    historyPanel.style.display = "block";
+    renderSearchHistory();
+  }
+
+  function closeHistory() {
+    historyPanel.style.display = "none";
+  }
+
+  document.getElementById("novaHistoryClose")
+    .addEventListener("click", closeHistory);
+
+  historyPanel.addEventListener("click", function (event) {
+    if (event.target === historyPanel) closeHistory();
+  });
+
+  document.getElementById("novaRefreshHistory")
+    .addEventListener("click", renderSearchHistory);
+
+  document.getElementById("novaClearSearchHistory")
+    .addEventListener("click", function () {
+      if (!window.confirm("क्या आप इस डिवाइस की पूरी search history हटाना चाहते हैं?")) {
+        return;
+      }
+
+      localStorage.removeItem("nova_search_history");
+      renderSearchHistory();
+      historyStatus.textContent = "Search history साफ कर दी गई है।";
+    });
+
+  document.getElementById("novaClearAIChat")
+    .addEventListener("click", function () {
+      const clearButton = document.getElementById("novaAIClear");
+
+      if (clearButton) {
+        clearButton.click();
+        historyStatus.textContent = "मौजूदा AI chat साफ करने का अनुरोध किया गया।";
+      } else {
+        historyStatus.textContent =
+          "AI panel उपलब्ध नहीं है। पहले AI Assistant खोलें।";
+      }
+    });
+
+  const settingsButton = document.getElementById("settingsOpen");
+
+  if (settingsButton) {
+    const historyButton = document.createElement("button");
+    historyButton.type = "button";
+    historyButton.id = "novaHistoryOpen";
+    historyButton.textContent = "🕘 History";
+    historyButton.style.cssText =
+      "padding:10px 14px;border-radius:10px;cursor:pointer;margin:5px";
+
+    settingsButton.insertAdjacentElement("afterend", historyButton);
+    historyButton.addEventListener("click", openHistory);
+  }
+
+  window.novaOpenHistory = openHistory;
+
+  console.log("Bharat Nova Step 10 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 10 -->
