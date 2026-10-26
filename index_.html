@@ -1200,6 +1200,32 @@ if (document.readyState === "loading") {
 
 console.log("Bharat Nova Step 6 loaded.");
 </script>
+  window.novaSaveSettings = function () {
+const engine = document.getElementById("novaDefaultEngine").value;
+const fontSize = document.getElementById("novaFontSize").value;
+const language = document.getElementById("novaLanguage").value;
+
+localStorage.setItem("novaEngine", engine);
+localStorage.setItem("novaFontSize", fontSize);
+localStorage.setItem("novaLanguage", language);
+
+const searchEngine = document.getElementById("searchEngine");
+if (searchEngine) {
+searchEngine.value = engine;
+}
+
+document.documentElement.style.fontSize = fontSize + "px";
+
+document.getElementById("novaSettingsMessage").textContent =
+"Settings saved successfully! ✅";
+};
+
+window.novaClearHistory = function () {
+localStorage.removeItem("novaSearchHistory");
+
+document.getElementById("novaSettingsMessage").textContent =
+"Search history cleared. ✅";
+};
 <script>
 /* BHARAT NOVA STEP 7 */
 
