@@ -3241,5 +3241,111 @@ function novaStartVoice() {
   }
 }
  </style>
+ <!-- BHARAT NOVA GOOGLE PAY PREMIUM -->
+<section id="novaGpayPremium" style="
+  max-width:900px;
+  margin:28px auto;
+  padding:24px;
+  background:#071a32;
+  color:#ffffff;
+  border:2px solid #f4c542;
+  border-radius:22px;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+">
+  <h2 style="color:#f4c542;font-size:28px;">
+    💎 Bharat Nova Premium
+  </h2>
+
+  <p>Google Pay / UPI से Premium Plan चुनें।</p>
+
+  <div style="
+    background:#102b49;
+    padding:18px;
+    margin:15px 0;
+    border-radius:14px;
+  ">
+    <h3>🟢 Monthly Premium</h3>
+    <p style="font-size:27px;font-weight:bold;">₹49</p>
+    <p>30 दिन की Premium सदस्यता</p>
+    <button onclick="novaPayPremium(49,'30 Days')"
+      style="padding:13px 18px;border:0;border-radius:10px;
+      background:#34a853;color:white;font-size:16px;">
+      Pay ₹49 with UPI
+    </button>
+  </div>
+
+  <div style="
+    background:#102b49;
+    padding:18px;
+    margin:15px 0;
+    border-radius:14px;
+  ">
+    <h3>🔵 3-Month Premium</h3>
+    <p style="font-size:27px;font-weight:bold;">₹129</p>
+    <p>90 दिन की Premium सदस्यता</p>
+    <button onclick="novaPayPremium(129,'90 Days')"
+      style="padding:13px 18px;border:0;border-radius:10px;
+      background:#4285f4;color:white;font-size:16px;">
+      Pay ₹129 with UPI
+    </button>
+  </div>
+
+  <p><b>आपका UPI ID:</b></p>
+  <input id="novaPremiumUPI"
+    value="manmohan595120@okicici"
+    readonly
+    style="width:100%;box-sizing:border-box;padding:13px;
+    font-size:17px;border-radius:9px;margin-bottom:12px;">
+
+  <button onclick="novaCopyUPI()"
+    style="padding:12px 17px;border:0;border-radius:9px;
+    background:#f4c542;color:#071a32;font-weight:bold;">
+    📋 Copy UPI ID
+  </button>
+
+  <p id="novaPremiumPaymentMessage"
+     style="margin-top:18px;line-height:1.6;">
+    भुगतान के बाद Premium सक्रिय करने के लिए भुगतान की पुष्टि आवश्यक है।
+  </p>
+</section>
+
+<script>
+function novaPayPremium(amount, duration) {
+  const upi = "manmohan595120@okicici";
+  const name = "Bharat Nova Premium";
+  const transactionNote = "BharatNova_" + duration.replace(" ", "");
+
+  const paymentURL =
+    "upi://pay?pa=" + encodeURIComponent(upi) +
+    "&pn=" + encodeURIComponent(name) +
+    "&am=" + encodeURIComponent(amount.toFixed(2)) +
+    "&cu=INR" +
+    "&tn=" + encodeURIComponent(transactionNote);
+
+  const message = document.getElementById(
+    "novaPremiumPaymentMessage"
+  );
+
+  message.textContent =
+    "Google Pay या किसी UPI ऐप में भुगतान पूरा करें। " +
+    "Premium तभी सक्रिय होगा जब भुगतान सत्यापित हो जाए।";
+
+  window.location.href = paymentURL;
+}
+
+function novaCopyUPI() {
+  const upi = "manmohan595120@okicici";
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(upi)
+      .then(() => alert("UPI ID कॉपी हो गया।"))
+      .catch(() => alert("UPI ID: " + upi));
+  } else {
+    alert("आपका UPI ID: " + upi);
+  }
+}
+</script>
+<!-- END BHARAT NOVA GOOGLE PAY PREMIUM -->
 </body>
 </html>
