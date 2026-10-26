@@ -1286,4 +1286,231 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 7 -->
- 
+ <!-- BHARAT NOVA STEP 8: SETTINGS PANEL -->
+<script>
+(function () {
+  "use strict";
+
+  const panel = document.createElement("section");
+  panel.id = "novaSettingsPanel";
+  panel.className = "card";
+  panel.style.cssText =
+    "display:none;max-width:850px;margin:24px auto;padding:20px;";
+
+  panel.innerHTML = `
+    <h2>⚙️ Bharat Nova Settings</h2>
+    <p>अपनी ऐप की सेटिंग चुनें।</p>
+
+    <label for="novaThemeSelect">Appearance / Theme</label>
+    <select id="novaThemeSelect"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="dark">Dark Theme</option>
+      <option value="light">Light Theme</option>
+      <option value="system">System Default</option>
+    </select>
+
+    <label for="novaLanguageSelect">App Language</label>
+    <select id="novaLanguageSelect"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="hi">हिंदी</option>
+      <option value="en">English</option>
+    </select>
+
+    <label for="novaFontSelect">Text Size</label>
+    <select id="novaFontSelect"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="16">Normal</option>
+      <option value="18">Large</option>
+      <option value="20">Extra Large</option>
+    </select>
+
+    <label for="novaSearchEngine">Default Search Engine</label>
+    <select id="novaSearchEngine"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="google">Google</option>
+      <option value="youtube">YouTube</option>
+      <option value="wikipedia">Wikipedia</option>
+    </select>
+
+    <label style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+      <input id="novaVoicePreference" type="checkbox">
+      Voice Search उपलब्ध होने पर इस्तेमाल करें
+    </label>
+
+    <label style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+      <input id="novaReadAloudPreference" type="checkbox">
+      AI जवाब पढ़कर सुनाने का विकल्प दिखाएँ
+    </label>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+      <button id="novaSaveSettings" class="btn btn-primary" type="button">
+        Save Settings
+      </button>
+      <button id="novaResetSettings" class="btn btn-secondary" type="button">
+        Reset
+      </button>
+      <button id="novaCloseSettings" class="btn btn-secondary" type="button">
+        Close
+      </button>
+    </div>
+
+    <p id="novaSettingsStatus" role="status" aria-live="polite"></p>
+  `;
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.parentNode.insertBefore(panel, footer);
+  } else {
+    document.getElementById("app").appendChild(panel);
+  }
+
+  const theme = document.getElementById("novaThemeSelect");
+  const language = document.getElementById("novaLanguageSelect");
+  const font = document.getElementById("novaFontSelect");
+  const engine = document.getElementById("novaSearchEngine");
+  const voice = document.getElementById("novaVoicePreference");
+  const readAloud = document.getElementById("novaReadAloudPreference");
+  const status = document.getElementById("novaSettingsStatus");
+
+  function safeGet(key, fallback) {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function safeSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function applyTheme(value) {
+    const app = document.getElementById("app");
+
+    if (value === "system") {
+      const dark = window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      value = dark ? "dark" : "light";
+    }
+
+    document.documentElement.dataset.theme = value;
+
+    if (app) {
+      app.dataset.theme = value;
+    }
+
+    const button = document.getElementById("themeButton");
+    if (button) {
+      button.textContent = value === "dark" ? "☀️ Theme" : "🌙 Theme";
+    }
+  }
+
+  function loadSettings() {
+    theme.value = safeGet("nova_theme", "dark");
+    language.value = safeGet("nova_language", "hi");
+    font.value = safeGet("nova_font", "16");
+    engine.value = safeGet("nova_engine", "google");
+    voice.checked = safeGet("nova_voice", "false") === "true";
+    readAloud.checked =
+      safeGet("nova_read_aloud", "false") === "true";
+
+    applyTheme(theme.value);
+    document.documentElement.style.fontSize = font.value + "px";
+  }
+
+  function showSettings() {
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    loadSettings();
+  }
+
+  const openButton = document.getElementById("settingsOpen");
+
+  if (openButton) {
+    openButton.addEventListener("click", showSettings);
+  }
+
+  document.getElementById("novaCloseSettings").addEventListener(
+    "click",
+    function () {
+      panel.style.display = "none";
+    }
+  );
+
+  document.getElementById("novaSaveSettings").addEventListener(
+    "click",
+    function () {
+      const settings = {
+        nova_theme: theme.value,
+        nova_language: language.value,
+        nova_font: font.value,
+        nova_engine: engine.value,
+        nova_voice: String(voice.checked),
+        nova_read_aloud: String(readAloud.checked)
+      };
+
+      let success = true;
+
+      Object.keys(settings).forEach(function (key) {
+        if (!safeSet(key, settings[key])) {
+          success = false;
+        }
+      });
+
+      applyTheme(theme.value);
+      document.documentElement.style.fontSize = font.value + "px";
+
+      status.textContent = success
+        ? "Settings सेव हो गई हैं।"
+        : "Settings पूरी तरह सेव नहीं हो सकीं। Browser storage उपलब्ध नहीं है।";
+    }
+  );
+
+  document.getElementById("novaResetSettings").addEventListener(
+    "click",
+    function () {
+      [
+        "nova_theme",
+        "nova_language",
+        "nova_font",
+        "nova_engine",
+        "nova_voice",
+        "nova_read_aloud"
+      ].forEach(function (key) {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          /* Storage उपलब्ध न हो तो सुरक्षित रूप से आगे बढ़ें। */
+        }
+      });
+
+      loadSettings();
+      status.textContent = "Default settings लागू कर दी गई हैं।";
+    }
+  );
+
+  const themeButton = document.getElementById("themeButton");
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      const current = safeGet("nova_theme", "dark");
+      const next = current === "dark" ? "light" : "dark";
+
+      theme.value = next;
+      safeSet("nova_theme", next);
+      applyTheme(next);
+    });
+  }
+
+  window.novaOpenSettings = showSettings;
+
+  loadSettings();
+})();
+</script>
+<!-- END BHARAT NOVA STEP 8 -->
