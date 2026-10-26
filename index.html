@@ -1886,3 +1886,140 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 10 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 11 */
+
+  function saveSearchHistory(query, engine) {
+    const cleanQuery = String(query || "").trim();
+    if (!cleanQuery) return;
+
+    try {
+      let history = JSON.parse(
+        localStorage.getItem("nova_search_history") || "[]"
+      );
+
+      if (!Array.isArray(history)) history = [];
+
+      history.push({
+        query: cleanQuery.slice(0, 500),
+        engine: String(engine || "google"),
+        time: new Date().toLocaleString()
+      });
+
+      localStorage.setItem(
+        "nova_search_history",
+        JSON.stringify(history.slice(-100))
+      );
+    } catch (error) {
+      console.warn("Search history could not be saved.", error);
+    }
+  }
+
+  window.novaStep11SaveHistory = saveSearchHistory;
+
+  /* Default search engine */
+  const originalNovaSearch = window.novaSearch;
+
+  window.novaSearch = function (engine) {
+    const input = document.getElementById("searchInput");
+    const query = input ? input.value.trim() : "";
+
+    let selectedEngine = String(engine || "").toLowerCase();
+
+    if (!["google", "youtube", "wikipedia"].includes(selectedEngine)) {
+      selectedEngine = localStorage.getItem("nova_engine") || "google";
+    }
+
+    if (query) saveSearchHistory(query, selectedEngine);
+
+    if (typeof originalNovaSearch === "function") {
+      return originalNovaSearch(selectedEngine);
+    }
+
+    if (!query) {
+      if (typeof window.novaMessage === "function") {
+        window.novaMessage("पहले अपना सवाल लिखें।");
+      }
+      return;
+    }
+
+    const encoded = encodeURIComponent(query);
+    const urls = {
+      google: "https://www.google.com/search?q=" + encoded,
+      youtube: "https://www.youtube.com/results?search_query=" + encoded,
+      wikipedia: "https://en.wikipedia.org/w/index.php?search=" + encoded
+    };
+
+    window.open(urls[selectedEngine], "_blank", "noopener");
+  };
+
+  /* Save history for existing search buttons */
+  [
+    ["searchButton", "google"],
+    ["googleButton", "google"],
+    ["youtubeButton", "youtube"],
+    ["wikiButton", "wikipedia"]
+  ].forEach(function (entry) {
+    const button = document.getElementById(entry[0]);
+    if (!button) return;
+
+    button.addEventListener("click", function () {
+      const input = document.getElementById("searchInput");
+      if (!input || !input.value.trim()) return;
+
+      let engine = entry[1];
+
+      if (entry[0] === "searchButton") {
+        engine = localStorage.getItem("nova_engine") || "google";
+      }
+
+      saveSearchHistory(input.value, engine);
+    });
+  });
+
+  /* Share Bharat Nova */
+  const shareButton = document.createElement("button");
+  shareButton.type = "button";
+  shareButton.id = "novaShareButton";
+  shareButton.textContent = "📤 Share Bharat Nova";
+  shareButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;cursor:pointer";
+
+  const header = document.querySelector(".topbar");
+
+  if (header) {
+    header.appendChild(shareButton);
+  } else {
+    document.body.appendChild(shareButton);
+  }
+
+  shareButton.addEventListener("click", async function () {
+    const shareData = {
+      title: "Bharat Nova",
+      text: "Try Bharat Nova — Search Smarter. Think Bigger.",
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareData.url);
+        alert("Bharat Nova का लिंक कॉपी हो गया है।");
+      } else {
+        window.prompt("Bharat Nova लिंक कॉपी करें:", shareData.url);
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        window.prompt("लिंक कॉपी करें:", shareData.url);
+      }
+    }
+  });
+
+  console.log("Bharat Nova Step 11 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 11 -->
