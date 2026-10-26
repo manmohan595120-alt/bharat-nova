@@ -328,3 +328,251 @@ footer{
 
   </section>
 </main>
+  <!-- BHARAT NOVA DASHBOARD -->
+
+<section id="homeSection">
+
+  <div class="card">
+    <p class="gold">🇮🇳 YOUR SMART AI ASSISTANT</p>
+    <h1>Search Smarter.<br>
+      <span class="gold">Think Bigger.</span>
+    </h1>
+    <p class="muted">
+      सवाल पूछें, जानकारी खोजें और AI की मदद से सीखें।
+    </p>
+
+    <div class="row">
+      <button class="btn btn-gold"
+        onclick="novaOpenTool('chat')">
+        🤖 Ask AI
+      </button>
+
+      <button class="btn btn-secondary"
+        onclick="novaOpenTool('search')">
+        🔎 Smart Search
+      </button>
+    </div>
+  </div>
+
+  <!-- SMART SEARCH -->
+
+  <section class="card" id="smartSearch">
+    <h2>🔎 Smart Search</h2>
+
+    <form id="searchForm">
+      <label for="searchQuery">क्या खोजना चाहते हैं?</label>
+
+      <input id="searchQuery"
+        type="search"
+        placeholder="यहाँ अपना सवाल लिखें..."
+        required>
+
+      <label for="searchEngine">Search Engine</label>
+      <select id="searchEngine">
+        <option value="google">Google</option>
+        <option value="bing">Bing</option>
+        <option value="duckduckgo">DuckDuckGo</option>
+      </select>
+
+      <button class="btn btn-gold" type="submit">
+        🔍 Search
+      </button>
+
+      <button class="btn btn-secondary"
+        id="voiceSearchButton" type="button">
+        🎙️ Voice Search
+      </button>
+    </form>
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn btn-secondary"
+        onclick="novaExternalSearch('youtube')">
+        ▶️ YouTube
+      </button>
+
+      <button class="btn btn-secondary"
+        onclick="novaExternalSearch('wikipedia')">
+        📚 Wikipedia
+      </button>
+
+      <button class="btn btn-secondary"
+        onclick="novaExternalSearch('news')">
+        📰 News
+      </button>
+    </div>
+  </section>
+
+  <!-- AI FEATURES -->
+
+  <section class="card">
+    <h2>✨ Explore AI Tools</h2>
+    <p class="muted">
+      अपनी ज़रूरत के अनुसार कोई टूल चुनें।
+    </p>
+
+    <div class="grid">
+
+      <button class="feature"
+        onclick="novaOpenTool('chat')">
+        <span class="feature-icon">🤖</span>
+        <strong>AI Chat</strong>
+        <span class="muted">सवाल और जवाब</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('photo')">
+        <span class="feature-icon">📷</span>
+        <strong>Photo AI</strong>
+        <span class="muted">तस्वीरों को समझें</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('file')">
+        <span class="feature-icon">📄</span>
+        <strong>File AI</strong>
+        <span class="muted">दस्तावेज़ों की मदद</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('writing')">
+        <span class="feature-icon">✍️</span>
+        <strong>AI Writing</strong>
+        <span class="muted">लेखन और आवेदन</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('study')">
+        <span class="feature-icon">📚</span>
+        <strong>Study AI</strong>
+        <span class="muted">पढ़ाई में सहायता</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('coding')">
+        <span class="feature-icon">💻</span>
+        <strong>Coding AI</strong>
+        <span class="muted">कोडिंग में मदद</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('translate')">
+        <span class="feature-icon">🌐</span>
+        <strong>Translation</strong>
+        <span class="muted">भाषा बदलें</span>
+      </button>
+
+      <button class="feature"
+        onclick="novaOpenTool('premium')">
+        <span class="feature-icon">⭐</span>
+        <strong>Premium</strong>
+        <span class="muted">प्लान देखें</span>
+      </button>
+
+    </div>
+  </section>
+
+</section>
+
+<!-- TOOL WORKSPACE -->
+
+<section class="card hidden" id="toolWorkspace">
+
+  <div class="row">
+    <button class="btn btn-secondary"
+      type="button" onclick="novaBackHome()">
+      ← Home
+    </button>
+
+    <h2 id="toolTitle">AI Assistant</h2>
+  </div>
+
+  <p id="toolDescription" class="muted"></p>
+
+  <!-- सामान्य AI Chat और Writing के लिए -->
+  <div id="textAITool" class="hidden">
+    <label for="aiPrompt">अपना सवाल लिखें</label>
+
+    <textarea id="aiPrompt"
+      placeholder="मुझे बताइए कि मैं आपकी कैसे मदद कर सकता हूँ..."></textarea>
+
+    <div class="row">
+      <button class="btn btn-gold"
+        type="button" id="askAIButton">
+        ✨ Ask AI
+      </button>
+
+      <button class="btn btn-secondary"
+        type="button" id="speakAnswerButton">
+        🔊 Read Answer
+      </button>
+    </div>
+
+    <div id="aiLoading" class="muted hidden"
+      role="status">
+      AI उत्तर तैयार कर रहा है...
+    </div>
+
+    <div id="aiAnswer"
+      class="card"
+      aria-live="polite"
+      style="white-space:pre-wrap"></div>
+  </div>
+
+  <!-- Photo AI: इसमें Voice Control नहीं है -->
+  <div id="photoAITool" class="hidden">
+    <h3>📷 Photo AI</h3>
+    <p class="muted">
+      तस्वीर चुनें और उसके बारे में सवाल लिखें।
+    </p>
+
+    <label for="photoInput">तस्वीर चुनें</label>
+    <input id="photoInput"
+      type="file"
+      accept="image/*">
+
+    <img id="photoPreview"
+      alt="Selected image preview"
+      class="hidden"
+      style="display:block;max-width:100%;max-height:320px;border-radius:12px;margin:12px 0">
+
+    <label for="photoQuestion">तस्वीर के बारे में सवाल</label>
+    <textarea id="photoQuestion"
+      placeholder="इस तस्वीर में क्या दिखाई दे रहा है?"></textarea>
+
+    <button class="btn btn-gold"
+      id="analyzePhotoButton" type="button">
+      🔍 Analyze Photo
+    </button>
+
+    <div id="photoAnswer"
+      aria-live="polite"
+      style="white-space:pre-wrap"></div>
+  </div>
+
+  <!-- File AI: इसमें Voice Control नहीं है -->
+  <div id="fileAITool" class="hidden">
+    <h3>📄 File AI</h3>
+    <p class="muted">
+      समर्थित दस्तावेज़ चुनें और बताएं कि उनसे क्या करवाना है।
+    </p>
+
+    <label for="documentInput">फ़ाइल चुनें</label>
+    <input id="documentInput"
+      type="file"
+      accept=".txt,.pdf,.docx">
+
+    <label for="fileQuestion">आपका निर्देश</label>
+    <textarea id="fileQuestion"
+      placeholder="इस फ़ाइल का सारांश बनाइए..."></textarea>
+
+    <button class="btn btn-gold"
+      id="analyzeFileButton" type="button">
+      📑 Analyze File
+    </button>
+
+    <div id="fileAnswer"
+      aria-live="polite"
+      style="white-space:pre-wrap"></div>
+  </div>
+
+</section>
