@@ -755,4 +755,157 @@ function novaStartVoice() {
   }
 })();
 </script>
+ <!-- BHARAT NOVA STEP 5: CONNECT LOGIN WITH FIREBASE -->
+<script>
+(function () {
+  "use strict";
+
+  function novaStep5Message(message, isError) {
+    const status = document.getElementById("novaAuthStatus");
+    if (!status) return;
+
+    status.textContent = message;
+    status.style.color = isError ? "#ff7777" : "#4ade80";
+  }
+
+  function novaStep5GetAuth() {
+    if (window.novaFirebaseAuthInstance) {
+      return window.novaFirebaseAuthInstance;
+    }
+
+    novaStep5Message(
+      "Firebase तैयार नहीं है। Firebase configuration जाँचें।",
+      true
+    );
+    return null;
+  }
+
+  const signup = document.getElementById("novaSignupButton");
+  const login = document.getElementById("novaLoginButton");
+  const logout = document.getElementById("novaLogoutButton");
+  const nameInput = document.getElementById("novaName");
+  const emailInput = document.getElementById("novaEmail");
+  const passwordInput = document.getElementById("novaPassword");
+
+  if (!signup || !login || !logout ||
+      !nameInput || !emailInput || !passwordInput) {
+    console.error("Bharat Nova: Login form नहीं मिला।");
+    return;
+  }
+
+  /* पुराने Step 3 के handlers को दोबारा चलने से रोकें */
+  signup.replaceWith(signup.cloneNode(true));
+  login.replaceWith(login.cloneNode(true));
+  logout.replaceWith(logout.cloneNode(true));
+
+  const signupButton = document.getElementById("novaSignupButton");
+  const loginButton = document.getElementById("novaLoginButton");
+  const logoutButton = document.getElementById("novaLogoutButton");
+
+  signupButton.addEventListener("click", async function () {
+    const auth = novaStep5GetAuth();
+    if (!auth) return;
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!name || !email || password.length < 6) {
+      novaStep5Message(
+        "नाम, सही ईमेल और कम-से-कम 6 अक्षर का पासवर्ड भरें।",
+        true
+      );
+      return;
+    }
+
+    signupButton.disabled = true;
+
+    try {
+      const result = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      await result.user.updateProfile({ displayName: name });
+
+      novaStep5Message(
+        "Account बन गया। Bharat Nova में आपका स्वागत है!",
+        false
+      );
+    } catch (error) {
+      novaStep5Message(
+        error.message || "Signup नहीं हो पाया।",
+        true
+      );
+    } finally {
+      signupButton.disabled = false;
+    }
+  });
+
+  loginButton.addEventListener("click", async function () {
+    const auth = novaStep5GetAuth();
+    if (!auth) return;
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      novaStep5Message("ईमेल और पासवर्ड भरें।", true);
+      return;
+    }
+
+    loginButton.disabled = true;
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      novaStep5Message("Login सफल रहा!", false);
+    } catch (error) {
+      novaStep5Message(
+        error.message || "Login नहीं हो पाया।",
+        true
+      );
+    } finally {
+      loginButton.disabled = false;
+    }
+  });
+
+  logoutButton.addEventListener("click", async function () {
+    const auth = novaStep5GetAuth();
+    if (!auth) return;
+
+    try {
+      await auth.signOut();
+      novaStep5Message("आप Logout हो गए हैं।", false);
+    } catch (error) {
+      novaStep5Message("Logout नहीं हो पाया।", true);
+    }
+  });
+
+  const auth = novaStep5GetAuth();
+
+  if (auth) {
+    auth.onAuthStateChanged(function (user) {
+      signupButton.style.display = user ? "none" : "inline-block";
+      loginButton.style.display = user ? "none" : "inline-block";
+      logoutButton.style.display = user ? "inline-block" : "none";
+
+      const headerLogin = document.getElementById("loginButton");
+
+      if (user) {
+        novaStep5Message(
+          "Logged in: " + (user.displayName || user.email),
+          false
+        );
+
+        if (headerLogin) {
+          headerLogin.textContent = "My Account";
+        }
+      } else if (headerLogin) {
+        headerLogin.textContent = "Login";
+      }
+    });
+  }
+})();
+</script>
+<!-- END BHARAT NOVA STEP 5 -->
 <!-- END BHARAT NOVA STEP 4 -->
