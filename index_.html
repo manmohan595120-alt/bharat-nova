@@ -1,1 +1,232 @@
-jh chl vcxchhc
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07152e">
+<meta name="description" content="Bharat Nova AI - Smart Search, AI Chat, Photo AI and File AI">
+<meta name="application-name" content="Bharat Nova">
+<title>Bharat Nova AI</title>
+
+<style>
+:root{
+  --bg:#07152e;
+  --panel:#102344;
+  --panel2:#172e50;
+  --text:#f5f7ff;
+  --muted:#b9c7df;
+  --gold:#f4c542;
+  --border:#294466;
+  --success:#55d69e;
+  --danger:#ff6464;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  line-height:1.5;
+}
+
+body.light{
+  --bg:#f2f5fb;
+  --panel:#ffffff;
+  --panel2:#e5ebf5;
+  --text:#14213a;
+  --muted:#52627a;
+  --border:#ccd6e5;
+}
+
+button,input,textarea,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:20px;
+  font-weight:800;
+}
+
+.logo{
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--gold);
+  color:#07152e;
+  font-size:24px;
+  font-weight:900;
+}
+
+.gold{
+  color:var(--gold);
+}
+
+.container{
+  width:min(100% - 24px,1000px);
+  margin:auto;
+}
+
+.card{
+  padding:18px;
+  margin:14px 0;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:var(--panel);
+}
+
+.btn{
+  padding:11px 15px;
+  border:0;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.btn-gold{
+  background:var(--gold);
+  color:#07152e;
+}
+
+.btn-secondary{
+  background:var(--panel2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+input,textarea,select{
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  background:var(--bg);
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+
+textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.feature{
+  padding:15px;
+  min-height:115px;
+  text-align:left;
+  color:var(--text);
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+}
+
+.feature-icon{
+  font-size:26px;
+}
+
+.feature strong{
+  display:block;
+  margin:7px 0;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+#message{
+  color:var(--gold);
+  overflow-wrap:anywhere;
+}
+
+.bottom-nav{
+  position:sticky;
+  bottom:0;
+  z-index:50;
+  display:flex;
+  justify-content:space-around;
+  gap:4px;
+  padding:8px 3px;
+  background:var(--panel);
+  border-top:1px solid var(--border);
+}
+
+.bottom-nav button{
+  flex:1;
+  padding:9px 2px;
+  border:0;
+  border-radius:10px;
+  color:var(--text);
+  background:transparent;
+  font-size:12px;
+}
+
+footer{
+  padding:24px 12px 90px;
+  text-align:center;
+  color:var(--muted);
+}
+
+@media(min-width:700px){
+  .grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  .auth-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+}
+</style>
+</head>
