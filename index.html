@@ -3030,6 +3030,38 @@ style="background:#f4c542;color:#061429;padding:12px 20px;border:0;border-radius
 </section>
 <!-- End Bharat Nova Premium Plans -->
   <script>
+    <script type="module">
+import { getAuth }
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+const premiumAuth = getAuth();
+
+window.novaChoosePlan = async function(plan) {
+  const output = document.getElementById("nova-premium-message");
+
+  const plans = {
+    monthly: { price: 49, days: 30, name: "Monthly Premium" },
+    quarterly: { price: 129, days: 90, name: "3 Months Premium" }
+  };
+
+  const selected = plans[plan];
+
+  if (!selected) {
+    output.textContent = "गलत Premium Plan।";
+    return;
+  }
+
+  if (!premiumAuth.currentUser) {
+    output.textContent = "पहले Login करें।";
+    return;
+  }
+
+  output.textContent =
+    selected.name + " चुना गया। कीमत ₹" +
+    selected.price + " है। अवधि " +
+    selected.days + " दिन है। भुगतान सत्यापन के बाद Premium सक्रिय होगा।";
+};
+</script>
   </script>
 </body>
 </html>
