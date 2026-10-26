@@ -476,7 +476,38 @@ footer{
 </section>
 
 <!-- TOOL WORKSPACE -->
+<section class="card" id="novaSettings">
+  <h2>⚙️ Bharat Nova Settings</h2>
 
+  <label for="novaLanguage">भाषा चुनें</label>
+  <select id="novaLanguage">
+    <option value="hi">हिन्दी</option>
+    <option value="en">English</option>
+  </select>
+
+  <label for="novaDefaultEngine">Search Engine</label>
+  <select id="novaDefaultEngine">
+    <option value="google">Google</option>
+    <option value="bing">Bing</option>
+    <option value="duckduckgo">DuckDuckGo</option>
+  </select>
+
+  <label for="novaFontSize">Text Size</label>
+  <select id="novaFontSize">
+    <option value="14">Small</option>
+    <option value="16" selected>Medium</option>
+    <option value="19">Large</option>
+    <option value="22">Extra Large</option>
+  </select>
+
+  <button class="btn btn-gold" type="button"
+    onclick="novaSaveSettings()">💾 Save Settings</button>
+
+  <button class="btn btn-secondary" type="button"
+    onclick="novaClearHistory()">🗑️ Clear History</button>
+
+  <p id="novaSettingsMessage"></p>
+</section>
 <section class="card hidden" id="toolWorkspace">
 
   <div class="row">
