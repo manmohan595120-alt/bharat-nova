@@ -2219,3 +2219,174 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 12 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 13 */
+
+  const premiumPanel = document.createElement("section");
+  premiumPanel.id = "novaPremiumPanel";
+
+  premiumPanel.style.cssText =
+    "display:none;position:fixed;inset:0;z-index:10009;" +
+    "overflow-y:auto;padding:16px;background:rgba(2,8,23,.92)";
+
+  premiumPanel.innerHTML = `
+    <div style="
+      max-width:760px;margin:20px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #475569;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">👑 Bharat Nova Premium</h2>
+        <button type="button" id="novaPremiumClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <p>अपने उपयोग के अनुसार plan चुनें।</p>
+
+      <div style="display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+        gap:14px;margin:20px 0">
+
+        <article style="padding:18px;border:1px solid #64748b;
+          border-radius:14px">
+          <h3>🆓 Free</h3>
+          <p style="font-size:26px;font-weight:bold">₹0</p>
+          <p>सामान्य search और उपलब्ध free सुविधाएँ।</p>
+          <button type="button" id="novaFreePlan"
+            style="padding:11px;border-radius:9px;width:100%">
+            Continue Free
+          </button>
+        </article>
+
+        <article style="padding:18px;border:1px solid #eab308;
+          border-radius:14px">
+          <h3>⭐ Monthly Premium</h3>
+          <p style="font-size:26px;font-weight:bold">₹49</p>
+          <p>30 दिनों के लिए।</p>
+          <button type="button" id="novaMonthlyPlan"
+            style="padding:11px;border-radius:9px;width:100%">
+            Choose Monthly
+          </button>
+        </article>
+
+        <article style="padding:18px;border:1px solid #eab308;
+          border-radius:14px">
+          <h3>💎 3-Month Premium</h3>
+          <p style="font-size:26px;font-weight:bold">₹129</p>
+          <p>90 दिनों के लिए।</p>
+          <button type="button" id="novaQuarterPlan"
+            style="padding:11px;border-radius:9px;width:100%">
+            Choose 3 Months
+          </button>
+        </article>
+      </div>
+
+      <div style="padding:16px;border-radius:12px;
+        background:rgba(127,127,127,.10)">
+        <h3>👤 My Dashboard</h3>
+        <p><strong>Name:</strong> <span id="novaDashName">Guest</span></p>
+        <p><strong>Email:</strong> <span id="novaDashEmail">Not signed in</span></p>
+        <p><strong>Account:</strong> <span id="novaDashStatus">Free / Guest</span></p>
+        <p id="novaPremiumMessage" role="status" aria-live="polite">
+          Premium सुविधाएँ भुगतान सत्यापन के बाद ही सक्रिय होनी चाहिए।
+        </p>
+      </div>
+
+      <p style="font-size:13px;opacity:.8;margin-top:18px">
+        यह स्क्रीन plan चयन का इंटरफ़ेस है। अभी यह भुगतान नहीं लेती और
+        Premium सदस्यता सक्रिय नहीं करती। भुगतान से पहले वैध payment
+        gateway, server-side verification, refund policy और सुरक्षा नियम
+        सेट करना आवश्यक है।
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(premiumPanel);
+
+  const premiumMessage =
+    document.getElementById("novaPremiumMessage");
+
+  function openPremium() {
+    premiumPanel.style.display = "block";
+    updateDashboard();
+  }
+
+  function closePremium() {
+    premiumPanel.style.display = "none";
+  }
+
+  function updateDashboard() {
+    const user = window.novaFirebaseAuthInstance &&
+      window.novaFirebaseAuthInstance.currentUser;
+
+    document.getElementById("novaDashName").textContent =
+      user && user.displayName ? user.displayName : "User";
+
+    document.getElementById("novaDashEmail").textContent =
+      user && user.email ? user.email : "Not signed in";
+
+    document.getElementById("novaDashStatus").textContent =
+      user ? "Signed in — Free unless verified Premium" : "Guest / Free";
+  }
+
+  document.getElementById("novaPremiumClose")
+    .addEventListener("click", closePremium);
+
+  premiumPanel.addEventListener("click", function (event) {
+    if (event.target === premiumPanel) closePremium();
+  });
+
+  document.getElementById("novaFreePlan")
+    .addEventListener("click", function () {
+      premiumMessage.textContent =
+        "Free plan चुना गया। उपलब्ध free सुविधाएँ इस्तेमाल कर सकते हैं।";
+    });
+
+  document.getElementById("novaMonthlyPlan")
+    .addEventListener("click", function () {
+      premiumMessage.textContent =
+        "Monthly plan: ₹49 / 30 days. Payment gateway अभी जोड़ा नहीं गया है; कोई भुगतान नहीं हुआ।";
+    });
+
+  document.getElementById("novaQuarterPlan")
+    .addEventListener("click", function () {
+      premiumMessage.textContent =
+        "3-Month plan: ₹129 / 90 days. Payment gateway अभी जोड़ा नहीं गया है; कोई भुगतान नहीं हुआ।";
+    });
+
+  const premiumButton = document.createElement("button");
+  premiumButton.type = "button";
+  premiumButton.id = "novaPremiumOpen";
+  premiumButton.textContent = "👑 Premium";
+  premiumButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;" +
+    "cursor:pointer";
+
+  const header = document.querySelector(".topbar");
+
+  if (header) {
+    header.appendChild(premiumButton);
+  } else {
+    document.body.appendChild(premiumButton);
+  }
+
+  premiumButton.addEventListener("click", openPremium);
+
+  window.novaOpenPremium = openPremium;
+  window.novaUpdateDashboard = updateDashboard;
+
+  if (window.novaFirebaseAuthInstance) {
+    window.novaFirebaseAuthInstance.onAuthStateChanged(function () {
+      updateDashboard();
+    });
+  }
+
+  console.log("Bharat Nova Step 13 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 13 -->
