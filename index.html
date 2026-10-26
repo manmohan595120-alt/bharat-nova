@@ -3160,7 +3160,7 @@ function novaStartVoice() {
     recognition.onresult = function (event) {
       const spoken = event.results[0][0].transcript.trim();
       questionBox.value = spoken;
-
+document.getElementById("novaOwnAsk").click();
   if (spoken) {
 askButton.click();
   }
