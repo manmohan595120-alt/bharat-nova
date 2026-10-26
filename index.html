@@ -3061,9 +3061,7 @@ function novaStartVoice() {
     }
   };
 
-  document.getElementById("novaOwnAsk").onclick = async function () {
-    const prompt = question.value.trim();
-
+  const prompt = document.getElementById("novaOwnQuestion").value.trim();
     if (!prompt && !selectedFile) {
       alert("पहले सवाल लिखें या फाइल चुनें।");
       return;
