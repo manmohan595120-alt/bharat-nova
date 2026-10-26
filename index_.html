@@ -1226,6 +1226,33 @@ localStorage.removeItem("novaSearchHistory");
 document.getElementById("novaSettingsMessage").textContent =
 "Search history cleared. ✅";
 };
+  (function () {
+const engine = localStorage.getItem("novaEngine");
+const fontSize = localStorage.getItem("novaFontSize");
+const language = localStorage.getItem("novaLanguage");
+
+if (engine) {
+const engineSelect = document.getElementById("novaDefaultEngine");
+if (engineSelect) engineSelect.value = engine;
+
+const searchEngine = document.getElementById("searchEngine");
+if (searchEngine) searchEngine.value = engine;
+
+}
+
+if (fontSize) {
+const fontSelect = document.getElementById("novaFontSize");
+if (fontSelect) fontSelect.value = fontSize;
+
+document.documentElement.style.fontSize = fontSize + "px";
+
+}
+
+if (language) {
+const languageSelect = document.getElementById("novaLanguage");
+if (languageSelect) languageSelect.value = language;
+}
+})();
 <script>
 /* BHARAT NOVA STEP 7 */
 
