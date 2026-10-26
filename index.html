@@ -908,4 +908,203 @@ function novaStartVoice() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 5 -->
-<!-- END BHARAT NOVA STEP 4 -->
+ <!-- BHARAT NOVA STEP 6: AI ASSISTANT -->
+<script>
+(function () {
+  "use strict";
+
+  const section = document.createElement("section");
+  section.id = "novaAISection";
+  section.className = "card";
+  section.style.cssText =
+    "display:none;max-width:850px;margin:24px auto;padding:20px;";
+
+  section.innerHTML = `
+    <h2>✨ Bharat Nova AI</h2>
+    <p>हिंदी या English में अपना सवाल पूछें।</p>
+
+    <div id="novaChatMessages"
+      aria-live="polite"
+      style="min-height:100px;max-height:380px;overflow:auto;
+      padding:12px;border-radius:12px;background:rgba(100,116,139,.12);
+      margin:14px 0;">
+      <p>नमस्ते! मैं Bharat Nova AI हूँ। आप क्या जानना चाहते हैं?</p>
+    </div>
+
+    <label for="novaAIQuestion">आपका सवाल</label>
+    <textarea id="novaAIQuestion" rows="3"
+      placeholder="यहाँ अपना सवाल लिखें..."
+      style="box-sizing:border-box;width:100%;padding:12px;
+      margin:8px 0;border-radius:10px;resize:vertical;"></textarea>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="novaAISend" class="btn btn-primary" type="button">
+        पूछें
+      </button>
+      <button id="novaAIVoice" class="btn btn-secondary" type="button">
+        🔊 जवाब सुनें
+      </button>
+      <button id="novaAIStop" class="btn btn-secondary" type="button">
+        ⏹ रोकें
+      </button>
+      <button id="novaAIClear" class="btn btn-secondary" type="button">
+        🗑 Clear Chat
+      </button>
+      <button id="novaAIClose" class="btn btn-secondary" type="button">
+        बंद करें
+      </button>
+    </div>
+
+    <p id="novaAIStatus" role="status" aria-live="polite"></p>
+  `;
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.parentNode.insertBefore(section, footer);
+  } else {
+    document.getElementById("app").appendChild(section);
+  }
+
+  const messages = document.getElementById("novaChatMessages");
+  const question = document.getElementById("novaAIQuestion");
+  const status = document.getElementById("novaAIStatus");
+  const sendButton = document.getElementById("novaAISend");
+
+  function novaAIShow() {
+    section.style.display = "block";
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    question.focus();
+  }
+
+  const aiButtons = [
+    document.getElementById("aiOpenButton"),
+    document.getElementById("cardAIButton")
+  ];
+
+  aiButtons.forEach(function (button) {
+    if (button) button.addEventListener("click", novaAIShow);
+  });
+
+  document.getElementById("novaAIClose").addEventListener("click", function () {
+    section.style.display = "none";
+  });
+
+  function novaAIAddMessage(role, text) {
+    const item = document.createElement("div");
+    item.style.cssText =
+      "padding:10px;margin:8px 0;border-radius:10px;" +
+      (role === "You"
+        ? "background:rgba(244,197,66,.13);"
+        : "background:rgba(100,116,139,.13);");
+
+    const heading = document.createElement("strong");
+    heading.textContent = role + ": ";
+
+    const body = document.createElement("span");
+    body.style.whiteSpace = "pre-wrap";
+    body.textContent = text;
+
+    item.appendChild(heading);
+    item.appendChild(body);
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function novaAIAsk() {
+    const prompt = question.value.trim();
+
+    if (!prompt) {
+      status.textContent = "पहले अपना सवाल लिखें।";
+      return;
+    }
+
+    sendButton.disabled = true;
+    status.textContent = "AI जवाब तैयार कर रहा है...";
+
+    novaAIAddMessage("You", prompt);
+    question.value = "";
+
+    try {
+      const response = await fetch(
+        "https://bharat-nova-ai.manmohan595120.workers.dev/ask",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: prompt })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("AI server ने HTTP " + response.status + " दिया।");
+      }
+
+      const data = await response.json();
+
+      const answer =
+        data.answer || data.response || data.result ||
+        data.message || data.text;
+
+      if (typeof answer !== "string" || !answer.trim()) {
+        throw new Error("Server से जवाब नहीं मिला। Worker का response format जाँचें।");
+      }
+
+      novaAIAddMessage("Bharat Nova AI", answer);
+      status.textContent = "जवाब मिल गया।";
+    } catch (error) {
+      novaAIAddMessage(
+        "System",
+        "AI से संपर्क नहीं हो पाया। इंटरनेट या Worker endpoint जाँचें।"
+      );
+      status.textContent = error.message || "एक समस्या हुई।";
+    } finally {
+      sendButton.disabled = false;
+    }
+  }
+
+  sendButton.addEventListener("click", novaAIAsk);
+
+  question.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      novaAIAsk();
+    }
+  });
+
+  document.getElementById("novaAIVoice").addEventListener("click", function () {
+    const text = messages.innerText.trim();
+
+    if (!("speechSynthesis" in window)) {
+      status.textContent = "आपका browser जवाब पढ़कर नहीं सुना सकता।";
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "hi-IN";
+    window.speechSynthesis.speak(utterance);
+    status.textContent = "जवाब पढ़कर सुनाया जा रहा है।";
+  });
+
+  document.getElementById("novaAIStop").addEventListener("click", function () {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    status.textContent = "आवाज़ रोक दी गई।";
+  });
+
+  document.getElementById("novaAIClear").addEventListener("click", function () {
+    messages.replaceChildren();
+
+    const welcome = document.createElement("p");
+    welcome.textContent = "नई चैट शुरू करें।";
+    messages.appendChild(welcome);
+
+    status.textContent = "इस चैट की स्क्रीन साफ़ हो गई।";
+  });
+
+  window.novaAIShow = novaAIShow;
+})();
+</script>
+<!-- END BHARAT NOVA STEP 6 -->
+ 
