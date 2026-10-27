@@ -2799,16 +2799,23 @@ async function verifyAdmin() {
   console.log("Admin role:", data.role);
   console.log("Admin isAdmin:", data.isAdmin);
 
- if (data.role !== "admin" && data.isAdmin !== true) {
-throw new Error(
-"ADMIN CHECK FAILED" +
-" | Email: " + user.email +
-" | UID: " + user.uid +
-" | Role: " + JSON.stringify(data.role) +
-" | isAdmin: " + JSON.stringify(data.isAdmin) +
-" | Document exists: " + adminDoc.exists
-);
- }
+ const adminRole = String(data.role || "")
+  .trim()
+  .toLowerCase();
+
+if (adminRole !== "admin" && data.isAdmin !== true) {
+  throw new Error(
+    "ADMIN CHECK FAILED" +
+    " | Email: " + user.email +
+    " | UID: " + user.uid +
+    " | Role: " + JSON.stringify(data.role) +
+    " | Normalized Role: " + JSON.stringify(adminRole) +
+    " | isAdmin: " + JSON.stringify(data.isAdmin) +
+    " | Document exists: " + adminDoc.exists
+  );
+}
+
+console.log("Bharat Nova Admin verified:", user.email);
 
  return { user, database };
 }
