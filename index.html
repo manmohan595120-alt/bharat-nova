@@ -2799,15 +2799,18 @@ async function verifyAdmin() {
   console.log("Admin role:", data.role);
   console.log("Admin isAdmin:", data.isAdmin);
 
-  if (data.role !== "admin" && data.isAdmin !== true) {
-    throw new Error(
-      "Admin role गलत है। users/" +
-      user.uid +
-      " document में role की value admin रखें।"
-    );
-  }
+ if (data.role !== "admin" && data.isAdmin !== true) {
+throw new Error(
+"ADMIN CHECK FAILED" +
+" | Email: " + user.email +
+" | UID: " + user.uid +
+" | Role: " + JSON.stringify(data.role) +
+" | isAdmin: " + JSON.stringify(data.isAdmin) +
+" | Document exists: " + adminDoc.exists
+);
+ }
 
-  return { user, database };
+ return { user, database };
 }
 
   async function loadAdminUsers() {
