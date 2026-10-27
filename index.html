@@ -2749,43 +2749,66 @@ window.SpeechRecognition || window.webkitSpeechRecognition;
     const el = document.getElementById("novaAdminStatus");
     if (el) el.textContent = message;
   }
+async function verifyAdmin() {
+  const a = auth();
+  const database = db();
 
-  async function verifyAdmin() {
-    const a = auth();
-    const database = db();
-
-    if (!a || !a.currentUser) {
-      throw new Error("पहले Bharat Nova में Admin account से Login करें।");
-    }
-
-    const user = a.currentUser;
-    if ((user.email || "").toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      throw new Error("इस account को Admin access नहीं मिला है।");
-    }
-
-    if (!database) {
-      throw new Error("Firebase Firestore उपलब्ध नहीं है।");
-    }
-
-    /*
-      Firestore में users/{admin UID} document होना चाहिए।
-      उसमें role: "admin" या isAdmin: true सेट करें।
-      Firestore Security Rules से भी इसे enforce करना जरूरी है।
-    */
-    const adminDoc = await database.collection("users").doc(user.uid).get();
-    const data = adminDoc.exists ? adminDoc.data() : {};
-console.log("Admin UID:", user.uid);
-console.log("Admin document exists:", adminDoc.exists);
-console.log("Admin role:", data.role);
-    if (!(data.role === "admin" || data.isAdmin === true)) {
-      throw new Error(
-        "Admin role verify नहीं हुआ। Firestore users/" +
-        user.uid + " document में role='admin' सेट करें।"
-      );
-    }
-
-    return { user, database };
+  if (!a || !a.currentUser) {
+    throw new Error("पहले Admin account से Login करें।");
   }
+
+  const user = a.currentUser;
+
+  if (
+    (user.email || "").toLowerCase() !==
+    ADMIN_EMAIL.toLowerCase()
+  ) {
+    throw new Error("इस account को Admin access नहीं मिला है।");
+  }
+
+  if (!database) {
+    throw new Error("Firebase Firestore उपलब्ध नहीं है।");
+  }
+
+  let adminDoc;
+
+  try {
+    adminDoc = await database
+      .collection("users")
+      .doc(user.uid)
+      .get();
+  } catch (error) {
+    console.error("Firestore error:", error);
+    throw new Error(
+      "Firestore error: " +
+      (error.message || error.code || "Document पढ़ा नहीं जा सका")
+    );
+  }
+
+  console.log("Admin UID:", user.uid);
+  console.log("Admin document exists:", adminDoc.exists);
+
+  if (!adminDoc.exists) {
+    throw new Error(
+      "Admin document नहीं मिला। UID: " + user.uid
+    );
+  }
+
+  const data = adminDoc.data() || {};
+
+  console.log("Admin role:", data.role);
+  console.log("Admin isAdmin:", data.isAdmin);
+
+  if (data.role !== "admin" && data.isAdmin !== true) {
+    throw new Error(
+      "Admin role गलत है। users/" +
+      user.uid +
+      " document में role की value admin रखें।"
+    );
+  }
+
+  return { user, database };
+}
 
   async function loadAdminUsers() {
     const body = document.getElementById("novaAdminUsers");
