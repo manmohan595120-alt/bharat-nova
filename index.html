@@ -3612,5 +3612,143 @@ function novaCopyUPI() {
 })();
 </script>
 <!-- END LOGIN BUTTON FIX -->
+ <!-- BHARAT NOVA ADMIN PANEL FIX -->
+<script>
+(function () {
+  "use strict";
+
+  const ADMIN_EMAIL = "Manmohan595120@gmail.com";
+
+  function initNovaAdminFix() {
+    const header = document.querySelector(".topbar");
+
+    if (!header) return;
+
+    let button = document.getElementById(
+      "novaAdminOpenButton"
+    );
+
+    if (!button) {
+      button = document.createElement("button");
+      button.id = "novaAdminOpenButton";
+      button.type = "button";
+      button.className = "btn btn-primary";
+      button.textContent = "👑 Admin Panel";
+
+      const container = header.querySelector(
+        ".topbar-inner"
+      );
+
+      if (container) {
+        container.appendChild(button);
+      } else {
+        header.appendChild(button);
+      }
+    }
+
+    button.onclick = async function () {
+      const auth = window.novaFirebaseAuthInstance;
+      const database = window.novaFirebaseDatabase;
+
+      if (!auth || !database) {
+        alert(
+          "Firebase तैयार नहीं है। पेज Refresh करके दोबारा प्रयास करें।"
+        );
+        return;
+      }
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        if (typeof window.novaShowAuth === "function") {
+          window.novaShowAuth();
+        }
+
+        alert("पहले अपने Admin account से Login करें।");
+        return;
+      }
+
+      if (
+        (user.email || "").toLowerCase() !==
+        ADMIN_EMAIL.toLowerCase()
+      ) {
+        alert("इस account को Admin access नहीं मिला है।");
+        return;
+      }
+
+      try {
+        const adminDoc = await database
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+        const data = adminDoc.exists
+          ? adminDoc.data()
+          : {};
+
+        if (
+          data.role !== "admin" &&
+          data.isAdmin !== true
+        ) {
+          alert(
+            "Admin role verify नहीं हुआ।\n\n" +
+            "Firestore में users collection खोलें।\n" +
+            "Document ID में अपना सही Firebase UID रखें।\n" +
+            "Field: role\n" +
+            "Type: string\n" +
+            "Value: admin"
+          );
+
+          return;
+        }
+
+        const panel = document.getElementById(
+          "novaAdminPanel"
+        );
+
+        if (!panel) {
+          alert(
+            "Admin Panel का HTML नहीं मिला। " +
+            "पुराने Step 15 के code को जाँचें।"
+          );
+          return;
+        }
+
+        panel.style.display = "block";
+
+        if (
+          typeof window.novaLoadAdminUsers === "function"
+        ) {
+          await window.novaLoadAdminUsers();
+        } else {
+          const refresh = document.getElementById(
+            "novaAdminRefresh"
+          );
+
+          if (refresh) refresh.click();
+        }
+
+      } catch (error) {
+        console.error("Bharat Nova Admin Error:", error);
+
+        alert(
+          "Admin Panel नहीं खुल पाया।\n" +
+          (error.message || "Firebase permissions जाँचें।")
+        );
+      }
+    };
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initNovaAdminFix
+    );
+  } else {
+    initNovaAdminFix();
+  }
+})();
+</script>
+<!-- END ADMIN PANEL FIX -->
 </body>
 </html>
