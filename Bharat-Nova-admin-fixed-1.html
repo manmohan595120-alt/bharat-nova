@@ -1,0 +1,3555 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061429">
+<meta name="description" content="Bharat Nova — AI Assistant, Smart Search, Voice Search and Learning">
+<meta name="application-name" content="Bharat Nova">
+<meta name="color-scheme" content="dark light">
+<title>Bharat Nova — Search Smarter, Think Bigger</title>
+
+<style>
+:root{
+ --bg:#061429;
+ --panel:#0c203b;
+ --panel2:#102a49;
+ --gold:#f4c542;
+ --text:#f4f7ff;
+ --muted:#a9bad1;
+ --border:#263d5b;
+ --green:#37d6a0;
+ --red:#ff6878;
+ --radius:18px;
+ --shadow:0 12px 35px #0004;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;
+ min-height:100vh;
+ background:var(--bg);
+ color:var(--text);
+ font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+ transition:background .2s,color .2s;
+}
+body.light{
+ --bg:#f1f5fb;
+ --panel:#fff;
+ --panel2:#e8eef8;
+ --gold:#b8860b;
+ --text:#14233a;
+ --muted:#53647c;
+ --border:#d5dfec;
+ --green:#087c59;
+ --red:#bf263d;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+.hidden{display:none!important}
+.gold{color:var(--gold)}
+.muted{color:var(--muted)}
+.container{width:min(1120px,94%);margin:auto}
+.topbar{
+ position:sticky;
+ top:0;
+ z-index:50;
+ background:var(--bg);
+ border-bottom:1px solid var(--border);
+}
+.topbar-inner{
+ min-height:68px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+ padding:10px 0;
+}
+.brand{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ font-size:21px;
+ font-weight:850;
+}
+.logo{
+ width:42px;height:42px;
+ display:grid;place-items:center;
+ border-radius:14px;
+ background:linear-gradient(135deg,#ffe58a,var(--gold));
+ color:#061429;
+ font-size:25px;font-weight:950;
+}
+.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.btn{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ gap:7px;
+ min-height:42px;
+ padding:10px 15px;
+ border:1px solid transparent;
+ border-radius:12px;
+ font-weight:750;
+}
+.btn-primary{background:var(--gold);color:#172033}
+.btn-secondary{
+ background:var(--panel2);
+ color:var(--text);
+ border-color:var(--border);
+}
+.btn-outline{
+ background:transparent;
+ color:var(--text);
+ border-color:var(--border);
+}
+.btn-danger{
+ background:#55202d;
+ color:#ffdbe0;
+ border-color:#8e3445;
+}
+.btn-success{
+ background:#103e37;
+ color:#b8ffe7;
+ border-color:#267864;
+}
+.btn-block{width:100%}
+button:focus-visible,input:focus-visible,
+textarea:focus-visible,select:focus-visible{
+ outline:2px solid var(--gold);
+ outline-offset:3px;
+}
+.hero{
+ padding:48px 0 30px;
+ text-align:center;
+}
+.badge{
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ padding:7px 12px;
+ border:1px solid var(--border);
+ border-radius:999px;
+ background:var(--panel);
+ color:var(--gold);
+ font-size:13px;
+ font-weight:750;
+}
+h1{
+ font-size:clamp(34px,7vw,65px);
+ line-height:1.08;
+ letter-spacing:-1.8px;
+ margin:22px 0 14px;
+}
+.hero p{
+ max-width:650px;
+ margin:0 auto 22px;
+ color:var(--muted);
+ line-height:1.8;
+}
+.search-box{
+ max-width:760px;
+ margin:24px auto 0;
+ padding:8px;
+ display:flex;
+ gap:8px;
+ border:1px solid var(--border);
+ border-radius:18px;
+ background:var(--panel);
+ box-shadow:var(--shadow);
+}
+.search-box input{
+ min-width:0;
+ flex:1;
+ background:transparent;
+ border:0;
+ color:var(--text);
+ padding:10px;
+ outline:none;
+}
+.quick-links{
+ display:flex;
+ justify-content:center;
+ gap:9px;
+ flex-wrap:wrap;
+ margin-top:17px;
+}
+.section{padding:24px 0 38px}
+.section-title{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ flex-wrap:wrap;
+ margin-bottom:18px;
+}
+.section-title h2{margin:0;font-size:24px}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:15px;
+}
+.card{
+ background:var(--panel);
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+ padding:19px;
+ box-shadow:var(--shadow);
+}
+.card h3{margin:0 0 9px;font-size:18px}
+.card p{color:var(--muted);line-height:1.7;margin:0 0 14px}
+.card-icon{font-size:27px;margin-bottom:12px}
+.field{display:grid;gap:7px;margin-bottom:14px}
+.field label{font-weight:700;font-size:14px}
+.field input,.field textarea,.field select,
+.input{
+ width:100%;
+ padding:12px 13px;
+ background:var(--bg);
+ border:1px solid var(--border);
+ border-radius:11px;
+ color:var(--text);
+}
+.field textarea{min-height:110px;resize:vertical}
+.footer{
+ border-top:1px solid var(--border);
+ padding:26px 0;
+ margin-top:30px;
+ color:var(--muted);
+ text-align:center;
+ line-height:1.8;
+}
+.notice{
+ padding:12px 14px;
+ border:1px solid var(--border);
+ border-radius:12px;
+ background:var(--panel2);
+ line-height:1.7;
+}
+.status{font-size:13px;color:var(--muted)}
+@media(max-width:760px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hero{padding-top:35px}
+ .topbar-inner{align-items:flex-start}
+}
+@media(max-width:480px){
+ .grid{grid-template-columns:1fr}
+ .brand{font-size:19px}
+ .search-box{flex-wrap:wrap}
+ .search-box input{flex-basis:100%}
+ .btn{padding:10px 12px}
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+<header class="topbar">
+ <div class="container topbar-inner">
+  <a class="brand" href="#" aria-label="Bharat Nova Home">
+   <span class="logo">N</span>
+   <span>Bharat <span class="gold">Nova</span></span>
+  </a>
+
+  <div class="row">
+   <button class="btn btn-secondary" id="themeButton" type="button">
+    🌙 Theme
+   </button>
+   <button class="btn btn-primary" id="loginOpen" type="button">
+    👤 Login
+   </button>
+   <button class="btn btn-secondary" id="installButton" type="button">
+    📲 Install
+   </button>
+  </div>
+ </div>
+</header>
+
+<main>
+ <div id="bharatMapTop" style="width:100%;display:flex;justify-content:center;align-items:center;padding:10px 0;box-sizing:border-box;margin:0 auto;">
+  <img src="./bharat-map.png"
+       alt="भारत का नक्शा"
+       style="display:block;width:90%;max-width:420px;height:320px;object-fit:contain;margin:0 auto;">
+ </div>
+<section class="hero container">
+ <span class="badge">✨ Your Smart Digital Companion</span>
+ <h1>Search Smarter.<br><span class="gold">Think Bigger.</span></h1>
+ <p>
+  Bharat Nova के साथ खोजें, सीखें और AI की मदद लें।
+  हिंदी और अंग्रेज़ी में स्मार्ट सर्च और डिजिटल टूल्स।
+ </p>
+
+ <div class="search-box">
+  <input id="searchInput" type="search"
+   placeholder="यहाँ कुछ भी खोजें..."
+   aria-label="Search">
+  <button class="btn btn-primary" id="searchButton" type="button">
+   🔎 Search
+  </button>
+  <button class="btn btn-secondary" id="voiceButton" type="button">
+   🎙️ Voice
+  </button>
+ </div>
+
+ <div class="quick-links">
+  <button class="btn btn-secondary" id="googleButton" type="button">
+   Google
+  </button>
+  <button class="btn btn-secondary" id="youtubeButton" type="button">
+   ▶ YouTube
+  </button>
+  <button class="btn btn-secondary" id="wikiButton" type="button">
+   📚 Wikipedia
+  </button>
+  <button class="btn btn-secondary" id="aiOpenButton" type="button">
+   🤖 Ask AI
+  </button>
+ </div>
+
+ <p id="appStatus" class="status" role="status">
+  Bharat Nova तैयार है।
+ </p>
+</section>
+
+<section class="section container">
+ <div class="section-title">
+  <h2>Explore <span class="gold">Bharat Nova</span></h2>
+ </div>
+
+ <div class="grid">
+  <article class="card">
+   <div class="card-icon">🔎</div>
+   <h3>Smart Search</h3>
+   <p>Google, YouTube और Wikipedia पर खोजें।</p>
+   <button class="btn btn-secondary btn-block"
+    type="button" id="cardSearchButton">Search Now</button>
+  </article>
+
+  <article class="card">
+   <div class="card-icon">🎙️</div>
+   <h3>Voice Search</h3>
+   <p>समर्थित ब्राउज़र में बोलकर खोजें।</p>
+   <button class="btn btn-secondary btn-block"
+    type="button" id="cardVoiceButton">Start Voice</button>
+  </article>
+
+  <article class="card">
+   <div class="card-icon">🤖</div>
+   <h3>AI Assistant</h3>
+   <p>अपने सवालों के जवाब पाने के लिए AI खोलें।</p>
+   <button class="btn btn-secondary btn-block"
+    type="button" id="cardAIButton">Open AI</button>
+  </article>
+
+  <article class="card">
+   <div class="card-icon">📁</div>
+   <h3>File Tools</h3>
+   <p>आगे के चरणों में फ़ाइल और दस्तावेज़ सुविधाएँ।</p>
+   <button class="btn btn-secondary btn-block"
+    type="button" id="cardFilesButton">File Tools</button>
+  </article>
+
+  <article class="card">
+   <div class="card-icon">⚙️</div>
+   <h3>Settings</h3>
+   <p>ऐप की प्राथमिकताएँ और उपयोग के विकल्प।</p>
+   <button class="btn btn-secondary btn-block"
+    type="button" id="settingsOpen">Open Settings</button>
+  </article>
+
+  <article class="card">
+   <div class="card-icon">🆘</div>
+   <h3>Help & Privacy</h3>
+   <p>सहायता, गोपनीयता और सुरक्षा जानकारी।</p>
+   <button class="btn btn-secondary btn-block"
+    type="button" id="helpOpen">Get Help</button>
+  </article>
+ </div>
+</section>
+
+<div class="container section">
+ <div class="notice">
+  <strong>🔐 Account Security</strong>
+  <p class="muted">
+   Login और अकाउंट बनाने की सुविधा ऐप के अंदर उपलब्ध होगी।
+   यूज़र को Firebase Console पर जाने की आवश्यकता नहीं होगी।
+  </p>
+ </div>
+</div>
+</main>
+
+<footer class="footer">
+ <div class="container">
+  <strong>Bharat <span class="gold">Nova</span></strong>
+  <div>Search Smarter. Think Bigger.</div>
+  <div>© <span id="currentYear"></span> Bharat Nova</div>
+ </div>
+</footer>
+
+</div>
+
+<!-- अगले स्टेप में यहाँ Login, AI, Settings और बाकी सुविधाएँ जोड़ेंगे। -->
+ <script>
+"use strict";
+
+const novaStatus = document.getElementById("appStatus");
+const novaInput = document.getElementById("searchInput");
+
+function novaMessage(message) {
+  if (novaStatus) novaStatus.textContent = message;
+}
+
+function novaGetQuery() {
+  return novaInput ? novaInput.value.trim() : "";
+}
+
+function novaSearch(engine) {
+  const query = novaGetQuery();
+
+  if (!query) {
+    novaMessage("पहले अपना सवाल या शब्द लिखें।");
+    if (novaInput) novaInput.focus();
+    return;
+  }
+
+  const urls = {
+    google: "https://www.google.com/search?q=",
+    youtube: "https://www.youtube.com/results?search_query=",
+    wiki: "https://en.wikipedia.org/w/index.php?search="
+  };
+
+  if (!urls[engine]) return;
+
+  window.open(
+    urls[engine] + encodeURIComponent(query),
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+  novaMessage("आपकी खोज खोली जा रही है।");
+}
+
+document.getElementById("searchButton")
+  ?.addEventListener("click", () => novaSearch("google"));
+
+document.getElementById("googleButton")
+  ?.addEventListener("click", () => novaSearch("google"));
+
+document.getElementById("youtubeButton")
+  ?.addEventListener("click", () => novaSearch("youtube"));
+
+document.getElementById("wikiButton")
+  ?.addEventListener("click", () => novaSearch("wiki"));
+
+document.getElementById("cardSearchButton")
+  ?.addEventListener("click", () => {
+    if (novaInput) novaInput.focus();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+novaInput?.addEventListener("keydown", event => {
+  if (event.key === "Enter") novaSearch("google");
+});
+
+document.getElementById("voiceButton")
+  ?.addEventListener("click", novaStartVoice);
+
+document.getElementById("cardVoiceButton")
+  ?.addEventListener("click", novaStartVoice);
+
+function novaStartVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    novaMessage(
+      "इस ब्राउज़र में Voice Search उपलब्ध नहीं है। Chrome में प्रयास करें।"
+    );
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  novaMessage("🎙️ सुन रहा हूँ... अब बोलिए।");
+
+  recognition.onresult = event => {
+    const transcript =
+      event.results[0][0].transcript.trim();
+
+    if (novaInput) novaInput.value = transcript;
+
+    novaMessage("सुना गया: " + transcript);
+
+    if (transcript) novaSearch("google");
+  };
+
+  recognition.onerror = event => {
+    novaMessage(
+      event.error === "not-allowed"
+        ? "Microphone की अनुमति दें।"
+        : "Voice Search नहीं चला। दोबारा प्रयास करें।"
+    );
+  };
+
+  recognition.onend = () => {
+    if (novaStatus &&
+        novaStatus.textContent === "🎙️ सुन रहा हूँ... अब बोलिए।") {
+      novaMessage("Voice Search बंद हो गया।");
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    novaMessage("Voice Search शुरू नहीं हो सका। दोबारा प्रयास करें।");
+  }
+}
+ </script>
+ <script>
+(function () {
+  "use strict";
+
+  const novaAuthBox = document.createElement("section");
+  novaAuthBox.id = "novaAuthBox";
+  novaAuthBox.className = "card";
+  novaAuthBox.style.cssText =
+    "display:none;max-width:520px;margin:24px auto;padding:22px;";
+
+  novaAuthBox.innerHTML = `
+    <h2>🔐 Bharat Nova Account</h2>
+    <p>Create an account or log in using your email and password.</p>
+
+    <label for="novaName">Your Name</label>
+    <input id="novaName" type="text" autocomplete="name"
+      placeholder="Enter your name"
+      style="width:100%;padding:12px;margin:8px 0 14px;border-radius:10px;">
+
+    <label for="novaEmail">Email Address</label>
+    <input id="novaEmail" type="email" autocomplete="email"
+      placeholder="Enter your email"
+      style="width:100%;padding:12px;margin:8px 0 14px;border-radius:10px;">
+
+    <label for="novaPassword">Password</label>
+    <input id="novaPassword" type="password"
+      autocomplete="current-password" placeholder="At least 6 characters"
+      style="width:100%;padding:12px;margin:8px 0 14px;border-radius:10px;">
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn btn-primary" id="novaSignupButton" type="button">
+        Create Account
+      </button>
+      <button class="btn btn-secondary" id="novaLoginButton" type="button">
+        Log In
+      </button>
+      <button class="btn btn-secondary" id="novaLogoutButton"
+        type="button" style="display:none;">Log Out</button>
+      <button class="btn btn-secondary" id="novaCloseAuth"
+        type="button">Close</button>
+    </div>
+
+    <p id="novaAuthStatus" role="status" aria-live="polite"
+      style="margin-top:14px;"></p>
+  `;
+
+  const novaFooter = document.querySelector(".footer");
+  if (novaFooter) {
+    novaFooter.parentNode.insertBefore(novaAuthBox, novaFooter);
+  } else {
+    document.getElementById("app").appendChild(novaAuthBox);
+  }
+
+  const novaAuthStatus = document.getElementById("novaAuthStatus");
+
+  function novaAuthMessage(text, isError) {
+    novaAuthStatus.textContent = text;
+    novaAuthStatus.style.color = isError ? "#ff7777" : "#4ade80";
+  }
+
+  function novaFirebaseAuth() {
+    if (!window.firebase || !window.firebase.apps) {
+      novaAuthMessage(
+        "Firebase SDK अभी लोड नहीं हुआ। अगले स्टेप में Firebase setup जोड़ेंगे।",
+        true
+      );
+      return null;
+    }
+
+    try {
+      if (!window.firebase.apps.length) {
+        novaAuthMessage(
+          "Firebase configuration अभी जोड़नी बाकी है। अगले स्टेप में setup करेंगे।",
+          true
+        );
+        return null;
+      }
+      return window.firebase.auth();
+    } catch (error) {
+      novaAuthMessage("Firebase setup में समस्या है। Configuration जाँचें।", true);
+      return null;
+    }
+  }
+
+  function novaShowAuth() {
+    novaAuthBox.style.display = "block";
+    novaAuthBox.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  const novaHeaderLogin = document.getElementById("loginButton");
+  if (novaHeaderLogin) {
+    novaHeaderLogin.addEventListener("click", novaShowAuth);
+  }
+
+  document.getElementById("novaCloseAuth").addEventListener("click", function () {
+    novaAuthBox.style.display = "none";
+  });
+
+  document.getElementById("novaSignupButton").addEventListener("click", async function () {
+    const auth = novaFirebaseAuth();
+    if (!auth) return;
+
+    const name = document.getElementById("novaName").value.trim();
+    const email = document.getElementById("novaEmail").value.trim();
+    const password = document.getElementById("novaPassword").value;
+
+    if (!name || !email || password.length < 6) {
+      novaAuthMessage("नाम, सही ईमेल और कम-से-कम 6 अक्षर का पासवर्ड भरें।", true);
+      return;
+    }
+
+    try {
+      const credential = await auth.createUserWithEmailAndPassword(email, password);
+      await credential.user.updateProfile({ displayName: name });
+      novaAuthMessage("Account बन गया! आप लॉग इन हैं।", false);
+    } catch (error) {
+      novaAuthMessage(error.message || "Account नहीं बन पाया।", true);
+    }
+  });
+
+  document.getElementById("novaLoginButton").addEventListener("click", async function () {
+    const auth = novaFirebaseAuth();
+    if (!auth) return;
+
+    const email = document.getElementById("novaEmail").value.trim();
+    const password = document.getElementById("novaPassword").value;
+
+    if (!email || !password) {
+      novaAuthMessage("ईमेल और पासवर्ड भरें।", true);
+      return;
+    }
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      novaAuthMessage("Login सफल रहा।", false);
+    } catch (error) {
+      novaAuthMessage(error.message || "Login नहीं हो पाया।", true);
+    }
+  });
+
+  document.getElementById("novaLogoutButton").addEventListener("click", async function () {
+    const auth = novaFirebaseAuth();
+    if (!auth) return;
+
+    try {
+      await auth.signOut();
+      novaAuthMessage("आप लॉग आउट हो गए हैं।", false);
+    } catch (error) {
+      novaAuthMessage("Logout नहीं हो पाया।", true);
+    }
+  });
+
+  const novaAuth = novaFirebaseAuth();
+  if (novaAuth) {
+    novaAuth.onAuthStateChanged(function (user) {
+      const logoutButton = document.getElementById("novaLogoutButton");
+      const loginButton = document.getElementById("novaLoginButton");
+      const signupButton = document.getElementById("novaSignupButton");
+
+      logoutButton.style.display = user ? "inline-block" : "none";
+      loginButton.style.display = user ? "none" : "inline-block";
+      signupButton.style.display = user ? "none" : "inline-block";
+
+      if (user) {
+        novaAuthMessage(
+          "Logged in: " + (user.displayName || user.email),
+          false
+        );
+        const headerButton = document.getElementById("loginButton");
+        if (headerButton) headerButton.textContent = "My Account";
+      } else {
+        const headerButton = document.getElementById("loginButton");
+        if (headerButton) headerButton.textContent = "Login";
+      }
+    });
+  }
+
+  window.novaShowAuth = novaShowAuth;
+})();
+ </script>
+ <!-- BHARAT NOVA STEP 4: FIREBASE INITIALIZATION -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const novaFirebaseConfigStep4 = {
+    apiKey: "AIzaSyA3gjWDlWRFWGTNgPK8nIPGL-2oaVTVtyo",
+    authDomain: "bharat-nova-755a8.firebaseapp.com",
+    projectId: "bharat-nova-755a8",
+    storageBucket: "bharat-nova-755a8.firebasestorage.app",
+    messagingSenderId: "68354571415",
+    appId: "1:68354571415:web:463bf88d106ca5616d7dd2",
+    measurementId: "G-1H75PJM6P6"
+  };
+
+  function initializeNovaFirebaseStep4() {
+    if (!window.firebase) {
+      console.error("Bharat Nova: Firebase SDK load नहीं हुआ।");
+      return;
+    }
+
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(novaFirebaseConfigStep4);
+      }
+
+      window.novaFirebaseApp = firebase.app();
+      window.novaFirebaseAuthInstance = firebase.auth();
+      window.novaFirebaseDatabase = firebase.firestore();
+
+      console.log("Bharat Nova: Firebase initialized successfully.");
+
+      const status = document.getElementById("novaAuthStatus");
+      if (status) {
+        status.textContent =
+          "Firebase तैयार है। Login और Signup इस्तेमाल कर सकते हैं।";
+        status.style.color = "#4ade80";
+      }
+    } catch (error) {
+      console.error("Bharat Nova Firebase initialization error:", error);
+
+      const status = document.getElementById("novaAuthStatus");
+      if (status) {
+        status.textContent =
+          "Firebase शुरू नहीं हो पाया। Console में error जाँचें।";
+        status.style.color = "#ff7777";
+      }
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeNovaFirebaseStep4,
+      { once: true }
+    );
+  } else {
+    initializeNovaFirebaseStep4();
+  }
+})();
+</script>
+ <!-- BHARAT NOVA STEP 5: CONNECT LOGIN WITH FIREBASE -->
+<script>
+(function () {
+  "use strict";
+
+  function novaStep5Message(message, isError) {
+    const status = document.getElementById("novaAuthStatus");
+    if (!status) return;
+
+    status.textContent = message;
+    status.style.color = isError ? "#ff7777" : "#4ade80";
+  }
+
+  function novaStep5GetAuth() {
+    if (window.novaFirebaseAuthInstance) {
+      return window.novaFirebaseAuthInstance;
+    }
+
+    novaStep5Message(
+      "Firebase तैयार नहीं है। Firebase configuration जाँचें।",
+      true
+    );
+    return null;
+  }
+
+  const signup = document.getElementById("novaSignupButton");
+  const login = document.getElementById("novaLoginButton");
+  const logout = document.getElementById("novaLogoutButton");
+  const nameInput = document.getElementById("novaName");
+  const emailInput = document.getElementById("novaEmail");
+  const passwordInput = document.getElementById("novaPassword");
+
+  if (!signup || !login || !logout ||
+      !nameInput || !emailInput || !passwordInput) {
+    console.error("Bharat Nova: Login form नहीं मिला।");
+    return;
+  }
+
+  /* पुराने Step 3 के handlers को दोबारा चलने से रोकें */
+  signup.replaceWith(signup.cloneNode(true));
+  login.replaceWith(login.cloneNode(true));
+  logout.replaceWith(logout.cloneNode(true));
+
+  const signupButton = document.getElementById("novaSignupButton");
+  const loginButton = document.getElementById("novaLoginButton");
+  const logoutButton = document.getElementById("novaLogoutButton");
+
+  signupButton.addEventListener("click", async function () {
+    const auth = novaStep5GetAuth();
+    if (!auth) return;
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!name || !email || password.length < 6) {
+      novaStep5Message(
+        "नाम, सही ईमेल और कम-से-कम 6 अक्षर का पासवर्ड भरें।",
+        true
+      );
+      return;
+    }
+
+    signupButton.disabled = true;
+
+    try {
+      const result = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      await result.user.updateProfile({ displayName: name });
+
+      novaStep5Message(
+        "Account बन गया। Bharat Nova में आपका स्वागत है!",
+        false
+      );
+    } catch (error) {
+      novaStep5Message(
+        error.message || "Signup नहीं हो पाया।",
+        true
+      );
+    } finally {
+      signupButton.disabled = false;
+    }
+  });
+
+  loginButton.addEventListener("click", async function () {
+    const auth = novaStep5GetAuth();
+    if (!auth) return;
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      novaStep5Message("ईमेल और पासवर्ड भरें।", true);
+      return;
+    }
+
+    loginButton.disabled = true;
+
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      novaStep5Message("Login सफल रहा!", false);
+    } catch (error) {
+      novaStep5Message(
+        error.message || "Login नहीं हो पाया।",
+        true
+      );
+    } finally {
+      loginButton.disabled = false;
+    }
+  });
+
+  logoutButton.addEventListener("click", async function () {
+    const auth = novaStep5GetAuth();
+    if (!auth) return;
+
+    try {
+      await auth.signOut();
+      novaStep5Message("आप Logout हो गए हैं।", false);
+    } catch (error) {
+      novaStep5Message("Logout नहीं हो पाया।", true);
+    }
+  });
+
+  const auth = novaStep5GetAuth();
+
+  if (auth) {
+    auth.onAuthStateChanged(function (user) {
+      signupButton.style.display = user ? "none" : "inline-block";
+      loginButton.style.display = user ? "none" : "inline-block";
+      logoutButton.style.display = user ? "inline-block" : "none";
+
+      const headerLogin = document.getElementById("loginButton");
+
+      if (user) {
+        novaStep5Message(
+          "Logged in: " + (user.displayName || user.email),
+          false
+        );
+
+        if (headerLogin) {
+          headerLogin.textContent = "My Account";
+        }
+      } else if (headerLogin) {
+        headerLogin.textContent = "Login";
+      }
+    });
+  }
+})();
+</script>
+<!-- END BHARAT NOVA STEP 5 -->
+ <!-- BHARAT NOVA STEP 6: AI ASSISTANT -->
+<script>
+(function () {
+  "use strict";
+
+  const section = document.createElement("section");
+  section.id = "novaAISection";
+  section.className = "card";
+  section.style.cssText =
+    "display:none;max-width:850px;margin:24px auto;padding:20px;";
+
+  section.innerHTML = `
+    <h2>✨ Bharat Nova AI</h2>
+    <p>हिंदी या English में अपना सवाल पूछें।</p>
+
+    <div id="novaChatMessages"
+      aria-live="polite"
+      style="min-height:100px;max-height:380px;overflow:auto;
+      padding:12px;border-radius:12px;background:rgba(100,116,139,.12);
+      margin:14px 0;">
+      <p>नमस्ते! मैं Bharat Nova AI हूँ। आप क्या जानना चाहते हैं?</p>
+    </div>
+
+    <label for="novaAIQuestion">आपका सवाल</label>
+    <textarea id="novaAIQuestion" rows="3"
+      placeholder="यहाँ अपना सवाल लिखें..."
+      style="box-sizing:border-box;width:100%;padding:12px;
+      margin:8px 0;border-radius:10px;resize:vertical;"></textarea>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="novaAISend" class="btn btn-primary" type="button">
+        पूछें
+      </button>
+      <button id="novaAIVoice" class="btn btn-secondary" type="button">
+        🔊 जवाब सुनें
+      </button>
+      <button id="novaAIStop" class="btn btn-secondary" type="button">
+        ⏹ रोकें
+      </button>
+      <button id="novaAIClear" class="btn btn-secondary" type="button">
+        🗑 Clear Chat
+      </button>
+      <button id="novaAIClose" class="btn btn-secondary" type="button">
+        बंद करें
+      </button>
+    </div>
+
+    <p id="novaAIStatus" role="status" aria-live="polite"></p>
+  `;
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.parentNode.insertBefore(section, footer);
+  } else {
+    document.getElementById("app").appendChild(section);
+  }
+
+  const messages = document.getElementById("novaChatMessages");
+  const question = document.getElementById("novaAIQuestion");
+  const status = document.getElementById("novaAIStatus");
+  const sendButton = document.getElementById("novaAISend");
+
+  function novaAIShow() {
+    section.style.display = "block";
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    question.focus();
+  }
+
+  const aiButtons = [
+    document.getElementById("aiOpenButton"),
+    document.getElementById("cardAIButton")
+  ];
+
+  aiButtons.forEach(function (button) {
+    if (button) button.addEventListener("click", novaAIShow);
+  });
+
+  document.getElementById("novaAIClose").addEventListener("click", function () {
+    section.style.display = "none";
+  });
+
+  function novaAIAddMessage(role, text) {
+    const item = document.createElement("div");
+    item.style.cssText =
+      "padding:10px;margin:8px 0;border-radius:10px;" +
+      (role === "You"
+        ? "background:rgba(244,197,66,.13);"
+        : "background:rgba(100,116,139,.13);");
+
+    const heading = document.createElement("strong");
+    heading.textContent = role + ": ";
+
+    const body = document.createElement("span");
+    body.style.whiteSpace = "pre-wrap";
+    body.textContent = text;
+
+    item.appendChild(heading);
+    item.appendChild(body);
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function novaAIAsk() {
+    const prompt = question.value.trim();
+
+    if (!prompt) {
+      status.textContent = "पहले अपना सवाल लिखें।";
+      return;
+    }
+
+    sendButton.disabled = true;
+    status.textContent = "AI जवाब तैयार कर रहा है...";
+
+    novaAIAddMessage("You", prompt);
+    question.value = "";
+
+    try {
+      const response = await fetch(
+        "https://bharat-nova-ai.manmohan595120.workers.dev/ask",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: prompt })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("AI server ने HTTP " + response.status + " दिया।");
+      }
+
+      const data = await response.json();
+
+      const answer =
+        data.answer || data.response || data.result ||
+        data.message || data.text;
+
+      if (typeof answer !== "string" || !answer.trim()) {
+        throw new Error("Server से जवाब नहीं मिला। Worker का response format जाँचें।");
+      }
+
+      novaAIAddMessage("Bharat Nova AI", answer);
+      status.textContent = "जवाब मिल गया।";
+    } catch (error) {
+      novaAIAddMessage(
+        "System",
+        "AI से संपर्क नहीं हो पाया। इंटरनेट या Worker endpoint जाँचें।"
+      );
+      status.textContent = error.message || "एक समस्या हुई।";
+    } finally {
+      sendButton.disabled = false;
+    }
+  }
+
+  sendButton.addEventListener("click", novaAIAsk);
+
+  question.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      novaAIAsk();
+    }
+  });
+
+  document.getElementById("novaAIVoice").addEventListener("click", function () {
+    const text = messages.innerText.trim();
+
+    if (!("speechSynthesis" in window)) {
+      status.textContent = "आपका browser जवाब पढ़कर नहीं सुना सकता।";
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "hi-IN";
+    window.speechSynthesis.speak(utterance);
+    status.textContent = "जवाब पढ़कर सुनाया जा रहा है।";
+  });
+
+  document.getElementById("novaAIStop").addEventListener("click", function () {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    status.textContent = "आवाज़ रोक दी गई।";
+  });
+
+  document.getElementById("novaAIClear").addEventListener("click", function () {
+    messages.replaceChildren();
+
+    const welcome = document.createElement("p");
+    welcome.textContent = "नई चैट शुरू करें।";
+    messages.appendChild(welcome);
+
+    status.textContent = "इस चैट की स्क्रीन साफ़ हो गई।";
+  });
+
+  window.novaAIShow = novaAIShow;
+})();
+</script>
+<!-- END BHARAT NOVA STEP 6 -->
+ <!-- BHARAT NOVA STEP 7: PHOTO AND FILE TOOLS -->
+<script>
+(function () {
+  "use strict";
+
+  const panel = document.createElement("section");
+  panel.id = "novaFileTools";
+  panel.className = "card";
+  panel.style.cssText =
+    "display:none;max-width:850px;margin:24px auto;padding:20px;";
+
+  panel.innerHTML = `
+    <h2>📁 AI Photo & File Tools</h2>
+    <p>फोटो, PDF या दूसरी फाइल चुनें।</p>
+
+    <label for="novaFilePicker">फोटो या फाइल चुनें</label>
+    <input id="novaFilePicker" type="file"
+      accept="image/*,.pdf,.txt,.csv,.json,.doc,.docx"
+      style="display:block;width:100%;margin:14px 0;padding:10px;">
+
+    <div id="novaFilePreview"
+      style="padding:12px;border:1px solid rgba(148,163,184,.4);
+      border-radius:12px;overflow-wrap:anywhere;">
+      अभी कोई फाइल नहीं चुनी गई।
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+      <button id="novaFileSendToAI" class="btn btn-primary" type="button">
+        AI में सवाल पूछें
+      </button>
+      <button id="novaFileRemove" class="btn btn-secondary" type="button">
+        फाइल हटाएँ
+      </button>
+      <button id="novaFileClose" class="btn btn-secondary" type="button">
+        बंद करें
+      </button>
+    </div>
+
+    <p id="novaFileStatus" role="status" aria-live="polite"></p>
+    <p style="font-size:13px;opacity:.8;">
+      नोट: फाइल चुनना अपने-आप AI analysis नहीं करता।
+      फाइल का वास्तविक analysis तभी होगा जब AI Worker उस प्रकार की
+      फाइल को सुरक्षित तरीके से process करने के लिए तैयार हो।
+    </p>
+  `;
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.parentNode.insertBefore(panel, footer);
+  } else {
+    document.getElementById("app").appendChild(panel);
+  }
+
+  const picker = document.getElementById("novaFilePicker");
+  const preview = document.getElementById("novaFilePreview");
+  const status = document.getElementById("novaFileStatus");
+
+  let selectedFile = null;
+  let previewUrl = null;
+
+  function showPanel() {
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  const openButton = document.getElementById("cardFilesButton");
+  if (openButton) {
+    openButton.addEventListener("click", showPanel);
+  }
+
+  document.getElementById("novaFileClose").addEventListener("click", function () {
+    panel.style.display = "none";
+  });
+
+  function clearPreview() {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+    }
+
+    preview.replaceChildren();
+  }
+
+  picker.addEventListener("change", function () {
+    clearPreview();
+    selectedFile = picker.files && picker.files[0]
+      ? picker.files[0]
+      : null;
+
+    if (!selectedFile) {
+      preview.textContent = "अभी कोई फाइल नहीं चुनी गई।";
+      status.textContent = "";
+      return;
+    }
+
+    const maxBytes = 10 * 1024 * 1024;
+
+    if (selectedFile.size > maxBytes) {
+      selectedFile = null;
+      picker.value = "";
+      preview.textContent = "फाइल 10 MB से बड़ी है। छोटी फाइल चुनें।";
+      status.textContent = "फाइल स्वीकार नहीं की गई।";
+      return;
+    }
+
+    const details = document.createElement("div");
+    const fileSize = (selectedFile.size / 1024).toFixed(1);
+
+    details.textContent =
+      "नाम: " + selectedFile.name +
+      "\nप्रकार: " + (selectedFile.type || "Unknown") +
+      "\nआकार: " + fileSize + " KB";
+
+    details.style.whiteSpace = "pre-wrap";
+    preview.appendChild(details);
+
+    if (selectedFile.type.startsWith("image/")) {
+      previewUrl = URL.createObjectURL(selectedFile);
+
+      const image = document.createElement("img");
+      image.src = previewUrl;
+      image.alt = "चुनी गई फोटो का preview";
+      image.style.cssText =
+        "display:block;max-width:100%;max-height:260px;" +
+        "object-fit:contain;margin-top:12px;border-radius:10px;";
+
+      preview.appendChild(image);
+    }
+
+    status.textContent = "फाइल चुनी गई है।";
+  });
+
+  document.getElementById("novaFileRemove").addEventListener("click", function () {
+    picker.value = "";
+    selectedFile = null;
+    clearPreview();
+    preview.textContent = "अभी कोई फाइल नहीं चुनी गई।";
+    status.textContent = "फाइल हटा दी गई।";
+  });
+
+  document.getElementById("novaFileSendToAI").addEventListener("click", function () {
+    if (!selectedFile) {
+      status.textContent = "पहले फोटो या फाइल चुनें।";
+      return;
+    }
+
+    const question = document.getElementById("novaAIQuestion");
+
+    if (question) {
+      question.value =
+        "मेरी चुनी हुई फाइल का विश्लेषण करने में मदद करें: " +
+        selectedFile.name +
+        ". फाइल का प्रकार " +
+        (selectedFile.type || "Unknown") +
+        " है। कृपया बताएं कि इस फाइल को analyse करने के लिए क्या जरूरी है।";
+
+      if (window.novaAIShow) {
+        window.novaAIShow();
+      } else {
+        const aiPanel = document.getElementById("novaAISection");
+        if (aiPanel) {
+          aiPanel.style.display = "block";
+          aiPanel.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+
+      status.textContent =
+        "फाइल का नाम AI सवाल में जोड़ा गया है। फाइल की सामग्री अभी AI को नहीं भेजी गई।";
+    } else {
+      status.textContent = "AI Assistant उपलब्ध नहीं है।";
+    }
+  });
+
+  window.novaGetSelectedFile = function () {
+    return selectedFile;
+  };
+})();
+</script>
+<!-- END BHARAT NOVA STEP 7 -->
+ <!-- BHARAT NOVA STEP 8: SETTINGS PANEL -->
+<script>
+(function () {
+  "use strict";
+
+  const panel = document.createElement("section");
+  panel.id = "novaSettingsPanel";
+  panel.className = "card";
+  panel.style.cssText =
+    "display:none;max-width:850px;margin:24px auto;padding:20px;";
+
+  panel.innerHTML = `
+    <h2>⚙️ Bharat Nova Settings</h2>
+    <p>अपनी ऐप की सेटिंग चुनें।</p>
+
+    <label for="novaThemeSelect">Appearance / Theme</label>
+    <select id="novaThemeSelect"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="dark">Dark Theme</option>
+      <option value="light">Light Theme</option>
+      <option value="system">System Default</option>
+    </select>
+
+    <label for="novaLanguageSelect">App Language</label>
+    <select id="novaLanguageSelect"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="hi">हिंदी</option>
+      <option value="en">English</option>
+    </select>
+
+    <label for="novaFontSelect">Text Size</label>
+    <select id="novaFontSelect"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="16">Normal</option>
+      <option value="18">Large</option>
+      <option value="20">Extra Large</option>
+    </select>
+
+    <label for="novaSearchEngine">Default Search Engine</label>
+    <select id="novaSearchEngine"
+      style="display:block;width:100%;padding:12px;margin:8px 0 16px;">
+      <option value="google">Google</option>
+      <option value="youtube">YouTube</option>
+      <option value="wikipedia">Wikipedia</option>
+    </select>
+
+    <label style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+      <input id="novaVoicePreference" type="checkbox">
+      Voice Search उपलब्ध होने पर इस्तेमाल करें
+    </label>
+
+    <label style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+      <input id="novaReadAloudPreference" type="checkbox">
+      AI जवाब पढ़कर सुनाने का विकल्प दिखाएँ
+    </label>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+      <button id="novaSaveSettings" class="btn btn-primary" type="button">
+        Save Settings
+      </button>
+      <button id="novaResetSettings" class="btn btn-secondary" type="button">
+        Reset
+      </button>
+      <button id="novaCloseSettings" class="btn btn-secondary" type="button">
+        Close
+      </button>
+    </div>
+
+    <p id="novaSettingsStatus" role="status" aria-live="polite"></p>
+  `;
+
+  const footer = document.querySelector(".footer");
+  if (footer) {
+    footer.parentNode.insertBefore(panel, footer);
+  } else {
+    document.getElementById("app").appendChild(panel);
+  }
+
+  const theme = document.getElementById("novaThemeSelect");
+  const language = document.getElementById("novaLanguageSelect");
+  const font = document.getElementById("novaFontSelect");
+  const engine = document.getElementById("novaSearchEngine");
+  const voice = document.getElementById("novaVoicePreference");
+  const readAloud = document.getElementById("novaReadAloudPreference");
+  const status = document.getElementById("novaSettingsStatus");
+
+  function safeGet(key, fallback) {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function safeSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function applyTheme(value) {
+    const app = document.getElementById("app");
+
+    if (value === "system") {
+      const dark = window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+      value = dark ? "dark" : "light";
+    }
+
+    document.documentElement.dataset.theme = value;
+
+    if (app) {
+      app.dataset.theme = value;
+    }
+
+    const button = document.getElementById("themeButton");
+    if (button) {
+      button.textContent = value === "dark" ? "☀️ Theme" : "🌙 Theme";
+    }
+  }
+
+  function loadSettings() {
+    theme.value = safeGet("nova_theme", "dark");
+    language.value = safeGet("nova_language", "hi");
+    font.value = safeGet("nova_font", "16");
+    engine.value = safeGet("nova_engine", "google");
+    voice.checked = safeGet("nova_voice", "false") === "true";
+    readAloud.checked =
+      safeGet("nova_read_aloud", "false") === "true";
+
+    applyTheme(theme.value);
+    document.documentElement.style.fontSize = font.value + "px";
+  }
+
+  function showSettings() {
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    loadSettings();
+  }
+
+  const openButton = document.getElementById("settingsOpen");
+
+  if (openButton) {
+    openButton.addEventListener("click", showSettings);
+  }
+
+  document.getElementById("novaCloseSettings").addEventListener(
+    "click",
+    function () {
+      panel.style.display = "none";
+    }
+  );
+
+  document.getElementById("novaSaveSettings").addEventListener(
+    "click",
+    function () {
+      const settings = {
+        nova_theme: theme.value,
+        nova_language: language.value,
+        nova_font: font.value,
+        nova_engine: engine.value,
+        nova_voice: String(voice.checked),
+        nova_read_aloud: String(readAloud.checked)
+      };
+
+      let success = true;
+
+      Object.keys(settings).forEach(function (key) {
+        if (!safeSet(key, settings[key])) {
+          success = false;
+        }
+      });
+
+      applyTheme(theme.value);
+      document.documentElement.style.fontSize = font.value + "px";
+
+      status.textContent = success
+        ? "Settings सेव हो गई हैं।"
+        : "Settings पूरी तरह सेव नहीं हो सकीं। Browser storage उपलब्ध नहीं है।";
+    }
+  );
+
+  document.getElementById("novaResetSettings").addEventListener(
+    "click",
+    function () {
+      [
+        "nova_theme",
+        "nova_language",
+        "nova_font",
+        "nova_engine",
+        "nova_voice",
+        "nova_read_aloud"
+      ].forEach(function (key) {
+        try {
+          localStorage.removeItem(key);
+        } catch (error) {
+          /* Storage उपलब्ध न हो तो सुरक्षित रूप से आगे बढ़ें। */
+        }
+      });
+
+      loadSettings();
+      status.textContent = "Default settings लागू कर दी गई हैं।";
+    }
+  );
+
+  const themeButton = document.getElementById("themeButton");
+
+  if (themeButton) {
+    themeButton.addEventListener("click", function () {
+      const current = safeGet("nova_theme", "dark");
+      const next = current === "dark" ? "light" : "dark";
+
+      theme.value = next;
+      safeSet("nova_theme", next);
+      applyTheme(next);
+    });
+  }
+
+  window.novaOpenSettings = showSettings;
+
+  loadSettings();
+})();
+</script>
+<!-- END BHARAT NOVA STEP 8 -->
+ <script>
+(function () {
+  "use strict";
+
+  const helpPanel = document.createElement("section");
+  helpPanel.id = "novaHelpCenter";
+  helpPanel.style.cssText = `
+    display:none;position:fixed;inset:0;z-index:10005;
+    background:rgba(2,8,23,.88);overflow-y:auto;padding:18px;
+  `;
+
+  helpPanel.innerHTML = `
+    <div style="
+      max-width:720px;margin:25px auto;background:var(--card,#10213a);
+      color:var(--text,#fff);padding:22px;border-radius:18px;
+      border:1px solid #344766;box-sizing:border-box;
+    ">
+      <div style="display:flex;justify-content:space-between;
+      align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">🛟 Bharat Nova Help Center</h2>
+        <button id="novaHelpClose" type="button"
+          style="padding:10px 14px;border-radius:9px;cursor:pointer">
+          ✕ Close
+        </button>
+      </div>
+
+      <p>नमस्ते! Bharat Nova इस्तेमाल करने में सहायता के लिए नीचे विकल्प चुनें।</p>
+
+      <div style="display:grid;grid-template-columns:
+      repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:18px 0">
+
+        <button type="button" id="novaHelpSearch"
+          style="padding:14px;border-radius:12px;cursor:pointer">
+          🔎 Search Help
+        </button>
+
+        <button type="button" id="novaHelpAI"
+          style="padding:14px;border-radius:12px;cursor:pointer">
+          🤖 AI Assistant Help
+        </button>
+
+        <button type="button" id="novaHelpAccount"
+          style="padding:14px;border-radius:12px;cursor:pointer">
+          👤 Login & Account Help
+        </button>
+
+        <button type="button" id="novaHelpPrivacy"
+          style="padding:14px;border-radius:12px;cursor:pointer">
+          🔐 Privacy Policy
+        </button>
+
+        <button type="button" id="novaHelpTerms"
+          style="padding:14px;border-radius:12px;cursor:pointer">
+          📄 Terms & Conditions
+        </button>
+
+        <button type="button" id="novaHelpReport"
+          style="padding:14px;border-radius:12px;cursor:pointer">
+          📝 Report a Problem
+        </button>
+      </div>
+
+      <div id="novaHelpContent" style="
+        padding:16px;border-radius:12px;background:rgba(127,127,127,.10);
+        line-height:1.75;overflow-wrap:anywhere
+      ">
+        <h3>Welcome to Bharat Nova</h3>
+        <p>Search the web, use voice search, or open AI Assistant.
+        Internet access may be required for online features.</p>
+      </div>
+
+      <div style="margin-top:18px">
+        <h3>💬 Feedback / Support</h3>
+        <p>अपनी समस्या या सुझाव नीचे लिखें।</p>
+        <textarea id="novaSupportMessage" rows="4"
+          maxlength="2000" placeholder="अपनी समस्या यहाँ लिखें..."
+          style="width:100%;box-sizing:border-box;padding:12px;
+          border-radius:10px;font:inherit"></textarea>
+        <button id="novaSupportSend" type="button"
+          style="margin-top:10px;padding:12px 18px;
+          border-radius:10px;cursor:pointer">
+          📩 Prepare Support Message
+        </button>
+        <p id="novaSupportStatus" role="status"></p>
+      </div>
+
+      <p style="font-size:13px;opacity:.8;margin-top:20px">
+        कृपया Privacy Policy और Terms को अपनी वास्तविक सेवाओं,
+        डेटा उपयोग और संपर्क जानकारी के अनुसार प्रकाशित करने से पहले जाँचें।
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(helpPanel);
+
+  const helpContent = document.getElementById("novaHelpContent");
+
+  function showHelpContent(title, body) {
+    helpContent.innerHTML = "";
+    const heading = document.createElement("h3");
+    heading.textContent = title;
+    const paragraph = document.createElement("p");
+    paragraph.textContent = body;
+    helpContent.append(heading, paragraph);
+  }
+
+  function openHelp() {
+    helpPanel.style.display = "block";
+  }
+
+  function closeHelp() {
+    helpPanel.style.display = "none";
+  }
+
+  const helpButton = document.getElementById("helpOpen");
+  if (helpButton) helpButton.addEventListener("click", openHelp);
+
+  document.getElementById("novaHelpClose")
+    .addEventListener("click", closeHelp);
+
+  helpPanel.addEventListener("click", function (event) {
+    if (event.target === helpPanel) closeHelp();
+  });
+
+  document.getElementById("novaHelpSearch")
+    .addEventListener("click", function () {
+      showHelpContent(
+        "Search Help",
+        "Search box में अपना सवाल लिखें। Search बटन दबाएँ। Google, YouTube और Wikipedia के लिए उपलब्ध बटन भी इस्तेमाल कर सकते हैं। Voice Search के लिए microphone permission और supported browser आवश्यक है।"
+      );
+    });
+
+  document.getElementById("novaHelpAI")
+    .addEventListener("click", function () {
+      showHelpContent(
+        "AI Assistant Help",
+        "AI Assistant खोलकर अपना सवाल लिखें और Send दबाएँ। जवाब आने के लिए इंटरनेट और AI Worker सेवा उपलब्ध होना आवश्यक है। AI के जवाब गलत भी हो सकते हैं। इस समय चुनी गई फोटो या फाइल का वास्तविक विश्लेषण तभी होगा जब backend में उसका समर्थन जोड़ा गया हो।"
+      );
+    });
+
+  document.getElementById("novaHelpAccount")
+    .addEventListener("click", function () {
+      showHelpContent(
+        "Login & Account Help",
+        "Login बटन से नया अकाउंट बनाएँ या पहले से बने अकाउंट में प्रवेश करें। अकाउंट बनाने के लिए Firebase Authentication सेटअप और Email/Password sign-in सक्षम होना चाहिए। यदि login विफल हो, तो ईमेल, पासवर्ड, इंटरनेट और Firebase configuration जाँचें।"
+      );
+    });
+
+  document.getElementById("novaHelpPrivacy")
+    .addEventListener("click", function () {
+      showHelpContent(
+        "Privacy Policy",
+        "Bharat Nova आपकी जानकारी को कैसे उपयोग और सुरक्षित करता है, यह उसकी वास्तविक Firebase settings, AI backend और लागू सेवाओं पर निर्भर करता है। Search queries AI सेवा को भेजी जा सकती हैं। पासवर्ड या निजी जानकारी AI में न लिखें। ऐप प्रकाशित करने से पहले वास्तविक data collection, retention, third-party services, contact details और account deletion प्रक्रिया की पूरी Privacy Policy जोड़ें।"
+      );
+    });
+
+  document.getElementById("novaHelpTerms")
+    .addEventListener("click", function () {
+      showHelpContent(
+        "Terms & Conditions",
+        "Bharat Nova का उपयोग करते समय कानून का पालन करें। AI उत्तरों को बिना जाँच के महत्वपूर्ण निर्णयों का एकमात्र आधार न बनाएँ। सेवा की उपलब्धता, उपयोग की सीमाएँ, premium plans, refunds, intellectual property, account suspension और support के नियम प्रकाशित करने से पहले स्पष्ट रूप से लिखें। यह सामान्य प्रारंभिक सूचना है, पूर्ण कानूनी दस्तावेज नहीं।"
+      );
+    });
+
+  document.getElementById("novaHelpReport")
+    .addEventListener("click", function () {
+      showHelpContent(
+        "Report a Problem",
+        "नीचे Feedback / Support बॉक्स में समस्या लिखें। उदाहरण: login काम नहीं कर रहा, AI जवाब नहीं दे रहा, voice search नहीं चल रहा, या पेज पर error आ रहा है। पासवर्ड, OTP या payment card की जानकारी न भेजें।"
+      );
+      document.getElementById("novaSupportMessage").focus();
+    });
+
+  document.getElementById("novaSupportSend")
+    .addEventListener("click", function () {
+      const input = document.getElementById("novaSupportMessage");
+      const status = document.getElementById("novaSupportStatus");
+      const message = input.value.trim();
+
+      if (!message) {
+        status.textContent = "कृपया पहले अपनी समस्या लिखें।";
+        return;
+      }
+
+      const subject = encodeURIComponent("Bharat Nova Support Request");
+      const body = encodeURIComponent(
+        "Bharat Nova Support Request\n\n" + message
+      );
+
+      status.textContent =
+        "आपका email draft खोलने की कोशिश की जा रही है। इसे भेजने से पहले जाँच लें।";
+
+      window.location.href =
+        "mailto:Manmohan595120@gmail.com?subject=" +
+        subject + "&body=" + body;
+    });
+
+  window.novaOpenHelpCenter = openHelp;
+  console.log("Bharat Nova Step 9 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 9 -->
+ <script>
+(function () {
+  "use strict";
+
+  const historyPanel = document.createElement("section");
+  historyPanel.id = "novaHistoryPanel";
+  historyPanel.style.cssText = `
+    display:none;position:fixed;inset:0;z-index:10006;
+    overflow-y:auto;padding:18px;background:rgba(2,8,23,.90);
+  `;
+
+  historyPanel.innerHTML = `
+    <div style="
+      max-width:700px;margin:25px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #344766;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+      align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="margin:0">🕘 History & Privacy</h2>
+        <button type="button" id="novaHistoryClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <p>आपकी इस डिवाइस पर सेव की गई Bharat Nova search history यहाँ दिखाई जाएगी।</p>
+
+      <h3>🔎 Search History</h3>
+      <div id="novaSearchHistoryList"
+        style="padding:10px;border-radius:10px;
+        background:rgba(127,127,127,.10)">
+        अभी कोई search history नहीं है।
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0">
+        <button type="button" id="novaClearSearchHistory"
+          style="padding:11px;border-radius:9px">
+          Clear Search History
+        </button>
+        <button type="button" id="novaRefreshHistory"
+          style="padding:11px;border-radius:9px">
+          Refresh
+        </button>
+      </div>
+
+      <h3>🤖 AI Chat</h3>
+      <p>AI chat history इस डिवाइस पर अलग से सेव नहीं की जाती।
+      मौजूदा chat साफ करने के लिए AI panel का Clear बटन इस्तेमाल करें।</p>
+
+      <button type="button" id="novaClearAIChat"
+        style="padding:11px;border-radius:9px">
+        Clear Current AI Chat
+      </button>
+
+      <h3 style="margin-top:22px">🔐 Privacy Reminder</h3>
+      <p>Search history हटाने से Google या अन्य वेबसाइटों के अपने records
+      नहीं हटते। यह विकल्प केवल Bharat Nova की इस डिवाइस पर सेव की गई
+      search history साफ करता है।</p>
+
+      <p id="novaHistoryStatus" role="status"></p>
+    </div>
+  `;
+
+  document.body.appendChild(historyPanel);
+
+  const historyList =
+    document.getElementById("novaSearchHistoryList");
+  const historyStatus =
+    document.getElementById("novaHistoryStatus");
+
+  function getSearchHistory() {
+    try {
+      const stored = localStorage.getItem("nova_search_history");
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function renderSearchHistory() {
+    const items = getSearchHistory();
+    historyList.replaceChildren();
+
+    if (!items.length) {
+      historyList.textContent = "अभी कोई search history नहीं है।";
+      return;
+    }
+
+    items.slice().reverse().forEach(function (item) {
+      const row = document.createElement("div");
+      row.style.cssText =
+        "padding:10px 4px;border-bottom:1px solid #475569;overflow-wrap:anywhere";
+
+      const query = document.createElement("div");
+      query.textContent = String(item.query || "Search");
+
+      const meta = document.createElement("small");
+      meta.style.opacity = ".75";
+      meta.textContent = String(item.engine || "google") +
+        " · " + String(item.time || "");
+
+      row.append(query, meta);
+      historyList.appendChild(row);
+    });
+  }
+
+  function openHistory() {
+    historyPanel.style.display = "block";
+    renderSearchHistory();
+  }
+
+  function closeHistory() {
+    historyPanel.style.display = "none";
+  }
+
+  document.getElementById("novaHistoryClose")
+    .addEventListener("click", closeHistory);
+
+  historyPanel.addEventListener("click", function (event) {
+    if (event.target === historyPanel) closeHistory();
+  });
+
+  document.getElementById("novaRefreshHistory")
+    .addEventListener("click", renderSearchHistory);
+
+  document.getElementById("novaClearSearchHistory")
+    .addEventListener("click", function () {
+      if (!window.confirm("क्या आप इस डिवाइस की पूरी search history हटाना चाहते हैं?")) {
+        return;
+      }
+
+      localStorage.removeItem("nova_search_history");
+      renderSearchHistory();
+      historyStatus.textContent = "Search history साफ कर दी गई है।";
+    });
+
+  document.getElementById("novaClearAIChat")
+    .addEventListener("click", function () {
+      const clearButton = document.getElementById("novaAIClear");
+
+      if (clearButton) {
+        clearButton.click();
+        historyStatus.textContent = "मौजूदा AI chat साफ करने का अनुरोध किया गया।";
+      } else {
+        historyStatus.textContent =
+          "AI panel उपलब्ध नहीं है। पहले AI Assistant खोलें।";
+      }
+    });
+
+  const settingsButton = document.getElementById("settingsOpen");
+
+  if (settingsButton) {
+    const historyButton = document.createElement("button");
+    historyButton.type = "button";
+    historyButton.id = "novaHistoryOpen";
+    historyButton.textContent = "🕘 History";
+    historyButton.style.cssText =
+      "padding:10px 14px;border-radius:10px;cursor:pointer;margin:5px";
+
+    settingsButton.insertAdjacentElement("afterend", historyButton);
+    historyButton.addEventListener("click", openHistory);
+  }
+
+  window.novaOpenHistory = openHistory;
+
+  console.log("Bharat Nova Step 10 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 10 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 11 */
+
+  function saveSearchHistory(query, engine) {
+    const cleanQuery = String(query || "").trim();
+    if (!cleanQuery) return;
+
+    try {
+      let history = JSON.parse(
+        localStorage.getItem("nova_search_history") || "[]"
+      );
+
+      if (!Array.isArray(history)) history = [];
+
+      history.push({
+        query: cleanQuery.slice(0, 500),
+        engine: String(engine || "google"),
+        time: new Date().toLocaleString()
+      });
+
+      localStorage.setItem(
+        "nova_search_history",
+        JSON.stringify(history.slice(-100))
+      );
+    } catch (error) {
+      console.warn("Search history could not be saved.", error);
+    }
+  }
+
+  window.novaStep11SaveHistory = saveSearchHistory;
+
+  /* Default search engine */
+  const originalNovaSearch = window.novaSearch;
+
+  window.novaSearch = function (engine) {
+    const input = document.getElementById("searchInput");
+    const query = input ? input.value.trim() : "";
+
+    let selectedEngine = String(engine || "").toLowerCase();
+
+    if (!["google", "youtube", "wikipedia"].includes(selectedEngine)) {
+      selectedEngine = localStorage.getItem("nova_engine") || "google";
+    }
+
+    if (query) saveSearchHistory(query, selectedEngine);
+
+    if (typeof originalNovaSearch === "function") {
+      return originalNovaSearch(selectedEngine);
+    }
+
+    if (!query) {
+      if (typeof window.novaMessage === "function") {
+        window.novaMessage("पहले अपना सवाल लिखें।");
+      }
+      return;
+    }
+
+    const encoded = encodeURIComponent(query);
+    const urls = {
+      google: "https://www.google.com/search?q=" + encoded,
+      youtube: "https://www.youtube.com/results?search_query=" + encoded,
+      wikipedia: "https://en.wikipedia.org/w/index.php?search=" + encoded
+    };
+
+    window.open(urls[selectedEngine], "_blank", "noopener");
+  };
+
+  /* Save history for existing search buttons */
+  [
+    ["searchButton", "google"],
+    ["googleButton", "google"],
+    ["youtubeButton", "youtube"],
+    ["wikiButton", "wikipedia"]
+  ].forEach(function (entry) {
+    const button = document.getElementById(entry[0]);
+    if (!button) return;
+
+    button.addEventListener("click", function () {
+      const input = document.getElementById("searchInput");
+      if (!input || !input.value.trim()) return;
+
+      let engine = entry[1];
+
+      if (entry[0] === "searchButton") {
+        engine = localStorage.getItem("nova_engine") || "google";
+      }
+
+      saveSearchHistory(input.value, engine);
+    });
+  });
+
+  /* Share Bharat Nova */
+  const shareButton = document.createElement("button");
+  shareButton.type = "button";
+  shareButton.id = "novaShareButton";
+  shareButton.textContent = "📤 Share Bharat Nova";
+  shareButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;cursor:pointer";
+
+  const header = document.querySelector(".topbar");
+
+  if (header) {
+    header.appendChild(shareButton);
+  } else {
+    document.body.appendChild(shareButton);
+  }
+
+  shareButton.addEventListener("click", async function () {
+    const shareData = {
+      title: "Bharat Nova",
+      text: "Try Bharat Nova — Search Smarter. Think Bigger.",
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareData.url);
+        alert("Bharat Nova का लिंक कॉपी हो गया है।");
+      } else {
+        window.prompt("Bharat Nova लिंक कॉपी करें:", shareData.url);
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        window.prompt("लिंक कॉपी करें:", shareData.url);
+      }
+    }
+  });
+
+  console.log("Bharat Nova Step 11 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 11 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 12 */
+
+  const panel = document.createElement("section");
+  panel.id = "novaAppInfoPanel";
+  panel.style.cssText =
+    "display:none;position:fixed;inset:0;z-index:10008;" +
+    "overflow-y:auto;padding:18px;background:rgba(2,8,23,.90)";
+
+  panel.innerHTML = `
+    <div style="
+      max-width:650px;margin:25px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #475569;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+        gap:12px;align-items:center;flex-wrap:wrap">
+        <h2 style="margin:0">🇮🇳 About Bharat Nova</h2>
+        <button type="button" id="novaInfoClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <div style="padding:16px;margin-top:16px;
+        border-radius:12px;background:rgba(127,127,127,.10)">
+        <h3>🔷 Bharat Nova</h3>
+        <p>Search Smarter. Think Bigger.</p>
+        <p>वेब सर्च और AI सहायता के लिए बनाया गया आपका वेब ऐप।</p>
+        <p><strong>Version:</strong> 1.0.0</p>
+        <p><strong>Network:</strong>
+          <span id="novaNetworkStatus">जाँच जारी है...</span>
+        </p>
+        <p><strong>App Mode:</strong>
+          <span id="novaAppMode">Browser</span>
+        </p>
+      </div>
+
+      <h3>📲 Install Bharat Nova</h3>
+      <p>यदि आपका ब्राउज़र PWA installation का समर्थन करता है,
+      तो Install बटन से ऐप को होम स्क्रीन पर जोड़ सकते हैं।</p>
+      <button type="button" id="novaInstallNow"
+        style="padding:12px 18px;border-radius:10px">
+        📲 Install App
+      </button>
+      <p id="novaInstallStatus" role="status"></p>
+
+      <h3>🌐 Quick Links</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button type="button" id="novaInfoGoogle"
+          style="padding:10px;border-radius:9px">Google</button>
+          <button type="button" id="novaGoogleVoice"
+style="padding:10px;border-radius:9px">🎤 Google Voice</button>
+        <button type="button" id="novaInfoYouTube"
+          style="padding:10px;border-radius:9px">YouTube</button>
+        <button type="button" id="novaInfoWiki"
+          style="padding:10px;border-radius:9px">Wikipedia</button>
+      </div>
+
+      <p style="font-size:13px;opacity:.8;margin-top:20px">
+        Install विकल्प ब्राउज़र, HTTPS और PWA manifest/service worker
+        configuration पर निर्भर करता है।
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(panel);
+
+  let installPrompt = null;
+
+  const installStatus = document.getElementById("novaInstallStatus");
+  const networkStatus = document.getElementById("novaNetworkStatus");
+  const appMode = document.getElementById("novaAppMode");
+
+  function updateNetworkStatus() {
+    networkStatus.textContent = navigator.onLine
+      ? "Online"
+      : "Offline — इंटरनेट कनेक्शन जाँचें";
+
+    networkStatus.style.color = navigator.onLine
+      ? "#4ade80"
+      : "#f87171";
+  }
+
+  function updateAppMode() {
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    appMode.textContent = standalone
+      ? "Installed App"
+      : "Browser";
+  }
+
+  function openInfo() {
+    panel.style.display = "block";
+    updateNetworkStatus();
+    updateAppMode();
+  }
+
+  function closeInfo() {
+    panel.style.display = "none";
+  }
+
+  document.getElementById("novaInfoClose")
+    .addEventListener("click", closeInfo);
+
+  panel.addEventListener("click", function (event) {
+    if (event.target === panel) closeInfo();
+  });
+
+  window.addEventListener("online", updateNetworkStatus);
+  window.addEventListener("offline", updateNetworkStatus);
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    installPrompt = event;
+    installStatus.textContent = "ऐप इंस्टॉल करने के लिए तैयार है।";
+  });
+
+  document.getElementById("novaInstallNow")
+    .addEventListener("click", async function () {
+      if (installPrompt) {
+        installPrompt.prompt();
+
+        try {
+          const choice = await installPrompt.userChoice;
+          installStatus.textContent =
+            choice.outcome === "accepted"
+              ? "Install अनुरोध स्वीकार किया गया।"
+              : "Install अभी रद्द किया गया।";
+        } catch (error) {
+          installStatus.textContent =
+            "Install स्थिति प्राप्त नहीं हो सकी।";
+        }
+
+        installPrompt = null;
+        return;
+      }
+
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        installStatus.textContent =
+          "Bharat Nova पहले से installed mode में चल रहा है।";
+      } else {
+        installStatus.textContent =
+          "Chrome के मेनू में 'Add to Home screen' या 'Install app' देखें।";
+      }
+    });
+
+  document.getElementById("novaInfoGoogle")
+    .addEventListener("click", function () {
+      window.open("https://www.google.com/", "_blank", "noopener");
+    });
+
+  document.getElementById("novaInfoYouTube")
+    .addEventListener("click", function () {
+      window.open("https://www.youtube.com/", "_blank", "noopener");
+    });
+
+  document.getElementById("novaInfoWiki")
+    .addEventListener("click", function () {
+      window.open("https://www.wikipedia.org/", "_blank", "noopener");
+    });
+
+  const footer = document.querySelector(".footer");
+ const googleVoiceButton = document.getElementById("novaGoogleVoice");
+
+if (googleVoiceButton) {
+googleVoiceButton.addEventListener("click", function () {
+const SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Google Voice के लिए Android Chrome इस्तेमाल करें।");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  googleVoiceButton.textContent = "🎤 सुन रहा हूँ...";
+
+  recognition.onresult = function (event) {
+    const spokenText = event.results[0][0].transcript.trim();
+
+    if (spokenText) {
+      const googleUrl =
+        "https://www.google.com/search?q=" +
+        encodeURIComponent(spokenText);
+
+      window.open(googleUrl, "_blank", "noopener");
+    }
+  };
+
+  recognition.onerror = function () {
+    alert("माइक्रोफोन की अनुमति जाँचें और दोबारा कोशिश करें।");
+  };
+
+  recognition.onend = function () {
+    googleVoiceButton.textContent = "🎤 Google Voice";
+  };
+
+  recognition.start();
+});
+
+}
+  const infoButton = document.createElement("button");
+
+  infoButton.type = "button";
+  infoButton.id = "novaAboutButton";
+  infoButton.textContent = "ℹ️ About / Install";
+  infoButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;cursor:pointer";
+
+  if (footer) {
+    footer.appendChild(infoButton);
+  } else {
+    document.body.appendChild(infoButton);
+  }
+
+  infoButton.addEventListener("click", openInfo);
+
+  const oldInstallButton = document.getElementById("installButton");
+
+  if (oldInstallButton) {
+    oldInstallButton.addEventListener("click", openInfo);
+  }
+
+  window.novaOpenAppInfo = openInfo;
+
+  updateNetworkStatus();
+  updateAppMode();
+
+  console.log("Bharat Nova Step 12 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 12 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 13 */
+
+  const premiumPanel = document.createElement("section");
+  premiumPanel.id = "novaPremiumPanel";
+
+  premiumPanel.style.cssText =
+    "display:none;position:fixed;inset:0;z-index:10009;" +
+    "overflow-y:auto;padding:16px;background:rgba(2,8,23,.92)";
+
+  premiumPanel.innerHTML = `
+    <div style="
+      max-width:760px;margin:20px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #475569;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">👑 Bharat Nova Premium</h2>
+        <button type="button" id="novaPremiumClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <p>अपने उपयोग के अनुसार plan चुनें।</p>
+
+      <div style="display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+        gap:14px;margin:20px 0">
+
+        <article style="padding:18px;border:1px solid #64748b;
+          border-radius:14px">
+          <h3>🆓 Free</h3>
+          <p style="font-size:26px;font-weight:bold">₹0</p>
+          <p>सामान्य search और उपलब्ध free सुविधाएँ।</p>
+          <button type="button" id="novaFreePlan"
+            style="padding:11px;border-radius:9px;width:100%">
+            Continue Free
+          </button>
+        </article>
+
+        <article style="padding:18px;border:1px solid #eab308;
+          border-radius:14px">
+          <h3>⭐ Monthly Premium</h3>
+          <p style="font-size:26px;font-weight:bold">₹49</p>
+          <p>30 दिनों के लिए।</p>
+          <button type="button" id="novaMonthlyPlan"
+            style="padding:11px;border-radius:9px;width:100%">
+            Choose Monthly
+          </button>
+        </article>
+
+        <article style="padding:18px;border:1px solid #eab308;
+          border-radius:14px">
+          <h3>💎 3-Month Premium</h3>
+          <p style="font-size:26px;font-weight:bold">₹129</p>
+          <p>90 दिनों के लिए।</p>
+          <button type="button" id="novaQuarterPlan"
+            style="padding:11px;border-radius:9px;width:100%">
+            Choose 3 Months
+          </button>
+        </article>
+      </div>
+
+      <div style="padding:16px;border-radius:12px;
+        background:rgba(127,127,127,.10)">
+        <h3>👤 My Dashboard</h3>
+        <p><strong>Name:</strong> <span id="novaDashName">Guest</span></p>
+        <p><strong>Email:</strong> <span id="novaDashEmail">Not signed in</span></p>
+        <p><strong>Account:</strong> <span id="novaDashStatus">Free / Guest</span></p>
+        <p id="novaPremiumMessage" role="status" aria-live="polite">
+          Premium सुविधाएँ भुगतान सत्यापन के बाद ही सक्रिय होनी चाहिए।
+        </p>
+      </div>
+
+      <p style="font-size:13px;opacity:.8;margin-top:18px">
+        यह स्क्रीन plan चयन का इंटरफ़ेस है। अभी यह भुगतान नहीं लेती और
+        Premium सदस्यता सक्रिय नहीं करती। भुगतान से पहले वैध payment
+        gateway, server-side verification, refund policy और सुरक्षा नियम
+        सेट करना आवश्यक है।
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(premiumPanel);
+
+  const premiumMessage =
+    document.getElementById("novaPremiumMessage");
+
+  function openPremium() {
+    premiumPanel.style.display = "block";
+    updateDashboard();
+  }
+
+  function closePremium() {
+    premiumPanel.style.display = "none";
+  }
+
+  function updateDashboard() {
+    const user = window.novaFirebaseAuthInstance &&
+      window.novaFirebaseAuthInstance.currentUser;
+
+    document.getElementById("novaDashName").textContent =
+      user && user.displayName ? user.displayName : "User";
+
+    document.getElementById("novaDashEmail").textContent =
+      user && user.email ? user.email : "Not signed in";
+
+    document.getElementById("novaDashStatus").textContent =
+      user ? "Signed in — Free unless verified Premium" : "Guest / Free";
+  }
+
+  document.getElementById("novaPremiumClose")
+    .addEventListener("click", closePremium);
+
+  premiumPanel.addEventListener("click", function (event) {
+    if (event.target === premiumPanel) closePremium();
+  });
+
+  document.getElementById("novaFreePlan")
+    .addEventListener("click", function () {
+      premiumMessage.textContent =
+        "Free plan चुना गया। उपलब्ध free सुविधाएँ इस्तेमाल कर सकते हैं।";
+    });
+
+  document.getElementById("novaMonthlyPlan")
+    .addEventListener("click", function () {
+      premiumMessage.textContent =
+        "Monthly plan: ₹49 / 30 days. Payment gateway अभी जोड़ा नहीं गया है; कोई भुगतान नहीं हुआ।";
+    });
+
+  document.getElementById("novaQuarterPlan")
+    .addEventListener("click", function () {
+      premiumMessage.textContent =
+        "3-Month plan: ₹129 / 90 days. Payment gateway अभी जोड़ा नहीं गया है; कोई भुगतान नहीं हुआ।";
+    });
+
+  const premiumButton = document.createElement("button");
+  premiumButton.type = "button";
+  premiumButton.id = "novaPremiumOpen";
+  premiumButton.textContent = "👑 Premium";
+  premiumButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;" +
+    "cursor:pointer";
+
+  const header = document.querySelector(".topbar");
+
+  if (header) {
+    header.appendChild(premiumButton);
+  } else {
+    document.body.appendChild(premiumButton);
+  }
+
+  premiumButton.addEventListener("click", openPremium);
+
+  window.novaOpenPremium = openPremium;
+  window.novaUpdateDashboard = updateDashboard;
+
+  if (window.novaFirebaseAuthInstance) {
+    window.novaFirebaseAuthInstance.onAuthStateChanged(function () {
+      updateDashboard();
+    });
+  }
+
+  console.log("Bharat Nova Step 13 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 13 -->
+ <script>
+(function () {
+  "use strict";
+
+  /* BHARAT NOVA STEP 14 */
+
+  const securityPanel = document.createElement("section");
+  securityPanel.id = "novaSecurityPanel";
+  securityPanel.style.cssText =
+    "display:none;position:fixed;inset:0;z-index:10010;" +
+    "overflow-y:auto;padding:16px;background:rgba(2,8,23,.92)";
+
+  securityPanel.innerHTML = `
+    <div style="
+      max-width:680px;margin:22px auto;padding:22px;
+      border-radius:18px;background:var(--card,#10213a);
+      color:var(--text,#fff);border:1px solid #475569;
+      box-sizing:border-box
+    ">
+      <div style="display:flex;justify-content:space-between;
+        align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="margin:0">🔐 Security & Privacy</h2>
+        <button type="button" id="novaSecurityClose"
+          style="padding:10px;border-radius:9px">✕ Close</button>
+      </div>
+
+      <h3>👤 Account Information</h3>
+      <p><strong>Email:</strong> <span id="novaSecurityEmail">Guest</span></p>
+      <p><strong>User ID:</strong> <span id="novaSecurityUID">Not signed in</span></p>
+
+      <h3>🧹 Manage Local Data</h3>
+      <p>ये विकल्प इसी ब्राउज़र में सेव की गई Bharat Nova जानकारी साफ करते हैं।</p>
+      <button type="button" id="novaSecurityClearSearch"
+        style="padding:11px;border-radius:9px;margin:4px">
+        Clear Search History
+      </button>
+      <button type="button" id="novaSecurityClearPrefs"
+        style="padding:11px;border-radius:9px;margin:4px">
+        Reset Preferences
+      </button>
+
+      <h3>🚪 Account Session</h3>
+      <button type="button" id="novaSecurityLogout"
+        style="padding:11px;border-radius:9px;margin:4px">
+        Logout
+      </button>
+
+      <h3>⚠️ Delete Account</h3>
+      <p>Account deletion स्थायी हो सकती है। आगे बढ़ने से पहले अपनी
+      जानकारी सुरक्षित कर लें। Firebase user deletion के लिए दोबारा
+      sign-in करना पड़ सकता है। यह विकल्प Firebase Authentication account
+      हटाने का प्रयास करता है; Firestore के सभी user records या दूसरे
+      सेव किए गए डेटा अपने-आप नहीं हटते।</p>
+      <button type="button" id="novaSecurityDeleteAccount"
+        style="padding:11px;border-radius:9px;margin:4px;
+        background:#991b1b;color:white">
+        Delete Authentication Account
+      </button>
+
+      <p id="novaSecurityMessage" role="status" aria-live="polite"></p>
+    </div>
+  `;
+
+  document.body.appendChild(securityPanel);
+
+  const securityMessage =
+    document.getElementById("novaSecurityMessage");
+
+  function currentUser() {
+    return window.novaFirebaseAuthInstance
+      ? window.novaFirebaseAuthInstance.currentUser
+      : null;
+  }
+
+  function updateSecurityAccount() {
+    const user = currentUser();
+
+    document.getElementById("novaSecurityEmail").textContent =
+      user && user.email ? user.email : "Guest / Not signed in";
+
+    document.getElementById("novaSecurityUID").textContent =
+      user && user.uid ? user.uid : "Not signed in";
+  }
+
+  function openSecurity() {
+    securityPanel.style.display = "block";
+    updateSecurityAccount();
+    securityMessage.textContent = "";
+  }
+
+  function closeSecurity() {
+    securityPanel.style.display = "none";
+  }
+
+  document.getElementById("novaSecurityClose")
+    .addEventListener("click", closeSecurity);
+
+  securityPanel.addEventListener("click", function (event) {
+    if (event.target === securityPanel) closeSecurity();
+  });
+
+  document.getElementById("novaSecurityClearSearch")
+    .addEventListener("click", function () {
+      if (!confirm("क्या इस डिवाइस की Bharat Nova search history साफ करें?")) {
+        return;
+      }
+
+      localStorage.removeItem("nova_search_history");
+      securityMessage.textContent =
+        "इस डिवाइस की search history साफ कर दी गई है।";
+    });
+
+  document.getElementById("novaSecurityClearPrefs")
+    .addEventListener("click", function () {
+      if (!confirm("क्या theme, language और अन्य preferences reset करें?")) {
+        return;
+      }
+
+      [
+        "nova_theme",
+        "nova_language",
+        "nova_font",
+        "nova_engine",
+        "nova_voice",
+        "nova_read_aloud"
+      ].forEach(function (key) {
+        localStorage.removeItem(key);
+      });
+
+      securityMessage.textContent =
+        "Preferences reset कर दी गई हैं। बदलाव पूरी तरह लागू करने के लिए पेज reload करें।";
+    });
+
+  document.getElementById("novaSecurityLogout")
+    .addEventListener("click", async function () {
+      const auth = window.novaFirebaseAuthInstance;
+
+      if (!auth) {
+        securityMessage.textContent =
+          "Firebase Authentication उपलब्ध नहीं है।";
+        return;
+      }
+
+      try {
+        await auth.signOut();
+        securityMessage.textContent = "आप logout हो गए हैं।";
+        updateSecurityAccount();
+      } catch (error) {
+        securityMessage.textContent =
+          "Logout नहीं हुआ: " + (error.message || "कृपया पुनः प्रयास करें।");
+      }
+    });
+
+  document.getElementById("novaSecurityDeleteAccount")
+    .addEventListener("click", async function () {
+      const user = currentUser();
+
+      if (!user) {
+        securityMessage.textContent =
+          "Account हटाने के लिए पहले login करें।";
+        return;
+      }
+
+      const confirmed = confirm(
+        "चेतावनी: Firebase Authentication account हटाने का प्रयास होगा। " +
+        "यह कदम वापस नहीं लिया जा सकता। क्या आप आगे बढ़ना चाहते हैं?"
+      );
+
+      if (!confirmed) return;
+
+      const secondConfirmation = prompt(
+        "पुष्टि के लिए DELETE लिखें:"
+      );
+
+      if (secondConfirmation !== "DELETE") {
+        securityMessage.textContent = "Account deletion रद्द कर दी गई।";
+        return;
+      }
+
+      try {
+        await user.delete();
+        securityMessage.textContent =
+          "Firebase Authentication account हटाने का अनुरोध पूरा हुआ। " +
+          "अन्य Firestore data की अलग से जाँच आवश्यक है।";
+        updateSecurityAccount();
+      } catch (error) {
+        if (error.code === "auth/requires-recent-login") {
+          securityMessage.textContent =
+            "सुरक्षा के लिए दोबारा login करें, फिर account deletion दोहराएँ।";
+        } else {
+          securityMessage.textContent =
+            "Account हटाया नहीं जा सका: " +
+            (error.message || "कृपया Firebase configuration जाँचें।");
+        }
+      }
+    });
+
+  const securityButton = document.createElement("button");
+  securityButton.type = "button";
+  securityButton.id = "novaSecurityOpen";
+  securityButton.textContent = "🔐 Security";
+  securityButton.style.cssText =
+    "padding:10px 14px;margin:5px;border-radius:10px;cursor:pointer";
+
+  const footer = document.querySelector(".footer");
+
+  if (footer) {
+    footer.appendChild(securityButton);
+  } else {
+    document.body.appendChild(securityButton);
+  }
+
+  securityButton.addEventListener("click", openSecurity);
+
+  window.novaOpenSecurity = openSecurity;
+
+  if (window.novaFirebaseAuthInstance) {
+    window.novaFirebaseAuthInstance.onAuthStateChanged(
+      updateSecurityAccount
+    );
+  }
+
+  console.log("Bharat Nova Step 14 loaded.");
+})();
+</script>
+<!-- END BHARAT NOVA STEP 14 -->
+ <script>
+/* =========================================
+   BHARAT NOVA — STEP 15 OF 15
+   Admin Users, Block/Unblock, Diagnostics
+   ========================================= */
+(function () {
+  "use strict";
+
+  const ADMIN_EMAIL = "Manmohan595120@gmail.com";
+  const db = () => window.novaFirebaseDatabase;
+  const auth = () => window.novaFirebaseAuthInstance;
+
+  function showNotice(message) {
+    if (typeof window.novaMessage === "function") {
+      window.novaMessage(message);
+    } else {
+      alert(message);
+    }
+  }
+
+  function createAdminPanel() {
+    if (document.getElementById("novaAdminPanel")) return;
+
+    const panel = document.createElement("section");
+    panel.id = "novaAdminPanel";
+    panel.style.cssText =
+      "display:none;position:fixed;inset:0;z-index:10050;" +
+      "overflow:auto;background:#061429;color:#fff;padding:18px;" +
+      "font-family:Arial,sans-serif";
+
+    panel.innerHTML = `
+      <div style="max-width:1000px;margin:15px auto;padding:18px;
+        border:1px solid #d6b33f;border-radius:16px;background:#0b1c35">
+        <div style="display:flex;justify-content:space-between;
+          align-items:center;gap:10px;flex-wrap:wrap">
+          <h2 style="color:#f4c542;margin:0">Bharat Nova Admin</h2>
+          <button id="novaAdminClose" type="button"
+            style="padding:10px;border-radius:8px">Close ✕</button>
+        </div>
+        <p>Users Management — users को देखें और Block/Unblock करें।</p>
+        <p id="novaAdminStatus" role="status">Admin permission जाँची जा रही है…</p>
+        <button id="novaAdminRefresh" type="button"
+          style="padding:10px;border-radius:8px;margin:8px 0">
+          Refresh Users
+        </button>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:650px">
+            <thead>
+              <tr style="color:#f4c542;text-align:left">
+                <th style="padding:9px">Name</th>
+                <th style="padding:9px">Email</th>
+                <th style="padding:9px">User ID</th>
+                <th style="padding:9px">Status</th>
+                <th style="padding:9px">Action</th>
+              </tr>
+            </thead>
+            <tbody id="novaAdminUsers">
+              <tr><td colspan="5" style="padding:10px">
+                Admin login के बाद users लोड होंगे।
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:#d4dbea">
+          सुरक्षा नोट: केवल इस panel को छिपाना पर्याप्त सुरक्षा नहीं है।
+          Firestore Security Rules में admin access और user updates की
+          अनुमति सुरक्षित रूप से सीमित करना आवश्यक है।
+        </p>
+      </div>`;
+
+    document.body.appendChild(panel);
+
+    document.getElementById("novaAdminClose").onclick = () => {
+      panel.style.display = "none";
+    };
+
+    document.getElementById("novaAdminRefresh").onclick = loadAdminUsers;
+  }
+
+  function adminStatus(message) {
+    const el = document.getElementById("novaAdminStatus");
+    if (el) el.textContent = message;
+  }
+
+  async function verifyAdmin() {
+    const a = auth();
+    const database = db();
+
+    if (!a || !a.currentUser) {
+      throw new Error("पहले Bharat Nova में Admin account से Login करें।");
+    }
+
+    const user = a.currentUser;
+    if ((user.email || "").trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      throw new Error("Admin email match नहीं हुआ। वर्तमान email: " + (user.email || "नहीं मिला"));
+    }
+
+    if (!database) {
+      throw new Error("Firebase Firestore उपलब्ध नहीं है। Firebase initialization जाँचें।");
+    }
+
+    // Admin identity is checked here by email; Firestore Security Rules
+    // must independently restrict admin operations to this authenticated email.
+    console.log("Bharat Nova admin email verified:", user.email);
+    console.log("Bharat Nova admin UID:", user.uid);
+    return { user, database };
+  }
+
+  async function loadAdminUsers() {
+    const body = document.getElementById("novaAdminUsers");
+    if (!body) return;
+
+    body.innerHTML = "";
+    adminStatus("Admin permission जाँची जा रही है…");
+
+    try {
+      const { user, database } = await verifyAdmin();
+      adminStatus("Admin verified. Users लोड हो रहे हैं…");
+
+      const snapshot = await database.collection("users").get();
+
+      if (snapshot.empty) {
+        body.innerHTML =
+          '<tr><td colspan="5" style="padding:10px">कोई user record नहीं मिला।</td></tr>';
+        adminStatus("Users collection खाली है।");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data() || {};
+        const row = document.createElement("tr");
+        row.style.borderTop = "1px solid #34445d";
+
+        const name = data.name || data.displayName || "—";
+        const email = data.email || "—";
+        const isBlocked = data.blocked === true;
+        const isAdminRecord =
+          doc.id === user.uid ||
+          data.role === "admin" ||
+          data.isAdmin === true;
+
+        [name, email, doc.id, isBlocked ? "Blocked" : "Active"]
+          .forEach((value) => {
+            const cell = document.createElement("td");
+            cell.style.cssText = "padding:9px;vertical-align:top";
+            cell.textContent = String(value);
+            row.appendChild(cell);
+          });
+
+        const actionCell = document.createElement("td");
+        actionCell.style.padding = "9px";
+
+        const actionButton = document.createElement("button");
+        actionButton.type = "button";
+        actionButton.textContent = isAdminRecord
+          ? "Admin Protected"
+          : (isBlocked ? "Unblock" : "Block");
+        actionButton.disabled = isAdminRecord;
+        actionButton.style.cssText =
+          "padding:8px 10px;border-radius:7px;cursor:pointer";
+
+        actionButton.addEventListener("click", async () => {
+          if (isAdminRecord) return;
+
+          const action = isBlocked ? "Unblock" : "Block";
+          if (!confirm("क्या आप इस user को " + action + " करना चाहते हैं?")) {
+            return;
+          }
+
+          actionButton.disabled = true;
+
+          try {
+            const check = await verifyAdmin();
+            const freshDoc = await check.database
+              .collection("users").doc(doc.id).get();
+
+            if (!freshDoc.exists) {
+              throw new Error("User record अब उपलब्ध नहीं है।");
+            }
+
+            const freshData = freshDoc.data() || {};
+            if (doc.id === check.user.uid ||
+                freshData.role === "admin" ||
+                freshData.isAdmin === true) {
+              throw new Error("Admin account को Block नहीं किया जा सकता।");
+            }
+
+            await check.database.collection("users").doc(doc.id).update({
+              blocked: !isBlocked,
+              statusUpdatedAt:
+                window.firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            showNotice("User status update हो गया।");
+            await loadAdminUsers();
+          } catch (error) {
+            console.error("Admin user update failed:", error);
+            showNotice("Update नहीं हुआ: " + (error.message || "Permission error"));
+          } finally {
+            actionButton.disabled = false;
+          }
+        });
+
+        actionCell.appendChild(actionButton);
+        row.appendChild(actionCell);
+        body.appendChild(row);
+      });
+
+      adminStatus("Users loaded: " + snapshot.size);
+    } catch (error) {
+      console.error("Admin panel error:", error);
+      adminStatus(error.message || "Admin panel खोलने में समस्या हुई।");
+      body.innerHTML =
+        '<tr><td colspan="5" style="padding:10px">Permission या Firebase configuration जाँचें।</td></tr>';
+    }
+  }
+
+  function addAdminButton() {
+    if (document.getElementById("novaAdminOpenButton")) return;
+
+    const button = document.createElement("button");
+    button.id = "novaAdminOpenButton";
+    button.type = "button";
+    button.textContent = "👑 Admin Panel";
+    button.style.cssText =
+      "padding:10px 13px;border-radius:9px;border:1px solid #d6b33f;" +
+      "background:#102541;color:#f4c542;font-weight:bold;cursor:pointer";
+
+    button.addEventListener("click", () => {
+      createAdminPanel();
+      const panel = document.getElementById("novaAdminPanel");
+      panel.style.display = "block";
+      loadAdminUsers();
+    });
+
+    const topbar = document.querySelector(".topbar");
+    const footer = document.querySelector(".footer");
+
+    if (topbar) topbar.appendChild(button);
+    else if (footer) footer.appendChild(button);
+    else document.body.appendChild(button);
+  }
+
+  function addDiagnostics() {
+    if (document.getElementById("novaDiagnostics")) return;
+
+    const box = document.createElement("details");
+    box.id = "novaDiagnostics";
+    box.style.cssText =
+      "margin:18px auto;max-width:900px;padding:12px;" +
+      "border:1px solid #34445d;border-radius:10px";
+
+    box.innerHTML = `
+      <summary style="cursor:pointer;font-weight:bold">
+        Bharat Nova — App Diagnostics
+      </summary>
+      <div id="novaDiagnosticsContent" style="padding-top:10px;line-height:1.8">
+        App status जाँची जा रही है…
+      </div>`;
+
+    const footer = document.querySelector(".footer");
+    if (footer && footer.parentNode) {
+      footer.parentNode.insertBefore(box, footer);
+    } else {
+      document.body.appendChild(box);
+    }
+
+    const firebaseReady = !!(window.firebase && window.novaFirebaseDatabase);
+    const workerUrl =
+      "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+    document.getElementById("novaDiagnosticsContent").innerHTML =
+      "Page: " + (location.protocol === "https:" ? "HTTPS सुरक्षित connection" : "HTTPS नहीं") +
+      "<br>Firebase SDK: " + (window.firebase ? "Loaded" : "Not detected") +
+      "<br>Firestore: " + (firebaseReady ? "Initialized" : "Not detected") +
+      "<br>AI endpoint configured: " + workerUrl +
+      "<br>Network: " + (navigator.onLine ? "Online" : "Offline") +
+      "<br>Storage available: " + (function () {
+        try {
+          localStorage.setItem("nova_test", "1");
+          localStorage.removeItem("nova_test");
+          return "Yes";
+        } catch (e) {
+          return "No";
+        }
+      })();
+
+    window.addEventListener("online", () => {
+      const content = document.getElementById("novaDiagnosticsContent");
+      if (content) content.setAttribute("data-network", "online");
+    });
+  }
+
+  function startFinalStep() {
+    addAdminButton();
+    addDiagnostics();
+
+    const currentYear = document.getElementById("currentYear");
+    if (currentYear) currentYear.textContent = String(new Date().getFullYear());
+
+    console.log("Bharat Nova Step 15 loaded successfully.");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startFinalStep);
+  } else {
+    startFinalStep();
+  }
+})();
+</script>
+<!-- END BHARAT NOVA STEP 15 -->
+
+</div>
+ <!-- BHARAT NOVA AI: SEPARATE SECTION -->
+<style>
+#bharatNovaOwnAI {
+  margin: 22px auto;
+  padding: 18px;
+  max-width: 760px;
+  border: 2px solid #f4c542;
+  border-radius: 18px;
+  background: linear-gradient(145deg,#07162d,#102747);
+  color: #fff;
+  font-family: Arial,sans-serif;
+}
+#bharatNovaOwnAI h2 {
+  color: #f4c542;
+  margin-top: 0;
+}
+#bharatNovaOwnAI textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 105px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.nova-own-btn {
+  padding: 11px 13px;
+  margin: 5px 3px 5px 0;
+  border: 1px solid #f4c542;
+  border-radius: 9px;
+  background: #102541;
+  color: #fff;
+  cursor: pointer;
+}
+#novaOwnAnswer {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+#novaOwnPreview {
+  max-width: 100%;
+  max-height: 220px;
+  display: block;
+  margin-top: 10px;
+}
+</style>
+
+<section id="bharatNovaOwnAI">
+  <h2>🤖 Bharat Nova AI</h2>
+  <p>आपका अपना AI Assistant — सवाल पूछें या फाइल चुनें।</p>
+
+  <textarea id="novaOwnQuestion"
+    placeholder="यहाँ अपना सवाल लिखें..."></textarea>
+
+  <div>
+    <button class="nova-own-btn" id="novaOwnAsk">💬 Ask My AI</button>
+    <button class="nova-own-btn" id="novaOwnVoice">🎤 Voice</button>
+  </div>
+
+  <div>
+    <button class="nova-own-btn" id="novaOwnImageButton">
+      📷 Upload Image
+    </button>
+    <button class="nova-own-btn" id="novaOwnFileButton">
+      📁 Upload File
+    </button>
+    <input id="novaOwnImage" type="file"
+      accept="image/*" hidden>
+    <input id="novaOwnFile" type="file"
+      accept=".pdf,.txt,.csv,.json,.doc,.docx"
+      hidden>
+    <img id="novaOwnPreview" alt="Selected image preview" hidden>
+    <p id="novaOwnFileName" aria-live="polite"></p>
+  </div>
+
+  <div id="novaOwnAnswer" aria-live="polite">
+    आपका AI जवाब यहाँ दिखाई देगा।
+  </div>
+</section>
+<script>
+(function () {
+  const question = document.getElementById("novaOwnQuestion");
+  const answer = document.getElementById("novaOwnAnswer");
+  const imageInput = document.getElementById("novaOwnImage");
+  const fileInput = document.getElementById("novaOwnFile");
+  const preview = document.getElementById("novaOwnPreview");
+  const fileName = document.getElementById("novaOwnFileName");
+  const imageButton = document.getElementById("novaOwnImageButton");
+  const fileButton = document.getElementById("novaOwnFileButton");
+  const askButton = document.getElementById("novaOwnAsk");
+  const voiceButton = document.getElementById("novaOwnVoice");
+
+  let selectedFile = null;
+
+  if (!question || !answer || !askButton) {
+    console.error("Bharat Nova AI controls missing.");
+    return;
+  }
+
+  if (imageButton && imageInput) {
+    imageButton.onclick = function () {
+      imageInput.click();
+    };
+  }
+
+  if (fileButton && fileInput) {
+    fileButton.onclick = function () {
+      fileInput.click();
+    };
+  }
+
+  function handleFileChange(event) {
+    const file = event.target.files &&
+                 event.target.files[0];
+
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("कृपया 10 MB से छोटी फाइल चुनें।");
+      event.target.value = "";
+      return;
+    }
+
+    selectedFile = file;
+
+    if (fileName) {
+      fileName.textContent =
+        "चुनी गई फाइल: " + file.name;
+    }
+
+    if (preview) {
+      preview.hidden = true;
+      preview.removeAttribute("src");
+
+      if (file.type.startsWith("image/")) {
+        preview.src = URL.createObjectURL(file);
+        preview.hidden = false;
+      }
+    }
+  }
+
+  if (imageInput) {
+    imageInput.addEventListener("change", handleFileChange);
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener("change", handleFileChange);
+  }
+
+  askButton.onclick = async function () {
+    const prompt = question.value.trim();
+
+    if (!prompt && !selectedFile) {
+      alert("पहले सवाल लिखें या फाइल चुनें।");
+      return;
+    }
+
+    if (!prompt && selectedFile) {
+      answer.textContent =
+        "फाइल चुनी गई है। फाइल का वास्तविक AI विश्लेषण करने के लिए Worker में upload support जोड़ना होगा।";
+      return;
+    }
+
+    answer.textContent = "AI जवाब तैयार कर रहा है…";
+    askButton.disabled = true;
+
+    try {
+      const response = await fetch(
+        "https://bharat-nova-ai.manmohan595120.workers.dev/ask",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            question: prompt
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "AI सेवा का उत्तर नहीं मिला (" +
+          response.status + ")"
+        );
+      }
+
+      const result =
+        data.answer ||
+        data.response ||
+        data.result ||
+        data.message ||
+        data.text;
+
+      answer.textContent = result ||
+        "AI से खाली जवाब मिला। कृपया दोबारा कोशिश करें।";
+
+    } catch (error) {
+      answer.textContent =
+        "AI में समस्या: " + error.message;
+
+      console.error("Bharat Nova AI error:", error);
+
+    } finally {
+      askButton.disabled = false;
+    }
+  };
+
+  if (voiceButton) {
+    voiceButton.onclick = function () {
+      const Speech =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+      if (!Speech) {
+        alert("Voice के लिए Android Chrome इस्तेमाल करें।");
+        return;
+      }
+
+      const recognition = new Speech();
+      recognition.lang = "hi-IN";
+      recognition.interimResults = false;
+
+      voiceButton.textContent = "🎤 सुन रहा हूँ...";
+
+      recognition.onresult = function (event) {
+        const spoken =
+          event.results[0][0].transcript.trim();
+
+        question.value = spoken;
+
+        if (spoken) {
+          askButton.click();
+        }
+      };
+
+      recognition.onerror = function () {
+        alert("Microphone permission जाँचें और दोबारा कोशिश करें।");
+      };
+
+      recognition.onend = function () {
+        voiceButton.textContent = "🎤 AI Voice";
+      };
+
+      recognition.start();
+    };
+  }
+
+})();
+</script>
+<!-- END BHARAT NOVA AI SECTION -->
+ <script>
+(function () {
+ <script>
+(function () {
+  const voiceButton = document.getElementById("novaOwnVoice");
+  const questionBox = document.getElementById("novaOwnQuestion");
+  const askButton = document.getElementById("novaOwnAsk");
+
+  if (!voiceButton || !questionBox || !askButton) {
+    console.log("Bharat Nova AI controls not found.");
+    return;
+  }
+
+  voiceButton.onclick = function () {
+    const Speech =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!Speech) {
+      alert("Voice के लिए Android Chrome इस्तेमाल करें।");
+      return;
+    }
+
+    const recognition = new Speech();
+    recognition.lang = "hi-IN";
+    recognition.interimResults = false;
+    voiceButton.textContent = "🎤 सुन रहा हूँ...";
+
+    recognition.onresult = function (event) {
+      const spoken = event.results[0][0].transcript.trim();
+      questionBox.value = spoken;
+
+      if (spoken) {
+        askButton.click();
+      }
+    };
+
+    recognition.onerror = function () {
+      alert("Microphone permission जाँचें और दोबारा कोशिश करें।");
+    };
+
+    recognition.onend = function () {
+      voiceButton.textContent = "🎤 AI Voice";
+    };
+
+    recognition.start();
+  };
+})();
+</script>
+})();
+ </script>
+ <style>
+#bharatNovaOwnAI {
+  max-width: 900px !important;
+  padding: 26px !important;
+  margin: 28px auto !important;
+  border-width: 3px !important;
+  border-radius: 22px !important;
+  box-sizing: border-box;
+}
+
+#bharatNovaOwnAI h2 {
+  font-size: 30px !important;
+  margin-bottom: 14px !important;
+}
+
+#bharatNovaOwnAI p {
+  font-size: 17px !important;
+  line-height: 1.7 !important;
+}
+
+#bharatNovaOwnAI textarea {
+  min-height: 140px !important;
+  padding: 16px !important;
+  font-size: 18px !important;
+  border-radius: 14px !important;
+}
+
+#bharatNovaOwnAI .nova-own-btn {
+  min-height: 52px !important;
+  padding: 14px 18px !important;
+  margin: 7px 4px 7px 0 !important;
+  font-size: 17px !important;
+  border-radius: 12px !important;
+}
+
+#bharatNovaOwnAI #novaOwnAnswer {
+  font-size: 18px !important;
+  line-height: 1.8 !important;
+  padding: 14px !important;
+  border-radius: 12px !important;
+}
+
+#bharatNovaOwnAI #novaOwnPreview {
+  max-height: 300px !important;
+  border-radius: 12px !important;
+}
+
+@media (max-width: 600px) {
+  #bharatNovaOwnAI {
+    margin: 18px 10px !important;
+    padding: 18px !important;
+  }
+
+  #bharatNovaOwnAI h2 {
+    font-size: 25px !important;
+  }
+
+  #bharatNovaOwnAI .nova-own-btn {
+    font-size: 16px !important;
+    padding: 13px !important;
+  }
+}
+ </style>
+ <!-- BHARAT NOVA GOOGLE PAY PREMIUM -->
+<section id="novaGpayPremium" style="
+  max-width:900px;
+  margin:28px auto;
+  padding:24px;
+  background:#071a32;
+  color:#ffffff;
+  border:2px solid #f4c542;
+  border-radius:22px;
+  box-sizing:border-box;
+  font-family:Arial,sans-serif;
+">
+  <h2 style="color:#f4c542;font-size:28px;">
+    💎 Bharat Nova Premium
+  </h2>
+
+  <p>Google Pay / UPI से Premium Plan चुनें।</p>
+
+  <div style="
+    background:#102b49;
+    padding:18px;
+    margin:15px 0;
+    border-radius:14px;
+  ">
+    <h3>🟢 Monthly Premium</h3>
+    <p style="font-size:27px;font-weight:bold;">₹49</p>
+    <p>30 दिन की Premium सदस्यता</p>
+    <button onclick="novaPayPremium(49,'30 Days')"
+      style="padding:13px 18px;border:0;border-radius:10px;
+      background:#34a853;color:white;font-size:16px;">
+      Pay ₹49 with UPI
+    </button>
+  </div>
+
+  <div style="
+    background:#102b49;
+    padding:18px;
+    margin:15px 0;
+    border-radius:14px;
+  ">
+    <h3>🔵 3-Month Premium</h3>
+    <p style="font-size:27px;font-weight:bold;">₹129</p>
+    <p>90 दिन की Premium सदस्यता</p>
+    <button onclick="novaPayPremium(129,'90 Days')"
+      style="padding:13px 18px;border:0;border-radius:10px;
+      background:#4285f4;color:white;font-size:16px;">
+      Pay ₹129 with UPI
+    </button>
+  </div>
+
+  <p><b>आपका UPI ID:</b></p>
+  <input id="novaPremiumUPI"
+    value="manmohan595120@okicici"
+    readonly
+    style="width:100%;box-sizing:border-box;padding:13px;
+    font-size:17px;border-radius:9px;margin-bottom:12px;">
+
+  <button onclick="novaCopyUPI()"
+    style="padding:12px 17px;border:0;border-radius:9px;
+    background:#f4c542;color:#071a32;font-weight:bold;">
+    📋 Copy UPI ID
+  </button>
+
+  <p id="novaPremiumPaymentMessage"
+     style="margin-top:18px;line-height:1.6;">
+    भुगतान के बाद Premium सक्रिय करने के लिए भुगतान की पुष्टि आवश्यक है।
+  </p>
+</section>
+
+<script>
+function novaPayPremium(amount, duration) {
+  const upi = "manmohan595120@okicici";
+  const name = "Bharat Nova Premium";
+  const transactionNote = "BharatNova_" + duration.replace(" ", "");
+
+  const paymentURL =
+    "upi://pay?pa=" + encodeURIComponent(upi) +
+    "&pn=" + encodeURIComponent(name) +
+    "&am=" + encodeURIComponent(amount.toFixed(2)) +
+    "&cu=INR" +
+    "&tn=" + encodeURIComponent(transactionNote);
+
+  const message = document.getElementById(
+    "novaPremiumPaymentMessage"
+  );
+
+  message.textContent =
+    "Google Pay या किसी UPI ऐप में भुगतान पूरा करें। " +
+    "Premium तभी सक्रिय होगा जब भुगतान सत्यापित हो जाए।";
+
+  window.location.href = paymentURL;
+}
+
+function novaCopyUPI() {
+  const upi = "manmohan595120@okicici";
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(upi)
+      .then(() => alert("UPI ID कॉपी हो गया।"))
+      .catch(() => alert("UPI ID: " + upi));
+  } else {
+    alert("आपका UPI ID: " + upi);
+  }
+}
+</script>
+<!-- END BHARAT NOVA GOOGLE PAY PREMIUM -->
+ <style>
+#novaGpayPremium #novaPremiumUPI {
+  display: none !important;
+}
+
+#novaGpayPremium p:has(+ #novaPremiumUPI) {
+  display: none !important;
+}
+ </style>
+ <style>
+/* Bharat Nova: Make cards and folders bigger */
+.card,
+.folder,
+.app-card,
+.feature-card,
+.tool-card,
+.category-card,
+.panel,
+.settings-card,
+.history-card,
+#bharatNovaOwnAI,
+#novaGpayPremium {
+  min-height: 150px !important;
+  padding: 24px !important;
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  border-radius: 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Make card headings bigger */
+.card h2,
+.card h3,
+.folder h2,
+.folder h3,
+.app-card h2,
+.app-card h3,
+.feature-card h2,
+.feature-card h3,
+.tool-card h2,
+.tool-card h3,
+.category-card h2,
+.category-card h3 {
+  font-size: 23px !important;
+  line-height: 1.5 !important;
+}
+
+/* Make text inside cards easier to read */
+.card p,
+.folder p,
+.app-card p,
+.feature-card p,
+.tool-card p,
+.category-card p,
+.panel p {
+  font-size: 17px !important;
+  line-height: 1.7 !important;
+}
+
+/* Make buttons bigger */
+.card button,
+.folder button,
+.app-card button,
+.feature-card button,
+.tool-card button,
+.category-card button,
+.panel button {
+  min-height: 48px !important;
+  padding: 12px 18px !important;
+  font-size: 16px !important;
+  border-radius: 12px !important;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+  .card,
+  .folder,
+  .app-card,
+  .feature-card,
+  .tool-card,
+  .category-card,
+  .panel {
+    padding: 20px !important;
+    min-height: 135px !important;
+    margin: 14px 4px !important;
+  }
+
+  .card h2,
+  .card h3,
+  .folder h2,
+  .folder h3,
+  .app-card h2,
+  .app-card h3,
+  .feature-card h2,
+  .feature-card h3 {
+    font-size: 21px !important;
+  }
+}
+ </style>
+</body>
+</html>
