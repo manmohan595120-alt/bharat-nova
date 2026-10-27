@@ -3564,5 +3564,53 @@ function novaCopyUPI() {
   }
 }
  </style>
+ <!-- BHARAT NOVA LOGIN BUTTON FIX -->
+<script>
+(function () {
+  "use strict";
+
+  function fixNovaLoginButton() {
+    const button = document.getElementById("loginOpen");
+
+    if (!button || button.dataset.loginFixed === "yes") {
+      return;
+    }
+
+    button.dataset.loginFixed = "yes";
+
+    button.addEventListener("click", function () {
+      const authBox = document.getElementById("novaAuthBox");
+
+      if (authBox) {
+        authBox.style.display = "block";
+
+        authBox.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        return;
+      }
+
+      if (typeof window.novaShowAuth === "function") {
+        window.novaShowAuth();
+        return;
+      }
+
+      alert("Login form तैयार नहीं है। पेज Refresh करें।");
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      fixNovaLoginButton
+    );
+  } else {
+    fixNovaLoginButton();
+  }
+})();
+</script>
+<!-- END LOGIN BUTTON FIX -->
 </body>
 </html>
