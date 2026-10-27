@@ -2774,7 +2774,9 @@ window.SpeechRecognition || window.webkitSpeechRecognition;
     */
     const adminDoc = await database.collection("users").doc(user.uid).get();
     const data = adminDoc.exists ? adminDoc.data() : {};
-
+console.log("Admin UID:", user.uid);
+console.log("Admin document exists:", adminDoc.exists);
+console.log("Admin role:", data.role);
     if (!(data.role === "admin" || data.isAdmin === true)) {
       throw new Error(
         "Admin role verify नहीं हुआ। Firestore users/" +
