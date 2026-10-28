@@ -4768,5 +4768,283 @@ if ("serviceWorker" in navigator) {
 })();
 </script>
 <!-- END BHARAT NOVA IMAGE EDIT FIX -->
+ <!-- BHARAT NOVA AI IMAGE RESIZE -->
+<script>
+(function () {
+  "use strict";
+
+  const input = document.getElementById("novaAIUpload");
+  const question = document.getElementById("novaAIQuestion");
+  const send = document.getElementById("novaAISend");
+  const messages = document.getElementById("novaChatMessages");
+
+  if (!input || !question || !send || !messages) {
+    console.warn(
+      "Bharat Nova Resize: AI chat controls नहीं मिले।"
+    );
+    return;
+  }
+
+  let busy = false;
+
+  function addMessage(text) {
+    const box = document.createElement("div");
+    box.style.cssText =
+      "margin:12px 0;padding:12px;background:#102442;" +
+      "color:white;border-radius:12px;white-space:pre-wrap;" +
+      "overflow-wrap:anywhere;";
+
+    box.textContent = text;
+    messages.appendChild(box);
+    messages.scrollTop = messages.scrollHeight;
+    return box;
+  }
+
+  function parseTarget(prompt) {
+    const p = prompt.toLowerCase();
+
+    const dimensions = p.match(
+      /(\d{2,5})\s*[x×]\s*(\d{2,5})/i
+    );
+
+    let width = dimensions ? Number(dimensions[1]) : 0;
+    let height = dimensions ? Number(dimensions[2]) : 0;
+
+    const kbMatch = p.match(
+      /(\d+(?:\.\d+)?)\s*(kb|kib)\b/i
+    );
+
+    const maxKB = kbMatch ? Number(kbMatch[1]) : 0;
+
+    let format = "";
+
+    if (/\b(webp)\b/.test(p)) format = "webp";
+    else if (/\b(jpg|jpeg)\b/.test(p)) format = "jpeg";
+    else if (/\bpng\b/.test(p)) format = "png";
+
+    const asksResize =
+      /\b(resize|resolution|dimension|size)\b/i.test(p) ||
+      /(साइज|आकार|रिजाइज|पिक्सल)/i.test(p);
+
+    const asksCompress =
+      /\b(compress|reduce|smaller|under|below)\b/i.test(p) ||
+      /(कम\s*कर|कम\s*करो|से\s*कम|छोटा\s*कर)/i.test(p);
+
+    const asksConvert =
+      /\b(convert|change|format)\b/i.test(p) ||
+      /(बदल|कन्वर्ट|फॉर्मेट)/i.test(p);
+
+    if (!width && !height && !maxKB &&
+        !format && !asksResize &&
+        !asksCompress && !asksConvert) {
+      return null;
+    }
+
+    return {
+      width,
+      height,
+      maxKB,
+      format: format || "jpeg",
+      keepRatio: !/(stretch|distort|अनुपात बिगाड़)/i.test(p)
+    };
+  }
+
+  function loadImage(file) {
+    return new Promise(function (resolve, reject) {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+
+      img.onerror = function () {
+        URL.revokeObjectURL(url);
+        reject(new Error("फोटो खोली नहीं जा सकी।"));
+      };
+
+      img.src = url;
+    });
+  }
+
+  function canvasBlob(canvas, mime, quality) {
+    return new Promise(function (resolve, reject) {
+      canvas.toBlob(function (blob) {
+        if (blob) resolve(blob);
+        else reject(new Error("फोटो कन्वर्ट नहीं हुई।"));
+      }, mime, quality);
+    });
+  }
+
+  async function processImage(file, options) {
+    const img = await loadImage(file);
+
+    let width = options.width || img.naturalWidth;
+    let height = options.height || img.naturalHeight;
+
+    if (options.keepRatio &&
+        options.width && options.height) {
+      const scale = Math.min(
+        options.width / img.naturalWidth,
+        options.height / img.naturalHeight
+      );
+
+      width = Math.max(
+        1, Math.round(img.naturalWidth * scale)
+      );
+
+      height = Math.max(
+        1, Math.round(img.naturalHeight * scale)
+      );
+    } else if (options.keepRatio && options.width) {
+      height = Math.max(
+        1,
+        Math.round(
+          img.naturalHeight *
+          options.width / img.naturalWidth
+        )
+      );
+    } else if (options.keepRatio && options.height) {
+      width = Math.max(
+        1,
+        Math.round(
+          img.naturalWidth *
+          options.height / img.naturalHeight
+        )
+      );
+    }
+
+    if (width > 8192 || height > 8192) {
+      throw new Error("अधिकतम dimension 8192 pixels रखें।");
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      throw new Error("Image processing उपलब्ध नहीं है।");
+    }
+
+    const mimeMap = {
+      jpeg: "image/jpeg",
+      png: "image/png",
+      webp: "image/webp"
+    };
+
+    const mime = mimeMap[options.format];
+
+    // JPEG में पारदर्शी भाग सफेद बैकग्राउंड बनेंगे।
+    if (mime === "image/jpeg") {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    ctx.drawImage(img, 0, 0, width, height);
+
+    let quality = 0.92;
+    let blob = await canvasBlob(canvas, mime, quality);
+
+    // Target KB हो तो JPEG/WebP quality कम करके कोशिश करें।
+    if (options.maxKB && mime !== "image/png") {
+      const targetBytes = options.maxKB * 1024;
+
+      for (let i = 0;
+           i < 12 && blob.size > targetBytes;
+           i++) {
+        quality = Math.max(0.08, quality - 0.08);
+        blob = await canvasBlob(canvas, mime, quality);
+      }
+    }
+
+    return {
+      blob,
+      width,
+      height,
+      originalWidth: img.naturalWidth,
+      originalHeight: img.naturalHeight,
+      mime,
+      targetKB: options.maxKB
+    };
+  }
+
+  function downloadResult(blob, format) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "bharat-nova-image." + format;
+    a.textContent = "⬇️ फोटो डाउनलोड करें";
+
+    a.style.cssText =
+      "display:inline-block;margin-top:10px;padding:10px 14px;" +
+      "background:#f4c542;color:#061429;border-radius:8px;" +
+      "font-weight:bold;text-decoration:none;";
+
+    return { url, a };
+  }
+
+  async function runResize() {
+    if (busy) return;
+
+    const prompt = question.value.trim();
+    const options = parseTarget(prompt);
+
+    if (!options) return;
+
+    const file = input.files && input.files[0];
+
+    if (!file) {
+      addMessage(
+        "पहले AI चैट में फोटो अपलोड करें, फिर उसका आकार " +
+        "बदलने का निर्देश दें।"
+      );
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      addMessage(
+        "Image Resize के लिए JPG, PNG या WebP फोटो चुनें।"
+      );
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      addMessage("फोटो 15 MB से बड़ी है। छोटी फोटो चुनें।");
+      return;
+    }
+
+    busy = true;
+    send.disabled = true;
+
+    const status = addMessage("फोटो प्रोसेस हो रही है…");
+
+    try {
+      const result = await processImage(file, options);
+
+      const sizeKB = result.blob.size / 1024;
+
+      status.textContent =
+        "फोटो तैयार है!\n" +
+        "पहला आकार: " +
+        result.originalWidth + " × " +
+        result.originalHeight + "\n" +
+        "नया आकार: " +
+        result.width + " × " +
+        result.height + "\n" +
+        "फ़ाइल आकार: " + sizeKB.toFixed(1) + " KB\n" +
+        "फॉर्मेट: " + result.mime;
+
+      if (options.maxKB && sizeKB > options.maxKB) {
+        status.textContent +=
+          "\nध्यान दें: तय KB सीमा हासिल नहीं हुई। " +
+          "इस फॉर्मेट में और compression या छोटे dimensions " +
+          "की जरूरत हो सकती है।";
+      }
+
+      const preview
 </body>
 </html>
