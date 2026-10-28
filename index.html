@@ -1440,7 +1440,178 @@ result.append(image, download);
 
 }
 </script>
-<!-- END BHARAT NOVA STEP 7 -->
+ async function novaAIAsk() {
+const prompt = question.value.trim();
+const file = upload.files && upload.files[0];
+
+if (!prompt && !file) {
+  status.textContent = "पहले सवाल लिखें या फाइल चुनें।";
+  return;
+}
+
+sendButton.disabled = true;
+status.textContent = "Bharat Nova AI काम कर रहा है...";
+
+try {
+  let fileData = { name: "", image: "", text: "" };
+
+  if (file) {
+    fileData = await novaAIReadFile(file);
+  }
+
+  novaAIAddMessage("आप", prompt || "इस फाइल को देखें।");
+  question.value = "";
+
+  let endpoint = WORKER + "/ask";
+
+  let payload = {
+    question: prompt,
+    message: prompt,
+    fileName: fileData.name,
+    fileText: fileData.text
+  };
+
+  if (fileData.image && prompt && novaAIIsImageEdit(prompt)) {
+    endpoint = WORKER + "/image/edit";
+
+    payload = {
+      prompt: prompt,
+      message: prompt,
+      image: fileData.image
+    };
+
+  } else if (!fileData.image && novaAIIsImageGenerate(prompt)) {
+    endpoint = WORKER + "/image/generate";
+
+    payload = { prompt: prompt };
+
+  } else if (fileData.image) {
+    payload.image = fileData.image;
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.success === false) {
+    throw new Error(
+      data.details || data.error || ("HTTP " + response.status)
+    );
+  }
+
+  if (data.imageData) {
+    novaAIShowImage(
+      data.imageData,
+      "bharat-nova-result.png"
+    );
+
+    novaAIAddMessage(
+      "Bharat Nova AI",
+      "इमेज तैयार है। डाउनलोड बटन दबाएँ।"
+    );
+
+  } else {
+    const answer =
+      data.answer ||
+      data.response ||
+      data.result ||
+      data.message ||
+      "सर्वर से जवाब नहीं मिला।";
+
+    novaAIAddMessage("Bharat Nova AI", answer);
+  }
+
+  status.textContent = "काम पूरा हुआ।";
+  upload.value = "";
+
+} catch (error) {
+  novaAIAddMessage(
+    "त्रुटि",
+    error.message || "अनुरोध पूरा नहीं हो पाया।"
+  );
+
+  status.textContent = "समस्या हुई। Worker और नेटवर्क जाँचें।";
+
+} finally {
+  sendButton.disabled = false;
+}
+
+}
+
+sendButton.addEventListener("click", novaAIAsk);
+
+question.addEventListener("keydown", function (event) {
+if (event.key === "Enter" && !event.shiftKey) {
+event.preventDefault();
+novaAIAsk();
+}
+});
+
+const voiceButton = document.getElementById("novaAIVoice");
+
+if (voiceButton) {
+voiceButton.addEventListener("click", function () {
+if (!("speechSynthesis" in window)) {
+status.textContent =
+"आपका ब्राउज़र आवाज़ में जवाब नहीं पढ़ सकता।";
+return;
+}
+
+  const text = messages.innerText.trim();
+
+  if (!text) return;
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "hi-IN";
+
+  window.speechSynthesis.speak(utterance);
+
+  status.textContent = "जवाब सुनाया जा रहा है।";
+});
+
+}
+
+const stopButton = document.getElementById("novaAIStop");
+
+if (stopButton) {
+stopButton.addEventListener("click", function () {
+if ("speechSynthesis" in window) {
+window.speechSynthesis.cancel();
+}
+
+  status.textContent = "आवाज़ रोक दी गई।";
+});
+
+}
+
+const clearButton = document.getElementById("novaAIClear");
+
+if (clearButton) {
+clearButton.addEventListener("click", function () {
+messages.replaceChildren();
+
+  novaAIAddMessage(
+    "Bharat Nova AI",
+    "नई चैट शुरू करें।"
+  );
+
+  result.replaceChildren();
+  status.textContent = "नई चैट तैयार है।";
+});
+
+}
+
+})();
+</script>
+
+<!-- END BHARAT NOVA STEP 6 -->
+<!-- START BHARAT NOVA STEP 7 -->
  
  <script>
 <style>
