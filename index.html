@@ -831,12 +831,23 @@ function novaStartVoice() {
         password
       );
 
-      await result.user.updateProfile({ displayName: name });
+   await result.user.updateProfile({ displayName: name });
 
-      novaStep5Message(
-        "Account बन गया। Bharat Nova में आपका स्वागत है!",
-        false
-      );
+const database = firebase.firestore();
+
+await database
+.collection("users")
+.doc(result.user.uid)
+.set({
+Name: name,
+Email: result.user.email,
+CreatedAt: new Date().toISOString()
+});
+
+novaStep5Message(
+"Account बन गया और आपका रिकॉर्ड सेव हो गया। Bharat Nova में आपका स्वागत है!",
+false
+);
     } catch (error) {
       novaStep5Message(
         error.message || "Signup नहीं हो पाया।",
