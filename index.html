@@ -4488,11 +4488,12 @@ function novaCopyUPI() {
   function initNovaAdminFix() {
     const header = document.querySelector(".topbar");
 
-    if (!header) return;
+    if (!header) {
+      console.error("Bharat Nova: Topbar नहीं मिला।");
+      return;
+    }
 
-    let button = document.getElementById(
-      "novaAdminOpenButton"
-    );
+    let button = document.getElementById("novaAdminOpenButton");
 
     if (!button) {
       button = document.createElement("button");
@@ -4501,9 +4502,7 @@ function novaCopyUPI() {
       button.className = "btn btn-primary";
       button.textContent = "👑 Admin Panel";
 
-      const container = header.querySelector(
-        ".topbar-inner"
-      );
+      const container = header.querySelector(".topbar-inner");
 
       if (container) {
         container.appendChild(button);
@@ -4517,9 +4516,7 @@ function novaCopyUPI() {
       const database = window.novaFirebaseDatabase;
 
       if (!auth || !database) {
-        alert(
-          "Firebase तैयार नहीं है। पेज Refresh करके दोबारा प्रयास करें।"
-        );
+        alert("Firebase तैयार नहीं है। पेज Refresh करके दोबारा प्रयास करें।");
         return;
       }
 
@@ -4542,73 +4539,69 @@ function novaCopyUPI() {
         return;
       }
 
+      button.disabled = true;
+
       try {
         const adminDoc = await database
           .collection("users")
           .doc(user.uid)
           .get();
 
-        const data = adminDoc.exists
-          ? adminDoc.data()
-          : {};
+        if (!adminDoc.exists) {
+          alert(
+            "Admin document नहीं मिला।\n\n" +
+            "Firebase UID: " + user.uid +
+            "\nFirestore में users collection के अंदर " +
+            "इसी UID वाली document ID जाँचें।"
+          );
+          return;
+        }
 
-       const adminDoc = await database
-  .collection("users")
-  .doc(user.uid)
-  .get();
+        const data = adminDoc.data() || {};
 
-if (!adminDoc.exists) {
-  alert(
-    "Admin document नहीं मिला।\n\n" +
-    "Firebase UID: " + user.uid +
-    "\n\nFirestore users document ID को इससे मिलाएँ।"
-  );
-  return;
-}
+        const adminRole = String(data.role || "")
+          .trim()
+          .toLowerCase();
 
-const data = adminDoc.data() || {};
+        if (
+          adminRole !== "admin" &&
+          data.isAdmin !== true
+        ) {
+          alert(
+            "Admin role verify नहीं हुआ।\n\n" +
+            "UID: " + user.uid +
+            "\nRole: " + JSON.stringify(data.role) +
+            "\nisAdmin: " + JSON.stringify(data.isAdmin)
+          );
+          return;
+        }
 
-const adminRole = String(data.role || "")
-  .trim()
-  .toLowerCase();
-
-if (
-  adminRole !== "admin" &&
-  data.isAdmin !== true
-) {
-  alert(
-    "Admin role verify नहीं हुआ।\n\n" +
-    "UID: " + user.uid +
-    "\nRole मिला: " + JSON.stringify(data.role) +
-    "\nisAdmin: " + JSON.stringify(data.isAdmin)
-  );
-  return;
-}
-
-        const panel = document.getElementById(
-          "novaAdminPanel"
-        );
+        const panel = document.getElementById("novaAdminPanel");
 
         if (!panel) {
           alert(
             "Admin Panel का HTML नहीं मिला। " +
-            "पुराने Step 15 के code को जाँचें।"
+            "Step 15 का कोड जाँचें।"
           );
           return;
         }
 
         panel.style.display = "block";
+        panel.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
 
-        if (
-          typeof window.novaLoadAdminUsers === "function"
-        ) {
+        if (typeof window.novaLoadAdminUsers === "function") {
           await window.novaLoadAdminUsers();
         } else {
-          const refresh = document.getElementById(
-            "novaAdminRefresh"
-          );
+          const refresh = document.getElementById("novaAdminRefresh");
 
-          if (refresh) refresh.click();
+          if (refresh) {
+            refresh.click();
+          } else {
+            console.warn("Admin refresh button नहीं मिला।");
+          }
         }
 
       } catch (error) {
@@ -4618,6 +4611,8 @@ if (
           "Admin Panel नहीं खुल पाया।\n" +
           (error.message || "Firebase permissions जाँचें।")
         );
+      } finally {
+        button.disabled = false;
       }
     };
   }
@@ -4625,7 +4620,8 @@ if (
   if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
-      initNovaAdminFix
+      initNovaAdminFix,
+      { once: true }
     );
   } else {
     initNovaAdminFix();
