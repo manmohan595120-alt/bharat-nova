@@ -1143,6 +1143,36 @@ id="novaAIFileEditor">
   const question = document.getElementById("novaAIQuestion");
   const status = document.getElementById("novaAIStatus");
   const sendButton = document.getElementById("novaAISend");
+ const photoEditorButton = document.getElementById("novaAIPhotoEditor");
+const fileEditorButton = document.getElementById("novaAIFileEditor");
+
+if (photoEditorButton) {
+photoEditorButton.addEventListener("click", function () {
+if (typeof window.novaOpenStudio === "function") {
+window.novaOpenStudio();
+
+  const imageTab = document.getElementById("novaStudioImageTab");
+  if (imageTab) imageTab.click();
+} else {
+  status.textContent = "Photo Editor अभी उपलब्ध नहीं है।";
+}
+
+});
+}
+
+if (fileEditorButton) {
+fileEditorButton.addEventListener("click", function () {
+if (typeof window.novaOpenStudio === "function") {
+window.novaOpenStudio();
+
+  const fileTab = document.getElementById("novaStudioFileTab");
+  if (fileTab) fileTab.click();
+} else {
+  status.textContent = "File Editor अभी उपलब्ध नहीं है।";
+}
+
+});
+}
 
   function novaAIShow() {
     section.style.display = "block";
