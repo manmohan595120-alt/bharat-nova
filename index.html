@@ -1366,6 +1366,79 @@ false
     return selectedFile;
   };
 })();
+   if (file.size > 5 * 1024 * 1024) {
+throw new Error("फाइल 5 MB से छोटी चुनें।");
+}
+
+  if (file.type.startsWith("image/")) {
+    const dataURL = await new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        resolve(String(reader.result || ""));
+      };
+
+      reader.onerror = function () {
+        reject(new Error("फोटो पढ़ी नहीं जा सकी।"));
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    return {
+      name: file.name,
+      image: dataURL,
+      text: ""
+    };
+  }
+
+  const allowed = /\.(txt|csv|json)$/i.test(file.name);
+
+  if (!allowed) {
+    throw new Error(
+      "अभी TXT, CSV, JSON और इमेज फाइल समर्थित हैं।"
+    );
+  }
+
+  return {
+    name: file.name,
+    image: "",
+    text: await novaAIReadTextFile(file)
+  };
+}
+
+function novaAIIsImageEdit(prompt) {
+return /(edit|change|replace|remove|add|background|resize|बदल|हटाओ|जोड़ो|बैकग्राउंड|आकार बदल)/i.test(prompt);
+}
+
+function novaAIIsImageGenerate(prompt) {
+return /(generate image|create image|make an image|draw an image|नई इमेज|फोटो बनाओ|चित्र बनाओ|इमेज बनाओ)/i.test(prompt);
+}
+
+function novaAIShowImage(data, filename) {
+result.replaceChildren();
+
+const image = document.createElement("img");
+image.src = data;
+image.alt = "Bharat Nova AI image result";
+
+image.style.cssText =
+  "display:block;max-width:100%;height:auto;" +
+  "margin:12px auto;border-radius:12px;";
+
+const download = document.createElement("a");
+download.href = data;
+download.download = filename || "bharat-nova-image.png";
+download.textContent = "⬇️ इमेज डाउनलोड करें";
+
+download.style.cssText =
+  "display:inline-block;padding:12px;background:#f4c542;" +
+  "color:#061429;border-radius:8px;text-decoration:none;" +
+  "font-weight:bold;";
+
+result.append(image, download);
+
+}
 </script>
 <!-- END BHARAT NOVA STEP 7 -->
  
