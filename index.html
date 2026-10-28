@@ -2845,8 +2845,16 @@ console.log("Bharat Nova Admin verified:", user.email);
         const row = document.createElement("tr");
         row.style.borderTop = "1px solid #34445d";
 
-        const name = data.name || data.displayName || "—";
-        const email = data.email || "—";
+        const name =
+  data.name ||
+  data.Name ||
+  data.displayName ||
+  "—";
+
+const email =
+  data.email ||
+  data.Email ||
+  "—";
         const isBlocked = data.blocked === true;
         const isAdminRecord =
           doc.id === user.uid ||
