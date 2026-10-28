@@ -5024,5 +5024,106 @@ if ("serviceWorker" in navigator) {
   });
 })();
 </script>
+ <!-- BHARAT NOVA AI IMAGE TOOLS --><section id="novaImageTools" style="max-width:850px;margin:20px auto;padding:18px;background:#061429;color:white;border:1px solid #f4c542;border-radius:16px;font-family:Arial,sans-serif">
+  <h2 style="color:#f4c542">🎨 Bharat Nova AI — Image Studio</h2>
+  <p>अपनी फोटो एडिट करें या नई इमेज बनाने का अनुरोध करें।</p><label for="novaImageUpload">अपनी फोटो चुनें (एडिट करने के लिए):</label>
+<input id="novaImageUpload" type="file" accept="image/*" style="display:block;margin:12px 0;max-width:100%">
+
+  <textarea id="novaImagePrompt" rows="3" placeholder="उदाहरण: इस फोटो में भारत का नक्शा जोड़ दो। या नई इमेज बनाओ: हिमालय के सुंदर पहाड़।" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px"></textarea><button id="novaImageRun" type="button" style="margin-top:12px;padding:12px 18px;background:#f4c542;color:#061429;border:0;border-radius:9px;font-weight:bold">✨ इमेज बनाएँ / एडिट करें</button>
+
+  <p id="novaImageStatus" role="status" style="margin-top:12px"></p>
+  <div id="novaImageResult"></div>
+</section><script>
+(function () {
+  "use strict";
+
+  const WORKER = "https://bharat-nova-ai.manmohan595120.workers.dev";
+  const button = document.getElementById("novaImageRun");
+  const upload = document.getElementById("novaImageUpload");
+  const promptBox = document.getElementById("novaImagePrompt");
+  const status = document.getElementById("novaImageStatus");
+  const result = document.getElementById("novaImageResult");
+
+  button.addEventListener("click", async function () {
+    const prompt = promptBox.value.trim();
+    const file = upload.files && upload.files[0];
+
+    if (!prompt) {
+      status.textContent = "पहले बताइए कि कौन-सी इमेज बनानी या एडिट करनी है।";
+      return;
+    }
+
+    if (file && !file.type.startsWith("image/")) {
+      status.textContent = "कृपया सही फोटो चुनें।";
+      return;
+    }
+
+    if (file && file.size > 3 * 1024 * 1024) {
+      status.textContent = "कृपया 3 MB से छोटी फोटो चुनें।";
+      return;
+    }
+
+    button.disabled = true;
+    result.replaceChildren();
+    status.textContent = "⏳ Bharat Nova AI इमेज तैयार कर रहा है...";
+
+    try {
+      let response;
+
+      if (file) {
+        const imageData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error("फोटो पढ़ी नहीं जा सकी।"));
+          reader.readAsDataURL(file);
+        });
+
+        response = await fetch(WORKER + "/image/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: prompt, image: imageData })
+        });
+      } else {
+        response = await fetch(WORKER + "/image/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: prompt, message: prompt })
+        });
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || data.details || "Worker इमेज तैयार नहीं कर पाया।");
+      }
+
+      const imageData = data.imageData || data.image || data.result;
+
+      if (typeof imageData !== "string" ||
+          !/^data:image\/|^https?:\/\//i.test(imageData)) {
+        throw new Error("Worker से डाउनलोड करने योग्य इमेज नहीं मिली। Cloudflare Worker endpoint जाँचें।");
+      }
+
+      const image = document.createElement("img");
+      image.src = imageData;
+      image.alt = "Bharat Nova AI द्वारा तैयार इमेज";
+      image.style.cssText = "display:block;max-width:100%;height:auto;border-radius:12px;margin-top:16px";
+
+      const download = document.createElement("a");
+      download.href = imageData;
+      download.download = "bharat-nova-image.png";
+      download.textContent = "⬇️ इमेज डाउनलोड करें";
+      download.style.cssText = "display:inline-block;margin:12px 0;padding:10px 14px;background:#f4c542;color:#061429;border-radius:8px;text-decoration:none;font-weight:bold";
+
+      result.append(image, download);
+      status.textContent = "✅ इमेज तैयार है।";
+    } catch (error) {
+      status.textContent = "❌ " + error.message;
+    } finally {
+      button.disabled = false;
+    }
+  });
+})();
+</script><!-- END BHARAT NOVA AI IMAGE TOOLS -->
 </body>
 </html>
