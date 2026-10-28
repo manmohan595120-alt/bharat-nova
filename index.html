@@ -1452,6 +1452,573 @@ false
 })();
 </script>
 <!-- END BHARAT NOVA STEP 7 -->
+ <!-- BHARAT NOVA AI STUDIO - STEP 9 START -->
+<style>
+#novaStudioPanel {
+  display: none;
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 20px;
+  border: 1px solid rgba(244,197,66,.45);
+  border-radius: 18px;
+  background: #0b1b32;
+  color: #fff;
+}
+
+#novaStudioPanel * {
+  box-sizing: border-box;
+}
+
+#novaStudioPanel .studio-title {
+  color: #f4c542;
+  font-size: 25px;
+  margin-top: 0;
+}
+
+#novaStudioPanel .studio-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+#novaStudioPanel .studio-tab {
+  flex: 1;
+  min-width: 130px;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid #f4c542;
+  background: #102744;
+  color: #fff;
+  cursor: pointer;
+}
+
+#novaStudioPanel .studio-tab.active {
+  background: #f4c542;
+  color: #061429;
+  font-weight: bold;
+}
+
+#novaStudioPanel .studio-field {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  margin: 10px 0 16px;
+  border-radius: 10px;
+  border: 1px solid #52647c;
+  background: #061429;
+  color: #fff;
+  font: inherit;
+}
+
+#novaStudioPanel .studio-upload {
+  padding: 18px;
+  border: 2px dashed #64748b;
+  border-radius: 14px;
+  margin: 12px 0;
+}
+
+#novaStudioPanel .studio-preview {
+  min-height: 65px;
+  padding: 12px;
+  margin: 14px 0;
+  border-radius: 10px;
+  background: #061429;
+  overflow-wrap: anywhere;
+}
+
+#novaStudioPanel .studio-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  margin: 10px auto;
+  border-radius: 10px;
+}
+
+#novaStudioPanel .studio-status {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+#novaStudioPanel .studio-note {
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+#novaStudioPanel .studio-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+#novaStudioPanel .studio-actions button {
+  flex: 1;
+  min-width: 125px;
+}
+
+#novaStudioPanel .studio-download {
+  display: inline-block;
+  margin: 8px 8px 8px 0;
+  color: #f4c542;
+}
+
+@media (max-width: 480px) {
+  #novaStudioPanel {
+    padding: 14px;
+    margin: 16px 8px;
+  }
+}
+</style>
+
+<section id="novaStudioPanel" class="container" aria-label="Bharat Nova AI Studio">
+
+  <h2 class="studio-title">✨ Bharat Nova AI Studio</h2>
+
+  <p>
+    फोटो या डॉक्यूमेंट अपलोड करें और नीचे लिखें कि उसमें क्या बदलाव चाहिए।
+  </p>
+
+  <div class="studio-tabs">
+    <button type="button" class="studio-tab active"
+      id="novaStudioImageTab">
+      🖼️ Image Editor
+    </button>
+
+    <button type="button" class="studio-tab"
+      id="novaStudioFileTab">
+      📄 File Editor
+    </button>
+  </div>
+
+  <!-- IMAGE EDITOR -->
+  <section id="novaStudioImageSection">
+
+    <h3>🖼️ फोटो एडिटर</h3>
+
+    <label for="novaStudioImageInput">
+      अपनी फोटो चुनें
+    </label>
+
+    <div class="studio-upload">
+      <input
+        id="novaStudioImageInput"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        class="studio-field">
+
+      <p class="studio-note">
+        JPG, PNG या WebP फोटो चुनें। अधिकतम आकार 10 MB।
+      </p>
+    </div>
+
+    <div id="novaStudioImagePreview" class="studio-preview">
+      अभी कोई फोटो नहीं चुनी गई।
+    </div>
+
+    <label for="novaStudioImagePrompt">
+      ✍️ फोटो में क्या बदलाव करवाना है?
+    </label>
+
+    <textarea
+      id="novaStudioImagePrompt"
+      class="studio-field"
+      rows="4"
+      maxlength="2000"
+      placeholder="उदाहरण: इस फोटो में हेयरस्टाइल बदलो, बैकग्राउंड में पहाड़ दिखाओ..."
+    ></textarea>
+
+    <div class="studio-actions">
+      <button type="button" class="btn btn-primary"
+        id="novaStudioEditImage">
+        ✨ Edit Image
+      </button>
+
+      <button type="button" class="btn btn-secondary"
+        id="novaStudioResetImage">
+        Reset
+      </button>
+    </div>
+
+    <p class="studio-note">
+      नोट: असली फोटो एडिटिंग के लिए समर्थित AI इमेज मॉडल/API जोड़ना आवश्यक है।
+      अभी यह पैनल फोटो चुनने और निर्देश तैयार करने की सुविधा देता है।
+    </p>
+
+    <div id="novaStudioImageStatus"
+      class="studio-status" role="status" aria-live="polite"></div>
+
+    <div id="novaStudioEditedPreview" class="studio-preview">
+      एडिट की गई फोटो यहाँ दिखाई जाएगी।
+    </div>
+
+    <a id="novaStudioDownloadImage"
+      class="studio-download"
+      href="#"
+      download="bharat-nova-edited-image.png"
+      hidden>
+      Download Edited Image
+    </a>
+
+    <button type="button" class="btn btn-secondary"
+      id="novaStudioEditAgain" hidden>
+      Edit Again
+    </button>
+
+  </section>
+
+  <!-- FILE EDITOR -->
+  <section id="novaStudioFileSection" hidden>
+
+    <h3>📄 डॉक्यूमेंट एडिटर</h3>
+
+    <label for="novaStudioFileInput">
+      PDF, Word या TXT फ़ाइल चुनें
+    </label>
+
+    <div class="studio-upload">
+      <input
+        id="novaStudioFileInput"
+        type="file"
+        accept=".pdf,.doc,.docx,.txt,text/plain,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        class="studio-field">
+
+      <p class="studio-note">
+        अधिकतम आकार 10 MB। फ़ाइल अपलोड करने से पहले सुनिश्चित करें कि
+        उसमें कोई अनावश्यक निजी जानकारी न हो।
+      </p>
+    </div>
+
+    <div id="novaStudioFilePreview" class="studio-preview">
+      अभी कोई फ़ाइल नहीं चुनी गई।
+    </div>
+
+    <label for="novaStudioFilePrompt">
+      ✍️ फ़ाइल में क्या बदलाव करवाना है?
+    </label>
+
+    <textarea
+      id="novaStudioFilePrompt"
+      class="studio-field"
+      rows="4"
+      maxlength="2000"
+      placeholder="उदाहरण: अंग्रेज़ी की गलतियाँ ठीक करो, भाषा सरल करो या डॉक्यूमेंट का सारांश बनाओ..."
+    ></textarea>
+
+    <div class="studio-actions">
+      <button type="button" class="btn btn-primary"
+        id="novaStudioEditFile">
+        ✨ Edit File
+      </button>
+
+      <button type="button" class="btn btn-secondary"
+        id="novaStudioResetFile">
+        Reset
+      </button>
+    </div>
+
+    <h4>📝 संशोधित सामग्री का Preview</h4>
+
+    <textarea
+      id="novaStudioFileResult"
+      class="studio-field"
+      rows="10"
+      maxlength="200000"
+      placeholder="AI से प्राप्त संशोधित टेक्स्ट यहाँ दिखाई देगा।"
+      aria-label="संशोधित सामग्री"
+    ></textarea>
+
+    <button type="button" class="btn btn-primary"
+      id="novaStudioDownloadFile">
+      ⬇️ Download TXT
+    </button>
+
+    <p id="novaStudioFileStatus"
+      class="studio-status" role="status" aria-live="polite"></p>
+
+    <p class="studio-note">
+      अभी PDF और Word फ़ाइल की सामग्री पढ़ने तथा AI से संशोधित करवाने का
+      बैकएंड कनेक्शन नहीं जोड़ा गया है। डाउनलोड बटन केवल उपलब्ध Preview
+      टेक्स्ट को TXT फ़ाइल के रूप में सेव करेगा।
+    </p>
+
+  </section>
+
+  <button type="button" class="btn btn-secondary"
+    id="novaStudioClose"
+    style="margin-top:18px;">
+    Close AI Studio
+  </button>
+
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  const panel = document.getElementById("novaStudioPanel");
+
+  if (!panel || panel.dataset.initialized === "yes") return;
+  panel.dataset.initialized = "yes";
+
+  const imageTab = document.getElementById("novaStudioImageTab");
+  const fileTab = document.getElementById("novaStudioFileTab");
+  const imageSection = document.getElementById("novaStudioImageSection");
+  const fileSection = document.getElementById("novaStudioFileSection");
+
+  const imageInput = document.getElementById("novaStudioImageInput");
+  const imagePreview = document.getElementById("novaStudioImagePreview");
+  const imagePrompt = document.getElementById("novaStudioImagePrompt");
+  const imageStatus = document.getElementById("novaStudioImageStatus");
+  const editedPreview = document.getElementById("novaStudioEditedPreview");
+  const imageDownload = document.getElementById("novaStudioDownloadImage");
+  const editAgain = document.getElementById("novaStudioEditAgain");
+
+  const fileInput = document.getElementById("novaStudioFileInput");
+  const filePreview = document.getElementById("novaStudioFilePreview");
+  const filePrompt = document.getElementById("novaStudioFilePrompt");
+  const fileResult = document.getElementById("novaStudioFileResult");
+  const fileStatus = document.getElementById("novaStudioFileStatus");
+
+  let selectedImage = null;
+  let selectedDocument = null;
+  let imageUrl = null;
+
+  function showStudio() {
+    panel.style.display = "block";
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  window.novaOpenStudio = showStudio;
+
+  function showImageTab() {
+    imageSection.hidden = false;
+    fileSection.hidden = true;
+    imageTab.classList.add("active");
+    fileTab.classList.remove("active");
+  }
+
+  function showFileTab() {
+    imageSection.hidden = true;
+    fileSection.hidden = false;
+    imageTab.classList.remove("active");
+    fileTab.classList.add("active");
+  }
+
+  imageTab.addEventListener("click", showImageTab);
+  fileTab.addEventListener("click", showFileTab);
+
+  const openButton = document.getElementById("cardFilesButton");
+
+  if (openButton) {
+    openButton.addEventListener("click", showStudio);
+  }
+
+  const closeButton = document.getElementById("novaStudioClose");
+
+  if (closeButton) {
+    closeButton.addEventListener("click", function () {
+      panel.style.display = "none";
+    });
+  }
+
+  function clearImageUrl() {
+    if (imageUrl) {
+      URL.revokeObjectURL(imageUrl);
+      imageUrl = null;
+    }
+  }
+
+  imageInput.addEventListener("change", function () {
+    clearImageUrl();
+    selectedImage = imageInput.files && imageInput.files[0]
+      ? imageInput.files[0]
+      : null;
+
+    imagePreview.replaceChildren();
+    imageDownload.hidden = true;
+    editAgain.hidden = true;
+    editedPreview.textContent = "एडिट की गई फोटो यहाँ दिखाई जाएगी।";
+
+    if (!selectedImage) {
+      imagePreview.textContent = "अभी कोई फोटो नहीं चुनी गई।";
+      return;
+    }
+
+    if (selectedImage.size > 10 * 1024 * 1024) {
+      selectedImage = null;
+      imageInput.value = "";
+      imagePreview.textContent = "फोटो 10 MB से बड़ी है। छोटी फोटो चुनें।";
+      return;
+    }
+
+    if (!selectedImage.type.startsWith("image/")) {
+      selectedImage = null;
+      imageInput.value = "";
+      imagePreview.textContent = "कृपया समर्थित इमेज फ़ाइल चुनें।";
+      return;
+    }
+
+    imageUrl = URL.createObjectURL(selectedImage);
+
+    const image = document.createElement("img");
+    image.src = imageUrl;
+    image.alt = "चुनी गई फोटो का Preview";
+
+    const info = document.createElement("p");
+    info.textContent =
+      selectedImage.name + " (" +
+      (selectedImage.size / 1024).toFixed(1) + " KB)";
+
+    imagePreview.append(image, info);
+    imageStatus.textContent = "फोटो चुनी गई है। अब नीचे निर्देश लिखें।";
+  });
+
+  document.getElementById("novaStudioEditImage")
+    .addEventListener("click", function () {
+      if (!selectedImage) {
+        imageStatus.textContent = "पहले फोटो अपलोड करें।";
+        return;
+      }
+
+      if (!imagePrompt.value.trim()) {
+        imageStatus.textContent = "फोटो में क्या बदलाव चाहिए, वह लिखें।";
+        imagePrompt.focus();
+        return;
+      }
+
+      imageStatus.textContent =
+        "फोटो और निर्देश तैयार हैं, लेकिन वास्तविक AI इमेज एडिटिंग API " +
+        "अभी कनेक्ट नहीं है। अगला चरण बैकएंड कनेक्शन है।";
+    });
+
+  document.getElementById("novaStudioResetImage")
+    .addEventListener("click", function () {
+      clearImageUrl();
+      imageInput.value = "";
+      imagePrompt.value = "";
+      selectedImage = null;
+      imagePreview.textContent = "अभी कोई फोटो नहीं चुनी गई।";
+      editedPreview.textContent = "एडिट की गई फोटो यहाँ दिखाई जाएगी।";
+      imageStatus.textContent = "";
+      imageDownload.hidden = true;
+      editAgain.hidden = true;
+    });
+
+  editAgain.addEventListener("click", function () {
+    imagePrompt.focus();
+    imagePrompt.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  fileInput.addEventListener("change", function () {
+    selectedDocument = fileInput.files && fileInput.files[0]
+      ? fileInput.files[0]
+      : null;
+
+    fileResult.value = "";
+
+    if (!selectedDocument) {
+      filePreview.textContent = "अभी कोई फ़ाइल नहीं चुनी गई।";
+      return;
+    }
+
+    if (selectedDocument.size > 10 * 1024 * 1024) {
+      selectedDocument = null;
+      fileInput.value = "";
+      filePreview.textContent = "फ़ाइल 10 MB से बड़ी है। छोटी फ़ाइल चुनें।";
+      return;
+    }
+
+    filePreview.textContent =
+      "नाम: " + selectedDocument.name +
+      "\nआकार: " + (selectedDocument.size / 1024).toFixed(1) + " KB" +
+      "\nप्रकार: " + (selectedDocument.type || "Unknown");
+
+    filePreview.style.whiteSpace = "pre-wrap";
+    fileStatus.textContent = "फ़ाइल चुनी गई है। नीचे निर्देश लिखें।";
+  });
+
+  document.getElementById("novaStudioEditFile")
+    .addEventListener("click", async function () {
+      if (!selectedDocument) {
+        fileStatus.textContent = "पहले PDF, Word या TXT फ़ाइल चुनें।";
+        return;
+      }
+
+      if (!filePrompt.value.trim()) {
+        fileStatus.textContent = "फ़ाइल में क्या बदलाव चाहिए, वह लिखें।";
+        filePrompt.focus();
+        return;
+      }
+
+      if (selectedDocument.name.toLowerCase().endsWith(".txt") ||
+          selectedDocument.type === "text/plain") {
+        try {
+          const text = await selectedDocument.text();
+
+          fileResult.value =
+            "AI एडिटिंग API अभी कनेक्ट नहीं है।\n\n" +
+            "आपका निर्देश: " + filePrompt.value.trim() +
+            "\n\nमूल टेक्स्ट:\n" + text;
+
+          fileStatus.textContent =
+            "TXT फ़ाइल का टेक्स्ट पढ़ लिया गया है। वास्तविक AI सुधार के लिए API कनेक्शन बाकी है।";
+        } catch (error) {
+          fileStatus.textContent = "TXT फ़ाइल पढ़ी नहीं जा सकी।";
+        }
+
+        return;
+      }
+
+      fileStatus.textContent =
+        "फ़ाइल चुनी गई है, लेकिन PDF/Word पढ़ने और AI से संशोधित करने " +
+        "के लिए दस्तावेज़ प्रोसेसिंग तथा AI API कनेक्शन आवश्यक है।";
+    });
+
+  document.getElementById("novaStudioResetFile")
+    .addEventListener("click", function () {
+      fileInput.value = "";
+      filePrompt.value = "";
+      fileResult.value = "";
+      selectedDocument = null;
+      filePreview.textContent = "अभी कोई फ़ाइल नहीं चुनी गई।";
+      fileStatus.textContent = "";
+    });
+
+  document.getElementById("novaStudioDownloadFile")
+    .addEventListener("click", function () {
+      if (!fileResult.value.trim()) {
+        fileStatus.textContent = "डाउनलोड करने से पहले Preview टेक्स्ट उपलब्ध होना चाहिए।";
+        return;
+      }
+
+      const blob = new Blob(
+        [fileResult.value],
+        { type: "text/plain;charset=utf-8" }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+
+      anchor.href = url;
+      anchor.download = "bharat-nova-edited.txt";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      setTimeout(function () {
+        URL.revokeObjectURL(url);
+      }, 1000);
+
+      fileStatus.textContent = "TXT फ़ाइल डाउनलोड करने का अनुरोध भेजा गया है।";
+    });
+
+})();
+</script>
+<!-- BHARAT NOVA AI STUDIO - STEP 9 END -->
  <!-- BHARAT NOVA STEP 8: SETTINGS PANEL -->
 <script>
 (function () {
