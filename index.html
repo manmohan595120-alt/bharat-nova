@@ -5125,5 +5125,89 @@ if ("serviceWorker" in navigator) {
   });
 })();
 </script><!-- END BHARAT NOVA AI IMAGE TOOLS -->
+ <!-- BHARAT NOVA IMAGE EDIT FIX -->
+<script>
+(function () {
+  "use strict";
+
+  const worker = "https://bharat-nova-ai.manmohan595120.workers.dev";
+  const picker = document.getElementById("novaFilePicker");
+  const button = document.getElementById("novaFileSendToAI");
+  const panel = document.getElementById("novaFileTools");
+
+  if (!picker || !button || !panel) {
+    console.log("Bharat Nova: Image editor controls not found.");
+    return;
+  }
+
+  button.addEventListener("click", async function (event) {
+    const file = picker.files && picker.files[0];
+
+    if (!file || !file.type.startsWith("image/")) return;
+
+    const promptBox = panel.querySelector("textarea");
+    const prompt = promptBox ? promptBox.value.trim() : "";
+
+    if (!prompt) {
+      alert("पहले फोटो में क्या बदलना है, वह लिखें।");
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    button.disabled = true;
+
+    try {
+      const imageData = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("फोटो पढ़ी नहीं जा सकी।"));
+        reader.readAsDataURL(file);
+      });
+
+      const response = await fetch(worker + "/image/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: prompt,
+          image: imageData
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success || !data.imageData) {
+        throw new Error(data.error || data.details || "फोटो एडिट नहीं हुई।");
+      }
+
+      const result = document.createElement("div");
+      result.style.cssText = "margin:16px 0;padding:12px;border:1px solid #f4c542;border-radius:12px";
+
+      const title = document.createElement("h3");
+      title.textContent = "Bharat Nova AI — Edited Image";
+
+      const img = document.createElement("img");
+      img.src = data.imageData;
+      img.alt = "Edited image";
+      img.style.cssText = "max-width:100%;height:auto;border-radius:10px";
+
+      const download = document.createElement("a");
+      download.href = data.imageData;
+      download.download = "bharat-nova-edited.png";
+      download.textContent = "⬇️ एडिट की हुई फोटो डाउनलोड करें";
+      download.style.cssText = "display:block;margin-top:12px;color:#f4c542";
+
+      result.append(title, img, download);
+      panel.appendChild(result);
+    } catch (error) {
+      alert("Image Error: " + error.message);
+    } finally {
+      button.disabled = false;
+    }
+  }, true);
+})();
+</script>
+<!-- END BHARAT NOVA IMAGE EDIT FIX -->
 </body>
 </html>
