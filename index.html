@@ -3727,21 +3727,38 @@ function novaCopyUPI() {
           ? adminDoc.data()
           : {};
 
-        if (
-          data.role !== "admin" &&
-          data.isAdmin !== true
-        ) {
-          alert(
-            "Admin role verify नहीं हुआ।\n\n" +
-            "Firestore में users collection खोलें।\n" +
-            "Document ID में अपना सही Firebase UID रखें।\n" +
-            "Field: role\n" +
-            "Type: string\n" +
-            "Value: admin"
-          );
+       const adminDoc = await database
+  .collection("users")
+  .doc(user.uid)
+  .get();
 
-          return;
-        }
+if (!adminDoc.exists) {
+  alert(
+    "Admin document नहीं मिला।\n\n" +
+    "Firebase UID: " + user.uid +
+    "\n\nFirestore users document ID को इससे मिलाएँ।"
+  );
+  return;
+}
+
+const data = adminDoc.data() || {};
+
+const adminRole = String(data.role || "")
+  .trim()
+  .toLowerCase();
+
+if (
+  adminRole !== "admin" &&
+  data.isAdmin !== true
+) {
+  alert(
+    "Admin role verify नहीं हुआ।\n\n" +
+    "UID: " + user.uid +
+    "\nRole मिला: " + JSON.stringify(data.role) +
+    "\nisAdmin: " + JSON.stringify(data.isAdmin)
+  );
+  return;
+}
 
         const panel = document.getElementById(
           "novaAdminPanel"
