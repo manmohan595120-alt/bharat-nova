@@ -4555,5 +4555,342 @@ if ("serviceWorker" in navigator) {
   });
 }
  </script>
+ <!-- BHARAT NOVA FILE ASSISTANT -->
+<section id="novaFileAssistant" style="
+  max-width:850px;
+  margin:25px auto;
+  padding:20px;
+  border-radius:18px;
+  background:#061429;
+  color:#fff;
+  border:1px solid #f4c542;
+  font-family:Arial,sans-serif;
+">
+  <h2 style="color:#f4c542;margin-top:0">
+    📎 Bharat Nova File Assistant
+  </h2>
+
+  <p>Image या PDF अपलोड करें, सवाल पूछें और जवाब की PDF बनाएँ।</p>
+
+  <label for="novaFileInput">Image / PDF / Word / Text File</label>
+
+  <input
+    id="novaFileInput"
+    type="file"
+    accept="image/jpeg,image/png,image/webp,image/gif,.pdf,.docx,.txt,.csv"
+    style="
+      display:block;
+      width:100%;
+      box-sizing:border-box;
+      padding:12px;
+      margin:12px 0;
+      background:#102442;
+      color:white;
+      border:1px solid #60748e;
+      border-radius:10px;
+    "
+  >
+
+  <div id="novaFileInfo" style="font-size:14px;margin:8px 0;color:#f4c542">
+    अभी कोई फाइल नहीं चुनी गई।
+  </div>
+
+  <textarea
+    id="novaFileQuestion"
+    placeholder="अपना सवाल लिखें... जैसे इस PDF का सारांश बनाओ"
+    rows="4"
+    style="
+      box-sizing:border-box;
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      background:#102442;
+      color:white;
+      border:1px solid #60748e;
+      font-size:16px;
+    "
+  ></textarea>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+    <button id="novaFileSend" type="button" style="
+      flex:1;min-width:140px;padding:13px;border:0;
+      border-radius:10px;background:#f4c542;color:#061429;
+      font-weight:bold;font-size:15px;
+    ">➤ AI से पूछें</button>
+
+    <button id="novaMakePDF" type="button" style="
+      flex:1;min-width:140px;padding:13px;border:0;
+      border-radius:10px;background:#167d54;color:white;
+      font-weight:bold;font-size:15px;
+    ">📥 जवाब की PDF</button>
+  </div>
+
+  <div id="novaFileStatus" role="status" style="
+    margin-top:15px;white-space:pre-wrap;overflow-wrap:anywhere;
+  "></div>
+
+  <div id="novaFileAnswer" style="
+    margin-top:15px;padding:14px;border-radius:10px;
+    background:#102442;white-space:pre-wrap;
+    overflow-wrap:anywhere;line-height:1.6;
+  ">AI का जवाब यहाँ दिखाई देगा।</div>
+</section>
+
+<!-- PDF, DOCX AND PDF CREATION LIBRARIES -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const WORKER_URL =
+    "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+  const input = document.getElementById("novaFileInput");
+  const question = document.getElementById("novaFileQuestion");
+  const info = document.getElementById("novaFileInfo");
+  const status = document.getElementById("novaFileStatus");
+  const answerBox = document.getElementById("novaFileAnswer");
+  const send = document.getElementById("novaFileSend");
+  const makePDF = document.getElementById("novaMakePDF");
+
+  let currentAnswer = "";
+  let extractedText = "";
+  let currentImage = "";
+
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
+
+  function setStatus(message) {
+    status.textContent = message;
+  }
+
+  function readAsDataURL(file) {
+    return new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+      reader.onerror = function () {
+        reject(new Error("फाइल पढ़ी नहीं जा सकी।"));
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function extractPDF(file) {
+    if (!window.pdfjsLib) {
+      throw new Error("PDF लाइब्रेरी लोड नहीं हुई। इंटरनेट जाँचें।");
+    }
+
+    const buffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({
+      data: new Uint8Array(buffer)
+    }).promise;
+
+    let text = "";
+
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+
+      text += content.items.map(function (item) {
+        return item.str || "";
+      }).join(" ") + "\n";
+
+      if (text.length > 40000) {
+        text = text.slice(0, 40000);
+        break;
+      }
+    }
+
+    if (!text.trim()) {
+      throw new Error(
+        "PDF में पढ़ने योग्य टेक्स्ट नहीं मिला। स्कैन की हुई PDF के लिए OCR आवश्यक हो सकता है।"
+      );
+    }
+
+    return text;
+  }
+
+  async function extractDOCX(file) {
+    if (!window.mammoth) {
+      throw new Error("Word लाइब्रेरी लोड नहीं हुई।");
+    }
+
+    const result = await mammoth.extractRawText({
+      arrayBuffer: await file.arrayBuffer()
+    });
+
+    return result.value.slice(0, 40000);
+  }
+
+  input.addEventListener("change", async function () {
+    extractedText = "";
+    currentImage = "";
+
+    const file = input.files && input.files[0];
+
+    if (!file) {
+      info.textContent = "अभी कोई फाइल नहीं चुनी गई।";
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      input.value = "";
+      info.textContent = "फाइल 8 MB से बड़ी है। छोटी फाइल चुनें।";
+      setStatus("फाइल का आकार कम करके दोबारा कोशिश करें।");
+      return;
+    }
+
+    info.textContent = "चुनी गई फाइल: " + file.name;
+    setStatus("फाइल पढ़ी जा रही है...");
+
+    try {
+      const name = file.name.toLowerCase();
+
+      if (file.type.startsWith("image/")) {
+        currentImage = await readAsDataURL(file);
+        info.textContent = "Image तैयार है: " + file.name;
+      } else if (name.endsWith(".pdf")) {
+        extractedText = await extractPDF(file);
+        info.textContent =
+          "PDF से टेक्स्ट निकाला गया: " + file.name;
+      } else if (name.endsWith(".docx")) {
+        extractedText = await extractDOCX(file);
+        info.textContent =
+          "Word से टेक्स्ट निकाला गया: " + file.name;
+      } else if (
+        name.endsWith(".txt") ||
+        name.endsWith(".csv")
+      ) {
+        extractedText = (await file.text()).slice(0, 40000);
+        info.textContent =
+          "Text पढ़ लिया गया: " + file.name;
+      } else {
+        throw new Error(
+          "यह फॉर्मेट समर्थित नहीं है। PDF, DOCX, TXT, CSV या Image चुनें।"
+        );
+      }
+
+      setStatus("फाइल तैयार है। अब अपना सवाल पूछें।");
+    } catch (error) {
+      extractedText = "";
+      currentImage = "";
+      setStatus("फाइल त्रुटि: " + error.message);
+    }
+  });
+
+  send.addEventListener("click", async function () {
+    const userQuestion = question.value.trim();
+
+    if (!userQuestion && !extractedText && !currentImage) {
+      setStatus("पहले सवाल लिखें या कोई फाइल चुनें।");
+      return;
+    }
+
+    send.disabled = true;
+    setStatus("Bharat Nova AI जवाब तैयार कर रहा है...");
+    answerBox.textContent = "";
+
+    try {
+      const payload = {
+        message: userQuestion,
+        fileText: extractedText,
+        fileName: input.files[0] ? input.files[0].name : ""
+      };
+
+      if (currentImage) {
+        payload.image = currentImage;
+      }
+
+      const response = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.details || data.error || "AI request विफल हुई।"
+        );
+      }
+
+      currentAnswer = data.answer || data.response || "";
+
+      if (!currentAnswer) {
+        throw new Error("AI से खाली जवाब मिला।");
+      }
+
+      answerBox.textContent = currentAnswer;
+      setStatus("जवाब तैयार है। चाहें तो PDF डाउनलोड करें।");
+
+    } catch (error) {
+      setStatus("त्रुटि: " + error.message);
+    } finally {
+      send.disabled = false;
+    }
+  });
+
+  makePDF.addEventListener("click", function () {
+    if (!currentAnswer) {
+      setStatus("पहले AI से जवाब प्राप्त करें।");
+      return;
+    }
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      setStatus("PDF लाइब्रेरी लोड नहीं हुई। इंटरनेट जाँचें।");
+      return;
+    }
+
+    try {
+      const doc = new window.jspdf.jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 15;
+      const usableWidth = pageWidth - margin * 2;
+      let y = 20;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("Bharat Nova - AI Answer", margin, y);
+      y += 12;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+
+      const lines = doc.splitTextToSize(
+        currentAnswer,
+        usableWidth
+      );
+
+      lines.forEach(function (line) {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = 20;
+        }
+
+        doc.text(line, margin, y);
+        y += 6;
+      });
+
+      doc.save("Bharat-Nova-Answer.pdf");
+      setStatus(
+        "PDF डाउनलोड शुरू हो गया। ध्यान दें: हिंदी अक्षरों के लिए Unicode font जोड़ना आवश्यक है।"
+      );
+    } catch (error) {
+      setStatus("PDF बनाने में त्रुटि: " + error.message);
+    }
+  });
+})();
+</script>
 </body>
 </html>
