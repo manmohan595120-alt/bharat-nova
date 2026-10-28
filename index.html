@@ -1139,8 +1139,7 @@ false
     section.scrollIntoView({ behavior: "smooth", block: "start" });
     question.focus();
   }
-
-  const aiButtons = [
+const aiButtons = [
 document.getElementById("aiOpenButton")
 ];
 
@@ -1148,6 +1147,8 @@ aiButtons.forEach(function (button) {
 if (button) {
 button.addEventListener("click", novaAIShow);
 }
+});
+  
 });
   document.getElementById("novaAIClose").addEventListener("click", function () {
     section.style.display = "none";
