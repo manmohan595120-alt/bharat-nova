@@ -1141,14 +1141,14 @@ false
   }
 
   const aiButtons = [
-    document.getElementById("aiOpenButton"),
-    document.getElementById("cardAIButton")
-  ];
+document.getElementById("aiOpenButton")
+];
 
-  aiButtons.forEach(function (button) {
-    if (button) button.addEventListener("click", novaAIShow);
-  });
-
+aiButtons.forEach(function (button) {
+if (button) {
+button.addEventListener("click", novaAIShow);
+}
+});
   document.getElementById("novaAIClose").addEventListener("click", function () {
     section.style.display = "none";
   });
