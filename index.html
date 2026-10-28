@@ -4843,47 +4843,6 @@ if ("serviceWorker" in navigator) {
       return;
     }
 
-    try {
-      const doc = new window.jspdf.jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 15;
-      const usableWidth = pageWidth - margin * 2;
-      let y = 20;
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.text("Bharat Nova - AI Answer", margin, y);
-      y += 12;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-
-      const lines = doc.splitTextToSize(
-        currentAnswer,
-        usableWidth
-      );
-
-      lines.forEach(function (line) {
-        if (y > pageHeight - margin) {
-          doc.addPage();
-          y = 20;
-        }
-
-        doc.text(line, margin, y);
-        y += 6;
-      });
-
-      doc.save("Bharat-Nova-Answer.pdf");
-      setStatus(
-        "PDF डाउनलोड शुरू हो गया। ध्यान दें: हिंदी अक्षरों के लिए Unicode font जोड़ना आवश्यक है।"
-      );
-    } catch (error) {
-      setStatus("PDF बनाने में त्रुटि: " + error.message);
-    }
-  });
-})();
-</script>
  <!-- BHARAT NOVA AI IMAGE TOOLS --><section id="novaImageTools" style="max-width:850px;margin:20px auto;padding:18px;background:#061429;color:white;border:1px solid #f4c542;border-radius:16px;font-family:Arial,sans-serif">
   <h2 style="color:#f4c542">🎨 Bharat Nova AI — Image Studio</h2>
   <p>अपनी फोटो एडिट करें या नई इमेज बनाने का अनुरोध करें।</p><label for="novaImageUpload">अपनी फोटो चुनें (एडिट करने के लिए):</label>
