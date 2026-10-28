@@ -1951,70 +1951,7 @@ false
       }
 
       if (selectedDocument.name.toLowerCase().endsWith(".txt") ||
-          selectedDocument.type === "text/plain") {
-        try {
-          const text = await selectedDocument.text();
 
-          fileResult.value =
-            "AI एडिटिंग API अभी कनेक्ट नहीं है।\n\n" +
-            "आपका निर्देश: " + filePrompt.value.trim() +
-            "\n\nमूल टेक्स्ट:\n" + text;
-
-          fileStatus.textContent =
-            "TXT फ़ाइल का टेक्स्ट पढ़ लिया गया है। वास्तविक AI सुधार के लिए API कनेक्शन बाकी है।";
-        } catch (error) {
-          fileStatus.textContent = "TXT फ़ाइल पढ़ी नहीं जा सकी।";
-        }
-
-        return;
-      }
-
-      fileStatus.textContent =
-        "फ़ाइल चुनी गई है, लेकिन PDF/Word पढ़ने और AI से संशोधित करने " +
-        "के लिए दस्तावेज़ प्रोसेसिंग तथा AI API कनेक्शन आवश्यक है।";
-    });
-
-  document.getElementById("novaStudioResetFile")
-    .addEventListener("click", function () {
-      fileInput.value = "";
-      filePrompt.value = "";
-      fileResult.value = "";
-      selectedDocument = null;
-      filePreview.textContent = "अभी कोई फ़ाइल नहीं चुनी गई।";
-      fileStatus.textContent = "";
-    });
-
-  document.getElementById("novaStudioDownloadFile")
-    .addEventListener("click", function () {
-      if (!fileResult.value.trim()) {
-        fileStatus.textContent = "डाउनलोड करने से पहले Preview टेक्स्ट उपलब्ध होना चाहिए।";
-        return;
-      }
-
-      const blob = new Blob(
-        [fileResult.value],
-        { type: "text/plain;charset=utf-8" }
-      );
-
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-
-      anchor.href = url;
-      anchor.download = "bharat-nova-edited.txt";
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-
-      setTimeout(function () {
-        URL.revokeObjectURL(url);
-      }, 1000);
-
-      fileStatus.textContent = "TXT फ़ाइल डाउनलोड करने का अनुरोध भेजा गया है।";
-    });
-
-})();
-</script>
-<!-- BHARAT NOVA AI STUDIO - STEP 9 END -->
  <!-- BHARAT NOVA STEP 8: SETTINGS PANEL -->
 <script>
 (function () {
