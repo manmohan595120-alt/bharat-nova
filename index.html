@@ -426,11 +426,18 @@ function novaSearch(engine) {
 
   if (!urls[engine]) return;
 
-  window.open(
-    urls[engine] + encodeURIComponent(query),
-    "_blank",
-    "noopener,noreferrer"
+  const searchUrl =
+    urls[engine] + encodeURIComponent(query);
+
+  const openedWindow = window.open(
+    searchUrl,
+    "_blank"
   );
+
+  if (!openedWindow) {
+    window.location.href = searchUrl;
+    return;
+  }
 
   novaMessage("आपकी खोज खोली जा रही है।");
 }
