@@ -1072,150 +1072,9 @@ false
 })();
 </script>
 <!-- END BHARAT NOVA STEP 5 -->
- <!-- BHARAT NOVA STEP 6: AI ASSISTANT -->
+  <!-- BHARAT NOVA STEP 6: AI ASSISTANT -->
 <script>
-(function () {
-  "use strict";
-
-  const section = document.createElement("section");
-  section.id = "novaAISection";
-  section.className = "card";
-  section.style.cssText =
-    "display:none;max-width:850px;margin:24px auto;padding:20px;";
-
-  section.innerHTML = `
-    <h2>✨ Bharat Nova AI</h2>
-    <p>हिंदी या English में अपना सवाल पूछें।</p>
-
-    <div id="novaChatMessages"
-      aria-live="polite"
-      style="min-height:100px;max-height:380px;overflow:auto;
-      padding:12px;border-radius:12px;background:rgba(100,116,139,.12);
-      margin:14px 0;">
-      <p>नमस्ते! मैं Bharat Nova AI हूँ। आप क्या जानना चाहते हैं?</p>
-    </div>
-
-    <label for="novaAIQuestion">आपका सवाल</label>
-    <textarea id="novaAIQuestion" rows="3"
-      placeholder="यहाँ अपना सवाल लिखें..."
-      style="box-sizing:border-box;width:100%;padding:12px;
-      margin:8px 0;border-radius:10px;resize:vertical;"></textarea>
-
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="novaAISend" class="btn btn-primary" type="button">
-        पूछें
-      </button>
-      <button id="novaAIVoice" class="btn btn-secondary" type="button">
-        🔊 जवाब सुनें
-      </button>
-      <button id="novaAIStop" class="btn btn-secondary" type="button">
-        ⏹ रोकें
-      </button>
-      <button id="novaAIClear" class="btn btn-secondary" type="button">
-        🗑 Clear Chat
-      </button>
-      <button id="novaAIClose" class="btn btn-secondary" type="button">
-        बंद करें
-      </button>
-    </div>
-    <div class="studio-actions">
-  <button type="button" class="btn btn-secondary"
-    id="novaAIPhotoEditor">
-    🖼️ Photo Editor
-  </button><button type="button" class="btn btn-secondary"
-id="novaAIFileEditor">
-📄 File Editor
-</button>
-
-</div>
-
-    <p id="novaAIStatus" role="status" aria-live="polite"></p>
-  `;
-
-  const footer = document.querySelector(".footer");
-  if (footer) {
-    footer.parentNode.insertBefore(section, footer);
-  } else {
-    document.getElementById("app").appendChild(section);
-  }
-
-  const messages = document.getElementById("novaChatMessages");
-  const question = document.getElementById("novaAIQuestion");
-  const status = document.getElementById("novaAIStatus");
-  const sendButton = document.getElementById("novaAISend");
- const photoEditorButton = document.getElementById("novaAIPhotoEditor");
-const fileEditorButton = document.getElementById("novaAIFileEditor");
-
-if (photoEditorButton) {
-photoEditorButton.addEventListener("click", function () {
-if (typeof window.novaOpenStudio === "function") {
-window.novaOpenStudio();
-
-  const imageTab = document.getElementById("novaStudioImageTab");
-  if (imageTab) imageTab.click();
-} else {
-  status.textContent = "Photo Editor अभी उपलब्ध नहीं है।";
-}
-
-});
-}
-
-if (fileEditorButton) {
-fileEditorButton.addEventListener("click", function () {
-if (typeof window.novaOpenStudio === "function") {
-window.novaOpenStudio();
-
-  const fileTab = document.getElementById("novaStudioFileTab");
-  if (fileTab) fileTab.click();
-} else {
-  status.textContent = "File Editor अभी उपलब्ध नहीं है।";
-}
-
-});
-}
-
-  function novaAIShow() {
-    section.style.display = "block";
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
-    question.focus();
-  }
-const aiButtons = [
-document.getElementById("aiOpenButton")
-];
-
-aiButtons.forEach(function (button) {
-if (button) {
-button.addEventListener("click", novaAIShow);
-}
-});
-  
-});
-  document.getElementById("novaAIClose").addEventListener("click", function () {
-    section.style.display = "none";
-  });
-
-  function novaAIAddMessage(role, text) {
-    const item = document.createElement("div");
-    item.style.cssText =
-      "padding:10px;margin:8px 0;border-radius:10px;" +
-      (role === "You"
-        ? "background:rgba(244,197,66,.13);"
-        : "background:rgba(100,116,139,.13);");
-
-    const heading = document.createElement("strong");
-    heading.textContent = role + ": ";
-
-    const body = document.createElement("span");
-    body.style.whiteSpace = "pre-wrap";
-    body.textContent = text;
-
-    item.appendChild(heading);
-    item.appendChild(body);
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
-  }
-
-  async function novaAIAsk() {
+(
     const prompt = question.value.trim();
 
     if (!prompt) {
@@ -1312,6 +1171,7 @@ button.addEventListener("click", novaAIShow);
 })();
 </script>
 <!-- END BHARAT NOVA STEP 6 -->
+
  <!-- BHARAT NOVA STEP 7: PHOTO AND FILE TOOLS -->
 <script>
 (function () {
