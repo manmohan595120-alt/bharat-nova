@@ -1878,22 +1878,119 @@ false
   });
 
   document.getElementById("novaStudioEditImage")
-    .addEventListener("click", function () {
-      if (!selectedImage) {
-        imageStatus.textContent = "पहले फोटो अपलोड करें।";
-        return;
+  .addEventListener("click", async function () {
+    if (!selectedImage) {
+      imageStatus.textContent = "पहले फोटो अपलोड करें।";
+      return;
+    }
+
+    const prompt = imagePrompt.value.trim();
+
+    if (!prompt) {
+      imageStatus.textContent =
+        "फोटो में क्या बदलाव चाहिए, वह लिखें।";
+      imagePrompt.focus();
+      return;
+    }
+
+    const button = document.getElementById("novaStudioEditImage");
+    const originalText = button.textContent;
+
+    try {
+      button.disabled = true;
+      button.textContent = "⏳ फोटो एडिट हो रही है...";
+      imageStatus.textContent =
+        "फोटो AI को भेजी जा रही है...";
+
+      imageDownload.hidden = true;
+      editAgain.hidden = true;
+
+      // फोटो को Base64 में बदलें
+      const imageData = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () =>
+          reject(new Error("फोटो पढ़ी नहीं जा सकी।"));
+
+        reader.readAsDataURL(selectedImage);
+      });
+
+      // Cloudflare Worker से कनेक्शन
+      const response = await fetch(
+        "https://bharat-nova-ai.manmohan595120.workers.dev/image/edit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            image: imageData,
+            message: prompt
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.details ||
+          data.error ||
+          "फोटो एडिट नहीं हो सकी।"
+        );
       }
 
-      if (!imagePrompt.value.trim()) {
-        imageStatus.textContent = "फोटो में क्या बदलाव चाहिए, वह लिखें।";
-        imagePrompt.focus();
-        return;
+      const outputImage =
+        data.imageData ||
+        (data.image
+          ? "data:image/png;base64," + data.image
+          : "");
+
+      if (!outputImage) {
+        throw new Error(
+          "AI से एडिट की गई फोटो नहीं मिली।"
+        );
       }
+
+      // एडिट की गई फोटो दिखाएँ
+      editedPreview.replaceChildren();
+
+      const img = document.createElement("img");
+      img.src = outputImage;
+      img.alt = "Bharat Nova Edited Image";
+      img.style.maxWidth = "100%";
+      img.style.height = "auto";
+      img.style.borderRadius = "12px";
+
+      editedPreview.appendChild(img);
+
+      // डाउनलोड बटन
+      imageDownload.href = outputImage;
+      imageDownload.download =
+        "bharat-nova-edited-image.png";
+      imageDownload.hidden = false;
+
+      editAgain.hidden = false;
 
       imageStatus.textContent =
-        "फोटो और निर्देश तैयार हैं, लेकिन वास्तविक AI इमेज एडिटिंग API " +
-        "अभी कनेक्ट नहीं है। अगला चरण बैकएंड कनेक्शन है।";
-    });
+        "✅ फोटो एडिट हो गई! अब डाउनलोड कर सकते हैं।";
+
+    } catch (error) {
+      console.error(
+        "Bharat Nova Photo Editing Error:",
+        error
+      );
+
+      imageStatus.textContent =
+        "❌ " +
+        (error.message || "फोटो एडिट नहीं हो सकी।");
+
+    } finally {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  });
 
   document.getElementById("novaStudioResetImage")
     .addEventListener("click", function () {
