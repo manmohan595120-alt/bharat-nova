@@ -814,6 +814,94 @@ function novaStartVoice() {
   }
 })();
  </script>
+ <!-- BHARAT NOVA BLOCKED USER MESSAGE --><script>
+(function () {
+  "use strict";
+
+  function checkNovaBlockedUser() {
+    if (!window.firebase ||
+        !firebase.apps ||
+        firebase.apps.length === 0) {
+      return;
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(async function (user) {
+      if (!user) return;
+
+      try {
+        const doc = await db
+          .collection("users")
+          .doc(user.uid)
+          .get();
+
+        if (!doc.exists) return;
+
+        const data = doc.data() || {};
+
+        if (data.blocked === true) {
+          let screen = document.getElementById(
+            "novaBlockedScreen"
+          );
+
+          if (!screen) {
+            screen = document.createElement("div");
+            screen.id = "novaBlockedScreen";
+
+            screen.style.cssText =
+              "position:fixed;inset:0;z-index:999999;" +
+              "background:#061429;color:white;" +
+              "display:flex;align-items:center;" +
+              "justify-content:center;padding:24px;" +
+              "text-align:center;font-family:Arial;";
+
+            screen.innerHTML =
+              '<div style="max-width:420px">' +
+              '<div style="font-size:52px">🔒</div>' +
+              '<h1>Bharat Nova</h1>' +
+              '<h2>आपका अकाउंट Block है</h2>' +
+              '<p>Admin ने आपके अकाउंट को Block किया है।' +
+              '</p><p>कृपया Admin से संपर्क करें।</p>' +
+              '<p>Admin Email:<br>' +
+              '<b>Manmohan595120@gmail.com</b></p>' +
+              '<button id="novaBlockedLogout" ' +
+              'style="padding:12px 24px;border:0;' +
+              'border-radius:8px;font-size:16px;' +
+              'cursor:pointer">Logout</button></div>';
+
+            document.body.appendChild(screen);
+
+            document.getElementById(
+              "novaBlockedLogout"
+            ).addEventListener("click", async function () {
+              try {
+                await auth.signOut();
+                location.reload();
+              } catch (error) {
+                alert("Logout नहीं हुआ। कृपया दोबारा कोशिश करें।");
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Blocked status check failed:", error);
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      checkNovaBlockedUser,
+      { once: true }
+    );
+  } else {
+    checkNovaBlockedUser();
+  }
+})();
+ </script>
  <!-- BHARAT NOVA STEP 5: CONNECT LOGIN WITH FIREBASE -->
 <script>
 (function () {
