@@ -2995,5 +2995,78 @@ function novaPaddarPay() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 23 -->
+<!-- BHARAT NOVA STEP 24: AI USAGE DASHBOARD -->
+<section id="novaUsageDashboard" style="max-width:600px;margin:20px auto;padding:18px;background:#101a30;color:white;border:1px solid #c9a227;border-radius:16px;font-family:Arial,sans-serif;">
+  <h2 style="color:#f5cc55;margin-top:0;">📊 AI Usage Dashboard</h2>
+  <p id="novaUsagePlan">Plan: जाँच की जा रही है...</p>
+
+  <div style="margin:14px 0;">
+    <label>💬 AI Requests</label>
+    <div style="height:12px;background:#263650;border-radius:8px;overflow:hidden;">
+      <div id="novaTextUsageBar" style="height:100%;width:0%;background:#39c68a;"></div>
+    </div>
+    <p id="novaTextUsageText">0 / 5 requests</p>
+  </div>
+
+  <div style="margin:14px 0;">
+    <label>🖼️ Image Requests</label>
+    <div style="height:12px;background:#263650;border-radius:8px;overflow:hidden;">
+      <div id="novaImageUsageBar" style="height:100%;width:0%;background:#e4bd49;"></div>
+    </div>
+    <p id="novaImageUsageText">0 / 5 requests</p>
+  </div>
+
+  <button id="novaRefreshUsage" type="button" style="width:100%;padding:12px;background:#c9a227;color:#101a30;border:0;border-radius:8px;font-weight:bold;">
+    Refresh Usage
+  </button>
+
+  <p style="font-size:12px;color:#cbd5e1;">
+    यह शुरुआती display है। वास्तविक usage और Premium limits सुरक्षित रूप से लागू करने के लिए server-side usage tracking आवश्यक है।
+  </p>
+</section>
+
+<script>
+(function () {
+  const STORAGE_KEY = "bharatNovaUsageDisplayV1";
+
+  function loadUsage() {
+    let usage = { text: 0, image: 0 };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      usage.text = Math.max(0, Number(saved.text) || 0);
+      usage.image = Math.max(0, Number(saved.image) || 0);
+    } catch (error) {}
+
+    return usage;
+  }
+
+  function renderUsage() {
+    const usage = loadUsage();
+    const textLimit = 5;
+    const imageLimit = 5;
+
+    document.getElementById("novaUsagePlan").textContent =
+      "Plan: Free (प्रदर्शन के लिए)";
+
+    document.getElementById("novaTextUsageBar").style.width =
+      Math.min(100, usage.text / textLimit * 100) + "%";
+    document.getElementById("novaImageUsageBar").style.width =
+      Math.min(100, usage.image / imageLimit * 100) + "%";
+
+    document.getElementById("novaTextUsageText").textContent =
+      usage.text + " / " + textLimit + " requests";
+
+    document.getElementById("novaImageUsageText").textContent =
+      usage.image + " / " + imageLimit + " requests";
+  }
+
+  document.getElementById("novaRefreshUsage")
+    .addEventListener("click", renderUsage);
+
+  renderUsage();
+})();
+</script>
+<!-- END BHARAT NOVA STEP 24 -->
 </body>
 </html>
