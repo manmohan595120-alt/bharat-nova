@@ -1901,5 +1901,118 @@ button:disabled {
 </script>
 <!-- END STEP 13 -->
 <!-- STEP 14 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 14: BHARAT NOVA SEARCH TOOLS -->
+<section id="novaSearchSection" class="nova-card"
+  style="margin:16px 0;padding:16px;border-radius:16px;">
+
+  <h2>🔎 Bharat Nova Search</h2>
+
+  <form id="novaSearchForm">
+    <label for="novaSearchQuery">Search anything</label>
+    <input id="novaSearchQuery" type="search"
+      placeholder="Type your search..."
+      maxlength="500" required
+      style="width:100%;box-sizing:border-box;padding:12px;margin:8px 0;">
+
+    <button type="submit">Google Search</button>
+    <button type="button" id="novaYouTubeSearch">YouTube</button>
+    <button type="button" id="novaWikipediaSearch">Wikipedia</button>
+    <button type="button" id="novaSearchVoice">🎤 Voice Search</button>
+  </form>
+
+  <p id="novaSearchStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+  const form = document.getElementById("novaSearchForm");
+  const query = document.getElementById("novaSearchQuery");
+  const youtube = document.getElementById("novaYouTubeSearch");
+  const wiki = document.getElementById("novaWikipediaSearch");
+  const voice = document.getElementById("novaSearchVoice");
+  const status = document.getElementById("novaSearchStatus");
+
+  if (!form || !query || !youtube || !wiki || !voice || !status) return;
+
+  function openSearch(engine) {
+    const text = query.value.trim();
+
+    if (!text) {
+      status.textContent = "Pehle search query likhein ya voice search use karein.";
+      query.focus();
+      return;
+    }
+
+    const urls = {
+      google: "https://www.google.com/search?q=",
+      youtube: "https://www.youtube.com/results?search_query=",
+      wikipedia: "https://en.wikipedia.org/w/index.php?search="
+    };
+
+    const base = urls[engine];
+    if (!base) return;
+
+    window.open(base + encodeURIComponent(text), "_blank", "noopener,noreferrer");
+    status.textContent = "Search new tab mein open karne ki request bheji gayi.";
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    openSearch("google");
+  });
+
+  youtube.addEventListener("click", function () {
+    openSearch("youtube");
+  });
+
+  wiki.addEventListener("click", function () {
+    openSearch("wikipedia");
+  });
+
+  voice.addEventListener("click", function () {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      status.textContent =
+        "Voice search is browser mein supported nahi hai. Chrome try karein.";
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = document.documentElement.lang === "en"
+      ? "en-IN" : "hi-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    status.textContent = "Suniye ja raha hai... Ab bolkar search karein.";
+
+    recognition.onresult = function (event) {
+      const result = event.results[0][0].transcript;
+      query.value = result;
+      openSearch("google");
+    };
+
+    recognition.onerror = function () {
+      status.textContent =
+        "Voice search nahi chala. Microphone permission check karein.";
+    };
+
+    recognition.onend = function () {
+      if (!query.value.trim()) {
+        status.textContent = "Voice input khatam hua. Dobara try kar sakte hain.";
+      }
+    };
+
+    try {
+      recognition.start();
+    } catch (error) {
+      status.textContent = "Voice search dobara start karein.";
+    }
+  });
+})();
+</script>
+<!-- END STEP 14 -->
+<!-- STEP 15 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
