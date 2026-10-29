@@ -1170,5 +1170,79 @@ button:disabled {
 </script>
 <!-- END STEP 6 -->
 <!-- STEP 7 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 7: THINK HARDER, EXPLAIN & SHORTEN -->
+<style>
+.nova-thinking-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.nova-thinking-tools .btn {
+  flex: 1 1 130px;
+}
+.nova-thinking-tools .selected {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const panel = document.getElementById("novaChatPanel");
+  const input = document.getElementById("novaChatInput");
+  if (!panel || !input || document.getElementById("novaThinkingTools")) {
+    return;
+  }
+
+  const tools = document.createElement("div");
+  tools.id = "novaThinkingTools";
+  tools.className = "nova-thinking-tools";
+
+  const modes = [
+    { id: "think", label: "🧠 Think Harder",
+      prompt: "इस सवाल का सावधानीपूर्वक विश्लेषण करें। मुख्य बिंदुओं, मान्यताओं और संभावित समाधानों को व्यवस्थित रूप से जाँचकर स्पष्ट निष्कर्ष दें।" },
+    { id: "explain", label: "📘 Explain Simply",
+      prompt: "इस विषय को आसान हिंदी में चरणबद्ध तरीके से समझाएँ और उपयुक्त उदाहरण दें।" },
+    { id: "shorten", label: "✂️ Shorten",
+      prompt: "पिछले उत्तर या विषय का अर्थ बनाए रखते हुए संक्षिप्त सार दें।" }
+  ];
+
+  modes.forEach(mode => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn";
+    button.textContent = mode.label;
+
+    button.addEventListener("click", () => {
+      input.value = mode.prompt +
+        (input.value.trim() ? "\n\nसवाल/विषय: " + input.value.trim() : "");
+      input.focus();
+
+      tools.querySelectorAll("button").forEach(item => {
+        item.classList.remove("selected");
+      });
+      button.classList.add("selected");
+
+      const status = document.getElementById("novaChatStatus");
+      if (status) {
+        status.textContent =
+          "मोड चुना गया है। अपना विषय लिखें और Send दबाएँ।";
+      }
+    });
+
+    tools.appendChild(button);
+  });
+
+  const compose = panel.querySelector(".nova-chat-compose");
+  if (compose) {
+    compose.insertBefore(tools, input);
+  }
+})();
+</script>
+<!-- END STEP 7 -->
+<!-- STEP 8 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
