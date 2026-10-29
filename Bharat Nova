@@ -1555,5 +1555,96 @@ button:disabled {
 </script>
 <!-- END STEP 9 -->
 <!-- STEP 10 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 10: BHARAT NOVA IMAGE BACKEND CONNECTION -->
+<section id="novaImageBackendSection" class="nova-card" style="margin:16px 0;padding:16px;border-radius:16px;">
+  <h2>🎨 Bharat Nova AI Image Studio</h2>
+  <p>Image upload, prompt aur backend status.</p>
+
+  <label for="novaBackendImage">Image select karein:</label>
+  <input id="novaBackendImage" type="file" accept="image/png,image/jpeg,image/webp"
+         style="display:block;margin:10px 0;">
+
+  <label for="novaBackendPrompt">Image mein kya badalna hai?</label>
+  <textarea id="novaBackendPrompt" rows="3"
+    placeholder="Example: background ko pahadon mein badal do"
+    style="width:100%;box-sizing:border-box;margin:8px 0;padding:12px;"></textarea>
+
+  <button id="novaBackendEditBtn" type="button">✨ AI se Edit Karein</button>
+  <p id="novaBackendStatus" role="status" aria-live="polite"></p>
+  <img id="novaBackendPreview" alt="Edited image preview"
+       hidden style="max-width:100%;border-radius:12px;">
+  <a id="novaBackendDownload" hidden download="bharat-nova-edited.png">
+    Edited Image Download Karein
+  </a>
+</section>
+
+<script>
+(function () {
+  const input = document.getElementById("novaBackendImage");
+  const prompt = document.getElementById("novaBackendPrompt");
+  const button = document.getElementById("novaBackendEditBtn");
+  const status = document.getElementById("novaBackendStatus");
+  const preview = document.getElementById("novaBackendPreview");
+  const download = document.getElementById("novaBackendDownload");
+
+  if (!input || !prompt || !button || !status || !preview || !download) return;
+
+  const MAX_SIZE = 10 * 1024 * 1024;
+  let selectedImage = null;
+  let previewUrl = null;
+
+  input.addEventListener("change", function () {
+    const file = input.files && input.files[0];
+    selectedImage = null;
+    preview.hidden = true;
+    download.hidden = true;
+
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      input.value = "";
+      status.textContent = "JPG, PNG ya WebP image select karein.";
+      return;
+    }
+
+    if (file.size > MAX_SIZE) {
+      input.value = "";
+      status.textContent = "Image 10 MB se chhoti honi chahiye.";
+      return;
+    }
+
+    selectedImage = file;
+    status.textContent = "Image select ho gayi. Ab editing prompt likhein.";
+  });
+
+  button.addEventListener("click", async function () {
+    if (!selectedImage) {
+      status.textContent = "Pehle image select karein.";
+      return;
+    }
+
+    if (!prompt.value.trim()) {
+      status.textContent = "Batayein image mein kya badalna hai.";
+      return;
+    }
+
+    /*
+      SECURITY:
+      Browser se Cloudflare secrets/API keys kabhi expose na karein.
+      Real editing ke liye authenticated/rate-limited backend endpoint
+      implement karna zaroori hai. Maujooda /ask text endpoint image
+      editing endpoint nahi hai.
+    */
+
+    button.disabled = true;
+    status.textContent =
+      "Image editing backend abhi configure nahi hai. Worker mein secure image-edit API connect karni hogi.";
+
+    button.disabled = false;
+  });
+})();
+</script>
+<!-- END STEP 10 -->
+<!-- STEP 11 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
