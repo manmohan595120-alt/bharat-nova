@@ -771,5 +771,185 @@ button:disabled {
 </script>
 <!-- END STEP 4 -->
 <!-- STEP 5 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 5: BHARAT NOVA AI BACKEND CONNECTION -->
+<script>
+(() => {
+  "use strict";
+
+  const WORKER_URL =
+    "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+  const panel = document.getElementById("novaChatPanel");
+  if (!panel || panel.dataset.aiConnected === "true") return;
+
+  panel.dataset.aiConnected = "true";
+
+  const input = document.getElementById("novaChatInput");
+  const sendButton = document.getElementById("novaChatSend");
+  const messages = document.getElementById("novaChatMessages");
+  const status = document.getElementById("novaChatStatus");
+
+  if (!input || !sendButton || !messages || !status) return;
+
+  let busy = false;
+  const conversation = [];
+
+  function addAIMessage(text) {
+    const welcome = document.getElementById("novaChatWelcome");
+    if (welcome) welcome.remove();
+
+    const bubble = document.createElement("div");
+    bubble.className = "nova-message ai";
+
+    const label = document.createElement("span");
+    label.className = "nova-message-label";
+    label.textContent = "Bharat Nova AI";
+
+    const content = document.createElement("div");
+    content.textContent = text;
+
+    bubble.append(label, content);
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  async function askAI() {
+    const question = input.value.trim();
+
+    if (busy) return;
+
+    if (!question) {
+      status.textContent = "पहले अपना सवाल लिखें।";
+      input.focus();
+      return;
+    }
+
+    if (question.length > 12000) {
+      status.textContent = "सवाल बहुत लंबा है। कृपया छोटा करें।";
+      return;
+    }
+
+    busy = true;
+    sendButton.disabled = true;
+    status.textContent = "Bharat Nova AI जवाब तैयार कर रहा है…";
+
+    // यूज़र का सवाल चैट में दिखाएँ।
+    const userBubble = document.createElement("div");
+    userBubble.className = "nova-message user";
+
+    const userLabel = document.createElement("span");
+    userLabel.className = "nova-message-label";
+    userLabel.textContent = "आप";
+
+    const userContent = document.createElement("div");
+    userContent.textContent = question;
+
+    userBubble.append(userLabel, userContent);
+    messages.appendChild(userBubble);
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+      const response = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          question: question,
+          prompt: question,
+          messages: [
+            ...conversation,
+            { role: "user", content: question }
+          ]
+        }),
+        signal: AbortSignal.timeout(60000),
+        cache: "no-store"
+      });
+
+      const raw = await response.text();
+
+      if (!response.ok) {
+        throw new Error("AI सर्वर ने HTTP " + response.status +
+          " जवाब दिया।");
+      }
+
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        throw new Error("AI सर्वर से सही JSON जवाब नहीं मिला।");
+      }
+
+      if (data.success === false || data.error) {
+        throw new Error(
+          typeof data.error === "string"
+            ? data.error
+            : "AI अनुरोध पूरा नहीं हो सका।"
+        );
+      }
+
+      const answer =
+        data.answer ??
+        data.response ??
+        data.reply ??
+        data.text ??
+        data.result?.response ??
+        data.result?.text ??
+        data.result;
+
+      if (typeof answer !== "string" || !answer.trim()) {
+        throw new Error(
+          "जवाब का फ़ॉर्मैट पहचाना नहीं गया। Worker के response फ़ॉर्मैट की जाँच करें।"
+        );
+      }
+
+      addAIMessage(answer);
+
+      conversation.push(
+        { role: "user", content: question },
+        { role: "assistant", content: answer }
+      );
+
+      // संदर्भ को सीमित रखें।
+      if (conversation.length > 12) {
+        conversation.splice(0, conversation.length - 12);
+      }
+
+      status.textContent = "जवाब तैयार है।";
+
+    } catch (error) {
+      addAIMessage(
+        "अभी जवाब नहीं मिल पाया। कृपया दोबारा प्रयास करें।"
+      );
+
+      status.textContent =
+        error.name === "TimeoutError"
+          ? "समय समाप्त हुआ। बाद में फिर प्रयास करें।"
+          : "कनेक्शन या Worker response में समस्या है: " +
+            error.message;
+
+    } finally {
+      busy = false;
+      sendButton.disabled = false;
+      input.focus();
+    }
+  }
+
+  // Step 4 के पुराने Send handler को बदलें।
+  sendButton.onclick = askAI;
+
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      askAI();
+    }
+  });
+})();
+</script>
+<!-- END STEP 5 -->
+<!-- STEP 6 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
