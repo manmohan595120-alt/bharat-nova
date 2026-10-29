@@ -2926,5 +2926,74 @@ function novaPaddarPay() {
 })();
 </script>
 <!-- END BHARAT NOVA STEP 22 -->
+<!-- BHARAT NOVA STEP 23: ACCOUNT SECURITY -->
+<section id="novaAccountSecurity" style="max-width:600px;margin:20px auto;padding:18px;background:#101a30;color:#fff;border:1px solid #c9a227;border-radius:16px;font-family:Arial,sans-serif;">
+  <h2 style="color:#f5cc55;margin-top:0;">🔐 Account Security</h2>
+  <p id="novaAccountStatus" role="status" aria-live="polite">Login status जाँचा जा रहा है...</p>
+
+  <button type="button" id="novaCheckAccount"
+    style="padding:11px;margin:5px;background:#c9a227;color:#101a30;border:0;border-radius:8px;">
+    Refresh Status
+  </button>
+
+  <button type="button" id="novaSecureLogout"
+    style="padding:11px;margin:5px;background:#a83232;color:white;border:0;border-radius:8px;">
+    Logout
+  </button>
+
+  <p style="font-size:13px;color:#cbd5e1;">
+    सुरक्षा के लिए अपना पासवर्ड किसी के साथ साझा न करें। Premium भुगतान की पुष्टि केवल अधिकृत सर्वर से करें।
+  </p>
+</section>
+
+<script>
+(function () {
+  const status = document.getElementById("novaAccountStatus");
+  const check = document.getElementById("novaCheckAccount");
+  const logout = document.getElementById("novaSecureLogout");
+
+  function refreshNovaAccountStatus() {
+    try {
+      if (window.firebase && firebase.auth &&
+          typeof firebase.auth === "function") {
+        const auth = firebase.auth();
+
+        status.textContent = auth.currentUser
+          ? "Login है: " + (auth.currentUser.email || "Email उपलब्ध नहीं")
+          : "अभी Login नहीं है।";
+        return;
+      }
+
+      status.textContent =
+        "Firebase Auth इस पेज पर उपलब्ध नहीं है। मौजूदा Login सिस्टम की जाँच करें।";
+    } catch (error) {
+      status.textContent =
+        "Login status नहीं पढ़ा जा सका। मौजूदा Authentication configuration जाँचें।";
+    }
+  }
+
+  check.addEventListener("click", refreshNovaAccountStatus);
+
+  logout.addEventListener("click", async function () {
+    try {
+      if (window.firebase && firebase.auth &&
+          typeof firebase.auth === "function") {
+        await firebase.auth().signOut();
+        status.textContent = "Logout हो गया।";
+        return;
+      }
+
+      status.textContent =
+        "Logout स्वतः नहीं हो सका। अपने मौजूदा Login सिस्टम का Logout बटन इस्तेमाल करें।";
+    } catch (error) {
+      status.textContent =
+        "Logout असफल रहा। कृपया दोबारा प्रयास करें।";
+    }
+  });
+
+  refreshNovaAccountStatus();
+})();
+</script>
+<!-- END BHARAT NOVA STEP 23 -->
 </body>
 </html>
