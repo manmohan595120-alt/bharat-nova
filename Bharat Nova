@@ -1646,5 +1646,97 @@ button:disabled {
 </script>
 <!-- END STEP 10 -->
 <!-- STEP 11 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 11: BHARAT NOVA SETTINGS -->
+<section id="novaSettingsSection" class="nova-card"
+  style="margin:16px 0;padding:16px;border-radius:16px;">
+  <h2>⚙️ Bharat Nova Settings</h2>
+
+  <label for="novaThemeSetting">Theme</label>
+  <select id="novaThemeSetting">
+    <option value="dark">Dark</option>
+    <option value="light">Light</option>
+    <option value="system">System Default</option>
+  </select>
+
+  <br><br>
+
+  <label for="novaFontSetting">Font Size</label>
+  <select id="novaFontSetting">
+    <option value="14px">Small</option>
+    <option value="16px" selected>Medium</option>
+    <option value="18px">Large</option>
+    <option value="20px">Extra Large</option>
+  </select>
+
+  <br><br>
+
+  <label for="novaLanguageSetting">Preferred Language</label>
+  <select id="novaLanguageSetting">
+    <option value="hi">हिन्दी</option>
+    <option value="en">English</option>
+    <option value="ur">اردو</option>
+  </select>
+
+  <br><br>
+
+  <button type="button" id="novaSaveSettings">Save Settings</button>
+  <p id="novaSettingsStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+  const theme = document.getElementById("novaThemeSetting");
+  const font = document.getElementById("novaFontSetting");
+  const language = document.getElementById("novaLanguageSetting");
+  const save = document.getElementById("novaSaveSettings");
+  const status = document.getElementById("novaSettingsStatus");
+
+  if (!theme || !font || !language || !save || !status) return;
+
+  function applySettings(settings) {
+    if (settings.theme === "light") {
+      document.documentElement.dataset.theme = "light";
+      document.documentElement.style.colorScheme = "light";
+    } else if (settings.theme === "dark") {
+      document.documentElement.dataset.theme = "dark";
+      document.documentElement.style.colorScheme = "dark";
+    } else {
+      delete document.documentElement.dataset.theme;
+      document.documentElement.style.colorScheme = "normal";
+    }
+
+    document.documentElement.style.fontSize = settings.font;
+    document.documentElement.lang = settings.language;
+  }
+
+  try {
+    const saved = JSON.parse(localStorage.getItem("bharatNovaSettings") || "{}");
+    if (["dark", "light", "system"].includes(saved.theme)) theme.value = saved.theme;
+    if (["14px", "16px", "18px", "20px"].includes(saved.font)) font.value = saved.font;
+    if (["hi", "en", "ur"].includes(saved.language)) language.value = saved.language;
+    applySettings({ theme: theme.value, font: font.value, language: language.value });
+  } catch (error) {
+    status.textContent = "Default settings use ho rahi hain.";
+  }
+
+  save.addEventListener("click", function () {
+    const settings = {
+      theme: theme.value,
+      font: font.value,
+      language: language.value
+    };
+
+    try {
+      localStorage.setItem("bharatNovaSettings", JSON.stringify(settings));
+      applySettings(settings);
+      status.textContent = "Settings save ho gayi hain.";
+    } catch (error) {
+      status.textContent = "Settings save nahi hui. Browser storage check karein.";
+    }
+  });
+})();
+</script>
+<!-- END STEP 11 -->
+<!-- STEP 12 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
