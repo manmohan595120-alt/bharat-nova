@@ -1352,98 +1352,379 @@ false
 
   question.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      askAI();
+यहाँ आपका पूरा (Complete) सिंगल कोड ब्लॉक दिया गया है। आपको दो अलग-अलग जगह से कोड कॉपी करने की जरूरत नहीं है। इस एक कोड के अंदर ऊपर वाला चैट इंटरफ़ेस और नीचे वाला payload लॉजिक (जिसमें इमेज, PDF, और फाइल्स जाती हैं) दोनों को एक साथ जोड़ दिया गया है।
+आप इस पूरे कोड को एक बार में कॉपी करें और अपनी फाइल में पुराने कोड को हटाकर पेस्ट कर दें:
+html
+<!-- BHARAT NOVA ADVANCED AI ASSISTANT (COMPLETE ALL-IN-ONE CODE) -->
+<section id="novaAISection" style="
+  max-width:900px;
+  margin:20px auto;
+  padding:20px;
+  border:1px solid #263d5b;
+  border-radius:18px;
+  background:#0c203b;
+  color:#f4f7ff;
+  font-family:system-ui,-apple-system,sans-serif;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+">
+  <h2 style="margin-top:0;color:#f4c542;display:flex;align-items:center;gap:8px;">
+    🇮🇳 Bharat Nova AI <span style="font-size:12px;background:#102a49;padding:4px 8px;border-radius:20px;color:#37d6a0;border:1px solid #263d5b;">v2.0 (ChatGPT Mode)</span>
+  </h2>
+
+  <p style="color:#a2b6d0;margin-bottom:15px;">सवाल पूछें, डॉक्युमेंट्स (PDF/CSV) का विश्लेषण करें, या इमेज-टू-इमेज प्रॉम्प्ट का उपयोग करें।</p>
+
+  <!-- स्टेटस इंडिकेटर -->
+  <div id="novaAIStatus" role="status" style="color:#37d6a0;margin:10px 0;font-weight:500;">
+    Bharat Nova AI तैयार है।
+  </div>
+
+  <!-- चैट विंडो (ChatGPT स्टाइल बबल्स) -->
+  <div id="novaAIMessages" aria-live="polite" style="
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    max-height:500px;
+    overflow-y:auto;
+    padding:15px;
+    background:#061429;
+    border-radius:14px;
+    border:1px solid #1a2f4c;
+    margin-bottom:15px;
+  ">
+    <!-- स्वागत संदेश -->
+    <div style="padding:12px 16px;background:#102a49;border-radius:14px;max-width:85%;align-self:flex-start;border-bottom-left-radius:2px;">
+      <strong style="color:#f4c542;display:block;margin-bottom:4px;">Bharat Nova AI</strong>
+      <p style="margin:0;line-height:1.5;">नमस्ते! मैं ChatGPT की तरह आपकी मदद कर सकता हूँ। आप यहाँ फाइल (PDF, Excel, Images) अपलोड करके उनसे जुड़े सवाल भी पूछ सकते हैं।</p>
+    </div>
+  </div>
+
+  <!-- इनपुट एरिया -->
+  <div style="background:#061429;border:1px solid #263d5b;border-radius:12px;padding:8px;">
+    <textarea id="novaAIQuestion"
+      placeholder="यहाँ अपना सवाल लिखें या फ़ाइल अपलोड करके प्रॉम्प्ट दें... (Shift+Enter से नई लाइन, Enter से सेंड)"
+      rows="3"
+      style="box-sizing:border-box;width:100%;padding:10px;
+      border:0;outline:none;background:transparent;color:#f4f7ff;
+      font:inherit;resize:none;"></textarea>
+
+    <!-- प्रीव्यू बॉक्स -->
+    <div id="novaAIFilePreview" style="margin:5px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+
+    <!-- टूल्स और एक्शन बटन्स बार -->
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #1a2f4c;padding-top:8px;margin-top:5px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;gap:6px;align-items:center;">
+        <!-- फ़ाइल अपलोड बटन -->
+        <label for="novaAIFile" style="padding:8px 14px;background:#102a49;color:#f4f7ff;border-radius:8px;cursor:pointer;font-size:14px;border:1px solid #263d5b;display:inline-flex;align-items:center;gap:6px;">
+          📎 फ़ाइल / फोटो जोड़ें
+        </label>
+        <input id="novaAIFile" type="file"
+          accept="image/*,.pdf,.txt,.csv,.json,.doc,.docx"
+          style="display:none;">
+
+        <button id="novaAIVoice" style="padding:8px 12px;border:1px solid #f4c542;border-radius:8px;background:#102a49;color:white;cursor:pointer;font-size:14px;">
+          🎤 Voice
+        </button>
+      </div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button id="novaAIRead" style="padding:8px 12px;border:1px solid #263d5b;border-radius:8px;background:#102a49;color:white;cursor:pointer;font-size:14px;">
+          🔊 सुनें
+        </button>
+        <button id="novaAIStop" style="padding:8px 12px;border:1px solid #263d5b;border-radius:8px;background:#102a49;color:white;cursor:pointer;font-size:14px;">
+          ⏹ रोकें
+        </button>
+        <button id="novaAIClear" style="padding:8px 12px;border:1px solid #263d5b;border-radius:8px;background:#102a49;color:white;cursor:pointer;font-size:14px;">
+          🗑 नई चैट
+        </button>
+        <button id="novaAIAsk" style="padding:8px 20px;border:0;border-radius:8px;background:#f4c542;color:#061429;font-weight:bold;cursor:pointer;font-size:14px;">
+          भेजें ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- नीचे वाला रिजल्ट डिस्प्ले सेक्शन -->
+  <div id="novaAIResult" style="
+    margin-top:20px;
+    padding:12px;
+    border-radius:10px;
+    background: #061429;
+    border: 1px solid #1a2f4c;
+    min-height: 40px;
+    display: none;
+  "></div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  const WORKER = "https://workers.dev";
+
+  const question = document.getElementById("novaAIQuestion");
+  const upload = document.getElementById("novaAIFile");
+  const sendButton = document.getElementById("novaAIAsk");
+  const voiceButton = document.getElementById("novaAIVoice");
+  const readButton = document.getElementById("novaAIRead");
+  const stopButton = document.getElementById("novaAIStop");
+  const clearButton = document.getElementById("novaAIClear");
+  const status = document.getElementById("novaAIStatus");
+  const messages = document.getElementById("novaAIMessages");
+  const preview = document.getElementById("novaAIFilePreview");
+  const result = document.getElementById("novaAIResult");
+
+  if (!question || !upload || !sendButton || !messages || !result) return;
+
+  let lastAnswer = "";
+  let voiceRecognition = null;
+  let isListening = false;
+
+  // चैट बबल संदेश फ़ंक्शन
+  function addMessage(sender, text, imageUrl = null, fileInfo = null) {
+    const box = document.createElement("div");
+    const isUser = sender === "आप";
+    box.style.cssText = `
+      padding: 12px 16px;
+      border-radius: 14px;
+      max-width: 85%;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      ${isUser ? 
+        'background: #1a4473; color: #ffffff; align-self: flex-end; border-bottom-right-radius: 2px;' : 
+        'background: #102a49; color: #f4f7ff; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #1e3a5f;'}
+    `;
+
+    const heading = document.createElement("strong");
+    heading.textContent = sender;
+    heading.style.cssText = `display: block; margin-bottom: 4px; font-size: 13px; color: ${isUser ? '#37d6a0' : '#f4c542'};`;
+    box.appendChild(heading);
+
+    if (fileInfo) {
+      const fileBadge = document.createElement("div");
+      fileBadge.style.cssText = "background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 6px; font-size: 13px; margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px; border: 1px dashed #263d5b;";
+      fileBadge.textContent = "📁 " + fileInfo;
+      box.appendChild(fileBadge);
     }
-  });
 
-  voiceButton.addEventListener("click", function () {
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
+    if (text) {
+      const body = document.createElement("div");
+      body.textContent = text;
+      box.appendChild(body);
+    }
 
-    if (!SpeechRecognition) {
-      status.textContent =
-        "Voice input के लिए Chrome में माइक्रोफोन सुविधा जाँचें।";
+    if (imageUrl) {
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "AI Output";
+      img.style.cssText = "display:block; max-width:100%; max-height:350px; border-radius:8px; margin-top:10px; border: 1px solid #263d5b;";
+      box.appendChild(img);
+    }
+
+    messages.appendChild(box);
+    messages.scrollTop = messages.scrollHeight;
+    return box;
+  }
+
+  function readFile(file) {
+    return new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+      reader.onload = function () { resolve(reader.result); };
+      reader.onerror = function () { reject(new Error("फ़ाइल पढ़ने में विफलता।")); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // फ़ाइल अपलोड होने पर प्रीव्यू दिखाना
+  upload.addEventListener("change", function () {
+    preview.replaceChildren();
+    const file = upload.files && upload.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      upload.value = "";
+      status.textContent = "फ़ाइल का साइज 10 MB से कम होना चाहिए।";
       return;
     }
 
-    if (voiceRecognition) {
-      voiceRecognition.stop();
+    const badge = document.createElement("div");
+    badge.style.cssText = "background:#102a49; padding:6px 12px; border-radius:8px; font-size:13px; border:1px solid #f4c542; display:flex; align-items:center; gap:8px;";
+    badge.innerHTML = `<span>📄 ${file.name}</span> <b id="removeFile" style="color:#d63737;cursor:pointer;">✕</b>`;
+    preview.appendChild(badge);
+
+    if (file.type.startsWith("image/")) {
+      const imgThumb = document.createElement("img");
+      imgThumb.style.cssText = "display:block; width:50px; height:50px; object-fit:cover; border-radius:6px; border:1px solid #263d5b;";
+      const url = URL.createObjectURL(file);
+      imgThumb.src = url;
+      imgThumb.onload = function () { URL.revokeObjectURL(url); };
+      badge.insertBefore(imgThumb, badge.firstChild);
     }
 
-    voiceRecognition = new SpeechRecognition();
-    voiceRecognition.lang = "hi-IN";
-    voiceRecognition.interimResults = false;
-    voiceRecognition.maxAlternatives = 1;
-
-    voiceRecognition.onstart = function () {
-      status.textContent = "बोलिए, Bharat Nova AI सुन रहा है...";
-    };
-
-    voiceRecognition.onresult = function (event) {
-      question.value =
-        event.results[0][0].transcript || "";
-
-      askAI();
-    };
-
-    voiceRecognition.onerror = function () {
-      status.textContent =
-        "आवाज़ नहीं मिली। माइक्रोफोन की अनुमति जाँचें।";
-    };
-
-    voiceRecognition.onend = function () {
-      voiceRecognition = null;
-    };
-
-    voiceRecognition.start();
+    document.getElementById("removeFile").addEventListener("click", function() {
+      upload.value = "";
+      preview.replaceChildren();
+    });
   });
 
-  readButton.addEventListener("click", function () {
-    if (!("speechSynthesis" in window)) {
-      status.textContent = "आवाज़ पढ़ने की सुविधा उपलब्ध नहीं है।";
+  // मुख्य आस्क और रिक्वेस्ट प्रोसेसिंग फ़ंक्शन
+  async function askAI() {
+    const prompt = question.value.trim();
+    const file = upload.files && upload.files[0];
+
+    if (!prompt && !file) {
+      status.textContent = "कृपया कुछ लिखें या कोई फ़ाइल अटैच करें।";
       return;
     }
 
-    if (!lastAnswer) {
-      status.textContent = "पहले AI का जवाब आने दें।";
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const speech = new SpeechSynthesisUtterance(lastAnswer);
-    speech.lang = "hi-IN";
-    window.speechSynthesis.speak(speech);
-  });
-
-  stopButton.addEventListener("click", function () {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-
-    if (voiceRecognition) {
-      voiceRecognition.stop();
-    }
-
-    status.textContent = "आवाज़ रोक दी गई।";
-  });
-
-  clearButton.addEventListener("click", function () {
-    messages.replaceChildren();
+    sendButton.disabled = true;
+    status.textContent = "Bharat Nova AI प्रोसेस कर रहा है...";
     result.replaceChildren();
-    lastAnswer = "";
+    result.style.display = "none";
 
-    addMessage(
-      "Bharat Nova AI",
-      "नमस्ते! मैं आपकी क्या मदद कर सकता हूँ?"
-    );
+    const userPromptText = prompt || (file ? `इस ${file.name.split('.').pop().toUpperCase()} फ़ाइल का विश्लेषण करें।` : "");
+    addMessage("आप", userPromptText, null, file ? file.name : null);
 
-    status.textContent = "नई चैट तैयार है।";
-  });
+    // एंडपॉइंट्स रूटिंग इंटेलिजेंस
+    let endpoint = "/ask"; 
+    const lowerPrompt = prompt.toLowerCase();
+    const isImageQuery = lowerPrompt.includes("बनाओ") || lowerPrompt.includes("बनाएं") || lowerPrompt.includes("generate") || lowerPrompt.includes("image") || lowerPrompt.includes("photo") || lowerPrompt.includes("picture") || lowerPrompt.includes("painting");
+
+    if (file && file.type.startsWith("image/")) {
+      if (lowerPrompt.includes("edit") || lowerPrompt.includes("बदलो") || lowerPrompt.includes("सुधारो") || lowerPrompt.includes("सुधार")) {
+        endpoint = "/image/edit";
+      }
+    } else if (isImageQuery) {
+Use code with caution.
+endpoint = "/image/generate";
+}
+// 🎯 यहाँ आपका पूरा पेलोड लॉजिक है (इमेज, पीडीएफ और टेक्स्ट फ़ाइलों के लिए)
+try {
+const payload = {
+question: userPromptText,
+message: userPromptText,
+prompt: userPromptText
+};
+if (file) {
+const dataURL = await readFile(file);
+payload.fileName = file.name;
+payload.fileType = file.type;
+payload.fileData = dataURL;
+if (file.type.startsWith("image/")) {
+payload.image = dataURL; // इमेज-टू-इमेज विज़न सपोर्ट
+} else {
+// PDF, CSV, Excel या TXT डेटा के लिए Base64 स्ट्रिंग सेंड करना
+payload.fileText = dataURL.split(",").slice(1).join(",");
+}
+}
+const response = await fetch(WORKER + endpoint, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(payload)
+});
+const data = await response.json();
+if (!response.ok || data.success === false) {
+throw new Error(data.details || data.error || "सर्वर रिस्पॉन्स एरर।");
+}
+const answerText = data.answer || data.response || data.message || "";
+const outputImage = data.image || data.imageUrl || data.url || data.result;
+// रिस्पॉन्स रेंडर करना और नीचे वाले बॉक्स (result) को अपडेट करना
+if (endpoint.includes("image") || (typeof outputImage === "string" && (outputImage.startsWith("data:image") || outputImage.startsWith("http")))) {
+addMessage("Bharat Nova AI", "आपकी रिक्वेस्ट के अनुसार तैयार इमेज:", outputImage);
+// नीचे वाले बॉक्स में भी फुल साइज आउटपुट सेट करना
+result.style.display = "block";
+result.innerHTML = <h4 style="margin:0 0 10px 0;color:#f4c542;">📋 Latest Output Display:</h4> <img src="${outputImage}" style="max-width:100%; border-radius:8px; border:1px solid #263d5b;">;
+lastAnswer = "आपकी इमेज तैयार हो गई है।";
+status.textContent = "इमेज सफलतापूर्वक जेनरेट की गई।";
+} else {
+if (typeof answerText !== "string" || !answerText.trim()) {
+throw new Error("AI से खाली रिस्पॉन्स मिला।");
+}
+lastAnswer = answerText;
+addMessage("Bharat Nova AI", answerText);
+// नीचे वाले बॉक्स में टेक्स्ट लोड करना
+result.style.display = "block";
+result.innerHTML = <h4 style="margin:0 0 10px 0;color:#f4c542;">📋 Latest Output Display:</h4> <div style="color:#f4f7ff; line-height:1.5;">${answerText}</div>;
+status.textContent = "जवाब आ चुका है।";
+}
+// इनपुट्स क्लियर करना
+question.value = "";
+upload.value = "";
+preview.replaceChildren();
+} catch (error) {
+addMessage("समस्या", error.message || "रिक्वेस्ट फेल हो गई।");
+status.textContent = "त्रुटि हुई। कृपया नेटवर्क या वर्कर चेक करें।";
+} finally {
+sendButton.disabled = false;
+}
+}
+sendButton.addEventListener("click", askAI);
+// Enter की-प्रेस लॉजिक
+question.addEventListener("keydown", function (event) {
+if (event.key === "Enter" && !event.shiftKey) {
+event.preventDefault();
+askAI();
+}
+});
+// --- वॉयस इनपुट (Speech to Text) ---
+voiceButton.addEventListener("click", function () {
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+status.textContent = "वॉयस इनपुट सपोर्टेड नहीं है। Chrome का उपयोग करें।";
+return;
+}
+if (isListening) { voiceRecognition.stop(); return; }
+voiceRecognition = new SpeechRecognition();
+voiceRecognition.lang = "hi-IN";
+voiceRecognition.onstart = function () {
+isListening = true;
+voiceButton.style.background = "#d63737";
+voiceButton.innerHTML = "🛑 Stop";
+status.textContent = "सुन रहा हूँ... बोलिए।";
+};
+voiceRecognition.onerror = function (e) { status.textContent = "आवाज एरर: " + e.error; };
+voiceRecognition.onend = function () {
+isListening = false;
+voiceButton.style.background = "#102a49";
+voiceButton.innerHTML = "🎤 Voice";
+};
+voiceRecognition.onresult = function (event) {
+question.value = event.results.transcript;
+status.textContent = "आवाज दर्ज हो गई है!";
+};
+voiceRecognition.start();
+});
+// --- टेक्स्ट टू स्पीच (Listen AI Response) ---
+readButton.addEventListener("click", function () {
+if (!lastAnswer) { status.textContent = "सुनाने के लिए कोई डेटा नहीं है।"; return; }
+window.speechSynthesis.cancel();
+const utterance = new SpeechSynthesisUtterance(lastAnswer);
+utterance.lang = "hi-IN";
+window.speechSynthesis.speak(utterance);
+status.textContent = "ऑडियो प्ले हो रहा है...";
+});
+stopButton.addEventListener("click", function () {
+window.speechSynthesis.cancel();
+status.textContent = "ऑडियो बंद किया गया।";
+});
+// --- चैट क्लियर करना ---
+clearButton.addEventListener("click", function () {
+window.speechSynthesis.cancel();
+if (voiceRecognition && isListening) voiceRecognition.stop();
+lastAnswer = "";
+question.value = "";
+upload.value = "";
+preview.replaceChildren();
+result.replaceChildren();
+result.style.display = "none";
+messages.innerHTML = <div style="padding:12px 16px;background:#102a49;border-radius:14px;max-width:85%;align-self:flex-start;"> <strong style="color:#f4c542;display:block;margin-bottom:4px;">Bharat Nova AI</strong> <p style="margin:0;">चैट रीसेट कर दी गई है। नया सवाल पूछें या फाइल अपलोड करें!</p> </div>;
+status.textContent = "नई चैट विंडो शुरू हो गई है।";
+});
 })();
-</script>
+
+<FollowUp>
+इस ऑल-इन-वन कोड को सेव करने के बाद इसे अपने लाइव सर्वर या लोकलहोस्ट पर टेस्ट करें। क्या **फाइल्स अपलोड होने** और **इमेज डिस्प्ले होने** में सब कुछ बिल्कुल सही ढंग से लोड हो रहा है?
+</FollowUp>
 <!-- END BHARAT NOVA STEP 6 -->
 <!-- START BHARAT NOVA STEP 7 -->
  
