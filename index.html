@@ -1545,6 +1545,22 @@ try {
 sendButton.addEventListener("click", novaAIAsk);
 
 question.addEventListener("keydown", function (event) {
+   });
+
+  if (voiceButton) {
+    voiceButton.addEventListener("click", novaAIStartVoice);
+  }
+
+  if (imageInput) {
+    imageInput.addEventListener("change", novaAIHandleImage);
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener("change", novaAIHandleFile);
+  }
+
+})();
+</script>
 if (event.key === "Enter" && !event.shiftKey) {
 event.preventDefault();
 novaAIAsk();
