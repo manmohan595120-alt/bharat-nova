@@ -2345,5 +2345,132 @@ button:disabled {
 </script>
 <!-- END STEP 17 -->
 <!-- STEP 18 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 18: BHARAT NOVA APP DIAGNOSTICS -->
+<section id="novaDiagnosticsSection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>🛡️ App Diagnostics</h2>
+ <p>Check your browser and Bharat Nova connection status.</p>
+
+ <button type="button" id="novaRunDiagnostics">Run Diagnostics</button>
+
+ <ul id="novaDiagnosticsResults" aria-live="polite">
+  <li>Diagnostics have not been run yet.</li>
+ </ul>
+
+ <p id="novaDiagnosticsStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+ const button = document.getElementById("novaRunDiagnostics");
+ const results = document.getElementById("novaDiagnosticsResults");
+ const status = document.getElementById("novaDiagnosticsStatus");
+
+ if (!button || !results || !status) return;
+
+ function addResult(label, passed, detail) {
+  const item = document.createElement("li");
+  item.textContent =
+   (passed ? "✅ " : "⚠️ ") + label + ": " + detail;
+  results.appendChild(item);
+ }
+
+ button.addEventListener("click", async function () {
+  button.disabled = true;
+  results.replaceChildren();
+  status.textContent = "Checking app status...";
+
+  addResult(
+   "Internet",
+   navigator.onLine,
+   navigator.onLine ? "Browser reports online." : "Browser reports offline."
+  );
+
+  addResult(
+   "Secure context",
+   window.isSecureContext,
+   window.isSecureContext
+    ? "Secure browser context available."
+    : "HTTPS is recommended for app features."
+  );
+
+  let storageOK = false;
+  try {
+   const key = "__nova_diagnostic_test__";
+   localStorage.setItem(key, "ok");
+   storageOK = localStorage.getItem(key) === "ok";
+   localStorage.removeItem(key);
+  } catch (error) {
+   storageOK = false;
+  }
+
+  addResult(
+   "Browser storage",
+   storageOK,
+   storageOK ? "Local storage is available." : "Local storage is unavailable."
+  );
+
+  addResult(
+   "Service worker support",
+   "serviceWorker" in navigator,
+   ("serviceWorker" in navigator)
+    ? "Browser supports service workers."
+    : "Service workers are not supported."
+  );
+
+  addResult(
+   "Install prompt support",
+   "BeforeInstallPromptEvent" in window,
+   ("BeforeInstallPromptEvent" in window)
+    ? "Install prompt event is exposed."
+    : "Automatic install prompt may not be available; check browser menu."
+  );
+
+  const workerURL =
+   "https://bharat-nova-ai.manmohan595120.workers.dev/ask";
+
+  try {
+   const controller = new AbortController();
+   const timeout = setTimeout(function () {
+    controller.abort();
+   }, 8000);
+
+   /*
+    * A GET health check does not send a user prompt.
+    * A 404/405 may mean the Worker accepts POST requests only.
+    */
+   const response = await fetch(workerURL, {
+    method: "GET",
+    signal: controller.signal
+   });
+
+   clearTimeout(timeout);
+
+   addResult(
+    "AI backend reachable",
+    response.ok || response.status === 405,
+    response.status === 405
+     ? "Worker responded; GET health checks may not be supported."
+     : "Worker returned HTTP " + response.status + "."
+   );
+  } catch (error) {
+   addResult(
+    "AI backend reachable",
+    false,
+    error.name === "AbortError"
+     ? "Connection timed out."
+     : "Could not verify the Worker from this browser."
+   );
+  }
+
+  status.textContent =
+   "Diagnostics complete. Warnings do not always mean the app is broken.";
+  button.disabled = false;
+ });
+})();
+</script>
+<!-- END STEP 18 -->
+<!-- STEP 19 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
