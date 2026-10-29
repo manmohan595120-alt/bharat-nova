@@ -346,5 +346,141 @@ button:disabled {
 </script>
 <!-- END STEP 2 -->
 <!-- STEP 3 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 3: MOBILE NAVIGATION & MAIN MENU -->
+<style>
+.nova-navigation {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 20px;
+}
+.nova-navigation button {
+  flex: 1 1 auto;
+  min-width: 100px;
+}
+.nova-navigation button.active {
+  background: var(--gold);
+  color: #061429;
+  border-color: var(--gold);
+  font-weight: 700;
+}
+.nova-menu-toggle {
+  display: none;
+}
+.nova-view {
+  margin-top: 18px;
+}
+.nova-view h2 {
+  margin-top: 0;
+}
+.nova-menu-note {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media(max-width:600px) {
+  .nova-menu-toggle {
+    display: inline-flex;
+  }
+  .nova-navigation {
+    display: none;
+    flex-direction: column;
+  }
+  .nova-navigation.open {
+    display: flex;
+  }
+  .nova-navigation button {
+    width: 100%;
+    text-align: left;
+  }
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const header = document.getElementById("appHeader");
+  const main = document.getElementById("mainContent");
+
+  if (!header || !main || document.getElementById("novaNavigation")) {
+    return;
+  }
+
+  const menuToggle = document.createElement("button");
+  menuToggle.type = "button";
+  menuToggle.className = "btn nova-menu-toggle";
+  menuToggle.textContent = "☰ Menu";
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-controls", "novaNavigation");
+
+  const nav = document.createElement("nav");
+  nav.id = "novaNavigation";
+  nav.className = "nova-navigation";
+  nav.setAttribute("aria-label", "Main navigation");
+
+  const items = [
+    ["home", "🏠 Home"],
+    ["chat", "💬 AI Chat"],
+    ["search", "🔎 Search"],
+    ["images", "🎨 Images"],
+    ["files", "📄 Documents"],
+    ["history", "🕘 History"],
+    ["settings", "⚙️ Settings"]
+  ];
+
+  items.forEach(([id, label]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn";
+    button.dataset.view = id;
+    button.textContent = label;
+
+    button.addEventListener("click", () => {
+      if (typeof window.bharatNovaOpenView === "function") {
+        window.bharatNovaOpenView(id);
+      } else {
+        const status = document.getElementById("appStatus");
+        if (status) {
+          status.textContent =
+            label.replace(/^[^ ]+ /, "") +
+            " का इंटरफेस अगले स्टेप में जोड़ा जाएगा।";
+        }
+        if (id === "home") {
+          const home = document.getElementById("homeSection");
+          if (home) home.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+
+      nav.querySelectorAll("button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === id);
+      });
+
+      if (window.innerWidth <= 600) {
+        nav.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    nav.appendChild(button);
+  });
+
+  menuToggle.addEventListener("click", () => {
+    const open = nav.classList.toggle("open");
+    menuToggle.setAttribute("aria-expanded", String(open));
+  });
+
+  header.appendChild(menuToggle);
+  main.insertBefore(nav, main.firstChild);
+
+  window.bharatNovaSetActiveMenu = function(id) {
+    nav.querySelectorAll("button").forEach(button => {
+      button.classList.toggle("active", button.dataset.view === id);
+    });
+  };
+})();
+</script>
+<!-- END STEP 3 -->
+<!-- STEP 4 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
