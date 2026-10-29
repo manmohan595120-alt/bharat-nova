@@ -1072,7 +1072,378 @@ false
 })();
 </script>
 <!-- END BHARAT NOVA STEP 5-->
+ <!-- BHARAT NOVA STEP 6: AI ASSISTANT -->
+<section id="novaAISection" style="
+  max-width:900px;
+  margin:20px auto;
+  padding:18px;
+  border:1px solid #263d5b;
+  border-radius:18px;
+  background:#0c203b;
+  color:#f4f7ff;
+  font-family:system-ui,sans-serif;
+">
+  <h2 style="margin-top:0;color:#f4c542">
+    🇮🇳 Bharat Nova AI
+  </h2>
 
+  <p>अपना सवाल पूछें, फोटो चुनें या AI से मदद लें।</p>
+
+  <div id="novaAIStatus" role="status"
+       style="color:#37d6a0;margin:10px 0">
+    Bharat Nova AI तैयार है।
+  </div>
+
+  <div id="novaAIMessages"
+       aria-live="polite"
+       style="display:flex;flex-direction:column;gap:12px">
+    <div style="padding:12px;background:#102a49;border-radius:12px">
+      <strong>Bharat Nova AI</strong>
+      <p>नमस्ते! मैं आपकी क्या मदद कर सकता हूँ?</p>
+    </div>
+  </div>
+
+  <label for="novaAIQuestion"
+         style="display:block;margin-top:18px">
+    अपना सवाल लिखें
+  </label>
+
+  <textarea id="novaAIQuestion"
+    placeholder="जैसे: भारत का इतिहास समझाओ या इस फोटो के बारे में बताओ..."
+    rows="4"
+    style="box-sizing:border-box;width:100%;padding:12px;
+    margin-top:8px;border-radius:10px;border:1px solid #263d5b;
+    background:#061429;color:#f4f7ff;font:inherit">
+  </textarea>
+
+  <label for="novaAIFile"
+         style="display:block;margin-top:12px">
+    फोटो या फाइल चुनें
+  </label>
+
+  <input id="novaAIFile" type="file"
+    accept="image/*,.pdf,.txt,.csv,.json,.doc,.docx"
+    style="box-sizing:border-box;width:100%;margin:10px 0;
+    padding:10px;background:#102a49;color:#f4f7ff;
+    border-radius:10px">
+
+  <div id="novaAIFilePreview"
+       style="margin:10px 0"></div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+    <button id="novaAIAsk"
+      style="padding:12px 18px;border:0;border-radius:10px;
+      background:#f4c542;color:#061429;font-weight:bold">
+      Ask My AI
+    </button>
+
+    <button id="novaAIVoice"
+      style="padding:12px;border:1px solid #f4c542;
+      border-radius:10px;background:#102a49;color:white">
+      🎤 Voice
+    </button>
+
+    <button id="novaAIRead"
+      style="padding:12px;border:1px solid #263d5b;
+      border-radius:10px;background:#102a49;color:white">
+      🔊 जवाब सुनें
+    </button>
+
+    <button id="novaAIStop"
+      style="padding:12px;border:1px solid #263d5b;
+      border-radius:10px;background:#102a49;color:white">
+      ⏹ रोकें
+    </button>
+
+    <button id="novaAIClear"
+      style="padding:12px;border:1px solid #263d5b;
+      border-radius:10px;background:#102a49;color:white">
+      नई चैट
+    </button>
+  </div>
+
+  <div id="novaAIResult" style="margin-top:16px"></div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  const WORKER =
+    "https://bharat-nova-ai.manmohan595120.workers.dev";
+
+  const question = document.getElementById("novaAIQuestion");
+  const upload = document.getElementById("novaAIFile");
+  const sendButton = document.getElementById("novaAIAsk");
+  const voiceButton = document.getElementById("novaAIVoice");
+  const readButton = document.getElementById("novaAIRead");
+  const stopButton = document.getElementById("novaAIStop");
+  const clearButton = document.getElementById("novaAIClear");
+  const status = document.getElementById("novaAIStatus");
+  const messages = document.getElementById("novaAIMessages");
+  const preview = document.getElementById("novaAIFilePreview");
+  const result = document.getElementById("novaAIResult");
+
+  if (!question || !upload || !sendButton || !messages) return;
+
+  let lastAnswer = "";
+  let voiceRecognition = null;
+
+  function addMessage(sender, text) {
+    const box = document.createElement("div");
+    box.style.cssText =
+      "padding:12px;border-radius:12px;background:#102a49;" +
+      "overflow-wrap:anywhere;white-space:pre-wrap;";
+
+    const heading = document.createElement("strong");
+    heading.textContent = sender;
+    heading.style.color =
+      sender === "Bharat Nova AI" ? "#f4c542" : "#37d6a0";
+
+    const body = document.createElement("div");
+    body.style.marginTop = "8px";
+    body.textContent = text;
+
+    box.append(heading, body);
+    messages.appendChild(box);
+    return box;
+  }
+
+  function readFile(file) {
+    return new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        resolve(reader.result);
+      };
+
+      reader.onerror = function () {
+        reject(new Error("फाइल पढ़ी नहीं जा सकी।"));
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+  upload.addEventListener("change", function () {
+    preview.replaceChildren();
+
+    const file = upload.files && upload.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      upload.value = "";
+      status.textContent = "फाइल का आकार 10 MB से कम रखें।";
+      return;
+    }
+
+    const info = document.createElement("p");
+    info.textContent = "चुनी गई फाइल: " + file.name;
+    preview.appendChild(info);
+
+    if (file.type.startsWith("image/")) {
+      const image = document.createElement("img");
+      image.alt = "चुनी गई फोटो का प्रीव्यू";
+      image.style.cssText =
+        "display:block;max-width:100%;max-height:300px;" +
+        "border-radius:12px;margin-top:10px;";
+
+      const url = URL.createObjectURL(file);
+      image.src = url;
+      image.onload = function () {
+        URL.revokeObjectURL(url);
+      };
+      preview.appendChild(image);
+    }
+  });
+
+  async function askAI() {
+    const prompt = question.value.trim();
+    const file = upload.files && upload.files[0];
+
+    if (!prompt && !file) {
+      status.textContent = "पहले सवाल लिखें या फाइल चुनें।";
+      return;
+    }
+
+    if (file && file.size > 10 * 1024 * 1024) {
+      status.textContent = "फाइल 10 MB से कम होनी चाहिए।";
+      return;
+    }
+
+    sendButton.disabled = true;
+    status.textContent = "Bharat Nova AI जवाब तैयार कर रहा है...";
+    result.replaceChildren();
+
+    addMessage("आप", prompt || "इस फाइल का विश्लेषण करें।");
+
+    try {
+      const payload = {
+        question: prompt || "इस फाइल का विश्लेषण करें।",
+        message: prompt || "इस फाइल का विश्लेषण करें।"
+      };
+
+      if (file) {
+        const dataURL = await readFile(file);
+
+        payload.fileName = file.name;
+        payload.fileType = file.type;
+        payload.fileData = dataURL;
+
+        if (file.type.startsWith("image/")) {
+          payload.image = dataURL;
+        } else if (
+          file.type.startsWith("text/") ||
+          /\.(txt|csv|json)$/i.test(file.name)
+        ) {
+          payload.fileText = dataURL.split(",").slice(1).join(",");
+        }
+      }
+
+      const response = await fetch(WORKER + "/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.success === false) {
+        throw new Error(
+          data.details || data.error || "सर्वर से जवाब नहीं मिला।"
+        );
+      }
+
+      const answer =
+        data.answer ||
+        data.response ||
+        data.result ||
+        data.message ||
+        "";
+
+      if (typeof answer !== "string" || !answer.trim()) {
+        throw new Error("AI ने खाली जवाब दिया। Worker की जाँच करें।");
+      }
+
+      lastAnswer = answer;
+      addMessage("Bharat Nova AI", answer);
+
+      status.textContent = "जवाब तैयार है।";
+
+      question.value = "";
+      upload.value = "";
+      preview.replaceChildren();
+
+    } catch (error) {
+      addMessage(
+        "समस्या",
+        error.message || "अनुरोध पूरा नहीं हो पाया।"
+      );
+      status.textContent =
+        "समस्या हुई। इंटरनेट और AI Worker की जाँच करें।";
+    } finally {
+      sendButton.disabled = false;
+    }
+  }
+
+  sendButton.addEventListener("click", askAI);
+
+  question.addEventListener("keydown", function (event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      askAI();
+    }
+  });
+
+  voiceButton.addEventListener("click", function () {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      status.textContent =
+        "Voice input के लिए Chrome में माइक्रोफोन सुविधा जाँचें।";
+      return;
+    }
+
+    if (voiceRecognition) {
+      voiceRecognition.stop();
+    }
+
+    voiceRecognition = new SpeechRecognition();
+    voiceRecognition.lang = "hi-IN";
+    voiceRecognition.interimResults = false;
+    voiceRecognition.maxAlternatives = 1;
+
+    voiceRecognition.onstart = function () {
+      status.textContent = "बोलिए, Bharat Nova AI सुन रहा है...";
+    };
+
+    voiceRecognition.onresult = function (event) {
+      question.value =
+        event.results[0][0].transcript || "";
+
+      askAI();
+    };
+
+    voiceRecognition.onerror = function () {
+      status.textContent =
+        "आवाज़ नहीं मिली। माइक्रोफोन की अनुमति जाँचें।";
+    };
+
+    voiceRecognition.onend = function () {
+      voiceRecognition = null;
+    };
+
+    voiceRecognition.start();
+  });
+
+  readButton.addEventListener("click", function () {
+    if (!("speechSynthesis" in window)) {
+      status.textContent = "आवाज़ पढ़ने की सुविधा उपलब्ध नहीं है।";
+      return;
+    }
+
+    if (!lastAnswer) {
+      status.textContent = "पहले AI का जवाब आने दें।";
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(lastAnswer);
+    speech.lang = "hi-IN";
+    window.speechSynthesis.speak(speech);
+  });
+
+  stopButton.addEventListener("click", function () {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+
+    if (voiceRecognition) {
+      voiceRecognition.stop();
+    }
+
+    status.textContent = "आवाज़ रोक दी गई।";
+  });
+
+  clearButton.addEventListener("click", function () {
+    messages.replaceChildren();
+    result.replaceChildren();
+    lastAnswer = "";
+
+    addMessage(
+      "Bharat Nova AI",
+      "नमस्ते! मैं आपकी क्या मदद कर सकता हूँ?"
+    );
+
+    status.textContent = "नई चैट तैयार है।";
+  });
+})();
+</script>
 <!-- END BHARAT NOVA STEP 6 -->
 <!-- START BHARAT NOVA STEP 7 -->
  
