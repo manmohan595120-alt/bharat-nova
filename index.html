@@ -1257,65 +1257,154 @@ false
     }
   });
 
-  async function askAI() {
-    const prompt = question.value.trim();
-    const file = upload.files && upload.files[0];
+async function askAI() {
+  const prompt = question.value.trim();
+  const file = upload.files && upload.files[0];
 
-    if (!prompt && !file) {
-      status.textContent = "पहले सवाल लिखें या फाइल चुनें।";
-      return;
-    }
+  if (!prompt && !file) {
+    status.textContent = "पहले सवाल लिखें या फाइल चुनें।";
+    return;
+  }
 
-    if (file && file.size > 10 * 1024 * 1024) {
-      status.textContent = "फाइल 10 MB से कम होनी चाहिए।";
-      return;
-    }
+  if (file && file.size > 10 * 1024 * 1024) {
+    status.textContent = "फाइल 10 MB से कम होनी चाहिए।";
+    return;
+  }
 
-    sendButton.disabled = true;
-    status.textContent = "Bharat Nova AI जवाब तैयार कर रहा है...";
-    result.replaceChildren();
+  sendButton.disabled = true;
+  status.textContent = "Bharat Nova AI काम कर रहा है...";
+  result.replaceChildren();
 
-    addMessage("आप", prompt || "इस फाइल का विश्लेषण करें।");
+  addMessage("आप", prompt || "इस फाइल का विश्लेषण करें।");
 
-    try {
-      const payload = {
-        question: prompt || "इस फाइल का विश्लेषण करें।",
-        message: prompt || "इस फाइल का विश्लेषण करें।"
-      };
+  try {
+    const isImage =
+      file && file.type.startsWith("image/");
 
-      if (file) {
-        const dataURL = await readFile(file);
+    const wantsEdit =
+      /(edit|change|modify|remove|replace|retouch|background|colour|color|एडिट|बदल|हटाओ|बदलो|बैकग्राउंड|रंग बदल|फोटो में|तस्वीर में)/i
+        .test(prompt);
 
-        payload.fileName = file.name;
-        payload.fileType = file.type;
+    const wantsImage =
+      /(generate image|create image|make image|draw image|create a picture|generate a picture|make a photo|new image|new photo|image banao|photo banao|tasveer banao|चित्र बनाओ|इमेज बनाओ|फोटो बनाओ|नई इमेज|नई फोटो|तस्वीर बनाओ|बना दो इमेज)/i
+        .test(prompt);
+
+    let endpoint = "/ask";
+    const payload = {
+      message: prompt || "इस फाइल का विश्लेषण करें।",
+      question: prompt || "इस फाइल का विश्लेषण करें।"
+    };
+
+    if (file) {
+      const dataURL = await readFile(file);
+
+      payload.fileName = file.name;
+      payload.fileType = file.type;
+
+      if (isImage) {
+        payload.image = dataURL;
+
+        if (wantsEdit) {
+          endpoint = "/image/edit";
+          payload.prompt = prompt;
+          payload.message = prompt;
+        }
+      } else if (
+        file.type.startsWith("text/") ||
+        /\.(txt|csv|json)$/i.test(file.name)
+      ) {
+        payload.fileText = await file.text();
+      } else {
         payload.fileData = dataURL;
 
-        if (file.type.startsWith("image/")) {
-          payload.image = dataURL;
-        } else if (
-          file.type.startsWith("text/") ||
-          /\.(txt|csv|json)$/i.test(file.name)
-        ) {
-          payload.fileText = dataURL.split(",").slice(1).join(",");
+        if (/\.pdf$/i.test(file.name)) {
+          status.textContent =
+            "PDF चुनी गई है। PDF पढ़ने के लिए Worker में PDF text extraction जरूरी है।";
         }
       }
+    }
 
-      const response = await fetch(WORKER + "/ask", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
+    if (!file && wantsImage) {
+      endpoint = "/image/generate";
+      payload.prompt = prompt;
+      payload.message = prompt;
+    }
 
-      const data = await response.json();
+    if (isImage && wantsEdit && !prompt) {
+      throw new Error("फोटो में क्या बदलाव करना है, वह लिखें।");
+    }
 
-      if (!response.ok || data.success === false) {
+    const response = await fetch(WORKER + endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      throw new Error(
+        data.details ||
+        data.error ||
+        "AI अनुरोध पूरा नहीं कर पाया।"
+      );
+    }
+
+    // वास्तविक इमेज परिणाम दिखाएँ
+    const imageData =
+      data.imageData ||
+      data.image ||
+      data.imageUrl ||
+      "";
+
+    if (
+      data.type === "image" ||
+      (typeof imageData === "string" &&
+        imageData.startsWith("data:image/"))
+    ) {
+      if (
+        typeof imageData !== "string" ||
+        !imageData.startsWith("data:image/")
+      ) {
         throw new Error(
-          data.details || data.error || "सर्वर से जवाब नहीं मिला।"
+          "इमेज का परिणाम मिला, लेकिन उसका प्रारूप सही नहीं है।"
         );
       }
 
+      const title = document.createElement("h3");
+      title.textContent =
+        endpoint === "/image/edit"
+          ? "🖼️ आपकी एडिट की हुई फोटो"
+          : "🎨 आपकी नई AI इमेज";
+
+      const img = document.createElement("img");
+      img.src = imageData;
+      img.alt = "Bharat Nova AI Image";
+      img.style.cssText =
+        "display:block;width:100%;max-width:600px;" +
+        "height:auto;border-radius:12px;margin:12px 0;";
+
+      const download = document.createElement("a");
+      download.href = imageData;
+      download.download = "bharat-nova-ai-image.png";
+      download.textContent = "⬇️ इमेज डाउनलोड करें";
+      download.style.cssText =
+        "display:inline-block;padding:12px 16px;" +
+        "margin:8px 0;background:#f4c542;" +
+        "color:#061429;border-radius:8px;" +
+        "font-weight:bold;text-decoration:none;";
+
+      result.append(title, img, download);
+
+      addMessage(
+        "Bharat Nova AI",
+        "आपकी इमेज तैयार है। नीचे से उसे देख सकते हैं और डाउनलोड कर सकते हैं।"
+      );
+
+      status.textContent = "इमेज तैयार है।";
+    } else {
       const answer =
         data.answer ||
         data.response ||
@@ -1323,30 +1412,35 @@ false
         data.message ||
         "";
 
-      if (typeof answer !== "string" || !answer.trim()) {
-        throw new Error("AI ने खाली जवाब दिया। Worker की जाँच करें।");
+      if (
+        typeof answer !== "string" ||
+        !answer.trim()
+      ) {
+        throw new Error("AI ने खाली जवाब दिया।");
       }
 
       lastAnswer = answer;
       addMessage("Bharat Nova AI", answer);
-
       status.textContent = "जवाब तैयार है।";
-
-      question.value = "";
-      upload.value = "";
-      preview.replaceChildren();
-
-    } catch (error) {
-      addMessage(
-        "समस्या",
-        error.message || "अनुरोध पूरा नहीं हो पाया।"
-      );
-      status.textContent =
-        "समस्या हुई। इंटरनेट और AI Worker की जाँच करें।";
-    } finally {
-      sendButton.disabled = false;
     }
+
+    question.value = "";
+    upload.value = "";
+    preview.replaceChildren();
+
+  } catch (error) {
+    addMessage(
+      "समस्या",
+      error.message || "अनुरोध पूरा नहीं हो पाया।"
+    );
+
+    status.textContent =
+      "AI में समस्या हुई। Worker और इंटरनेट की जाँच करें।";
+
+  } finally {
+    sendButton.disabled = false;
   }
+}
 
   sendButton.addEventListener("click", askAI);
 
