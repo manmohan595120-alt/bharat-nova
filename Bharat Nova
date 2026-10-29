@@ -111,5 +111,240 @@ body.light {
 })();
 </script>
 <!-- STEP 2 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 2: BHARAT NOVA DESIGN & THEME -->
+<style>
+/* Main Header */
+#appHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.nova-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 800;
+}
+.nova-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #f4c542, #ff9f1c);
+  color: #061429;
+  font-size: 24px;
+  font-weight: 900;
+  box-shadow: 0 4px 16px #f4c54230;
+}
+.nova-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.nova-header-actions button {
+  min-height: 40px;
+}
+#mainContent {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 22px 16px;
+  flex: 1;
+}
+#homeSection {
+  padding: clamp(22px, 5vw, 48px);
+  background:
+    radial-gradient(ellipse at top right, #173b5d 0, transparent 60%),
+    var(--panel);
+  overflow: hidden;
+}
+body.light #homeSection {
+  background:
+    radial-gradient(ellipse at top right, #dcecff 0, transparent 65%),
+    var(--panel);
+}
+#homeSection h1 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 7vw, 56px);
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+}
+#homeSection > p {
+  line-height: 1.7;
+}
+.nova-highlight {
+  color: var(--gold);
+}
+.nova-tagline {
+  font-size: 18px;
+  font-weight: 600;
+}
+.nova-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.nova-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #42d392;
+}
+.nova-theme-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.nova-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+#appFooter {
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 16px;
+  line-height: 1.8;
+}
+.nova-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.nova-footer-links a {
+  text-decoration: none;
+}
+button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+@media (max-width: 480px) {
+  #appHeader {
+    padding: 10px 12px;
+  }
+  .nova-brand {
+    font-size: 18px;
+  }
+  .nova-logo {
+    width: 38px;
+    height: 38px;
+  }
+  #mainContent {
+    padding: 14px 12px;
+  }
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const header = document.getElementById("appHeader");
+  const footer = document.getElementById("appFooter");
+  const home = document.getElementById("homeSection");
+
+  if (header && !header.dataset.novaStyled) {
+    header.dataset.novaStyled = "true";
+
+    const brand = document.createElement("div");
+    brand.className = "nova-brand";
+    brand.innerHTML =
+      '<span class="nova-logo" aria-label="Bharat Nova logo">N</span>' +
+      '<span>Bharat <span class="nova-highlight">Nova</span></span>';
+
+    const actions = document.createElement("div");
+    actions.className = "nova-header-actions";
+
+    const themeButton = document.createElement("button");
+    themeButton.type = "button";
+    themeButton.className = "btn nova-theme-button";
+    themeButton.id = "novaThemeButton";
+    themeButton.setAttribute("aria-label", "Change theme");
+    themeButton.textContent = "☀️ Theme";
+
+    themeButton.addEventListener("click", () => {
+      const light = document.body.classList.toggle("light");
+
+      try {
+        localStorage.setItem(
+          "bharatNovaTheme",
+          light ? "light" : "dark"
+        );
+      } catch (_) {}
+
+      themeButton.textContent = light ? "🌙 Theme" : "☀️ Theme";
+    });
+
+    try {
+      if (localStorage.getItem("bharatNovaTheme") === "light") {
+        document.body.classList.add("light");
+        themeButton.textContent = "🌙 Theme";
+      }
+    } catch (_) {}
+
+    actions.appendChild(themeButton);
+    header.append(brand, actions);
+  }
+
+  if (home && !home.dataset.novaStyled) {
+    home.dataset.novaStyled = "true";
+
+    const pill = document.createElement("div");
+    pill.className = "nova-pill";
+    pill.innerHTML =
+      '<span class="nova-dot"></span>' +
+      '<span>AI-powered smart workspace</span>';
+
+    home.insertBefore(pill, home.firstChild);
+
+    const title = home.querySelector("h1");
+    if (title) {
+      title.innerHTML =
+        'Search Smarter.<br><span class="nova-highlight">' +
+        'Think Bigger.</span>';
+    }
+
+    const paragraphs = home.querySelectorAll("p");
+    if (paragraphs.length > 0) {
+      paragraphs[0].classList.add("nova-tagline");
+    }
+  }
+
+  if (footer && !footer.dataset.novaStyled) {
+    footer.dataset.novaStyled = "true";
+
+    const links = document.createElement("div");
+    links.className = "nova-footer-links";
+    links.innerHTML =
+      '<a href="#privacy">Privacy</a>' +
+      '<a href="#help">Help & Support</a>' +
+      '<a href="#settings">Settings</a>';
+
+    footer.appendChild(links);
+  }
+})();
+</script>
+<!-- END STEP 2 -->
+<!-- STEP 3 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
