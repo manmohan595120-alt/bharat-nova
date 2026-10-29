@@ -1244,5 +1244,108 @@ button:disabled {
 </script>
 <!-- END STEP 7 -->
 <!-- STEP 8 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 8: VOICE INPUT AND SPEECH OUTPUT -->
+<style>
+.nova-voice-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.nova-voice-panel .btn {
+  flex: 1 1 130px;
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const panel = document.getElementById("novaChatPanel");
+  const input = document.getElementById("novaChatInput");
+
+  if (!panel || !input || document.getElementById("novaVoicePanel")) {
+    return;
+  }
+
+  const voicePanel = document.createElement("div");
+  voicePanel.id = "novaVoicePanel";
+  voicePanel.className = "nova-voice-panel";
+
+  voicePanel.innerHTML = `
+    <button type="button" class="btn" id="novaSpeakAnswer">
+      🔊 Last Answer
+    </button>
+    <button type="button" class="btn" id="novaStopSpeech">
+      ⏹ Stop Voice
+    </button>
+    <select id="novaVoiceLanguage" class="btn"
+      aria-label="Voice language">
+      <option value="hi-IN">हिंदी</option>
+      <option value="en-IN">English (India)</option>
+      <option value="en-US">English (US)</option>
+    </select>
+  `;
+
+  const compose = panel.querySelector(".nova-chat-compose");
+  if (compose) compose.appendChild(voicePanel);
+
+  const status = document.getElementById("novaChatStatus");
+
+  voicePanel.querySelector("#novaSpeakAnswer")
+    .addEventListener("click", () => {
+      if (!("speechSynthesis" in window)) {
+        if (status) {
+          status.textContent =
+            "इस ब्राउज़र में आवाज़ सुनाने की सुविधा उपलब्ध नहीं है।";
+        }
+        return;
+      }
+
+      const answers = panel.querySelectorAll(".nova-message.ai");
+      const last = answers[answers.length - 1];
+
+      if (!last) {
+        if (status) status.textContent = "पहले AI का जवाब प्राप्त करें।";
+        return;
+      }
+
+      const text = last.querySelector("div:last-child")?.textContent || "";
+      if (!text.trim()) return;
+
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text.slice(0, 12000));
+      utterance.lang =
+        voicePanel.querySelector("#novaVoiceLanguage").value;
+      utterance.rate = 1;
+      utterance.pitch = 1;
+
+      utterance.onstart = () => {
+        if (status) status.textContent = "जवाब पढ़कर सुनाया जा रहा है…";
+      };
+
+      utterance.onend = () => {
+        if (status) status.textContent = "आवाज़ पूरी हो गई।";
+      };
+
+      utterance.onerror = () => {
+        if (status) status.textContent = "आवाज़ सुनाने में समस्या हुई।";
+      };
+
+      window.speechSynthesis.speak(utterance);
+    });
+
+  voicePanel.querySelector("#novaStopSpeech")
+    .addEventListener("click", () => {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (status) status.textContent = "आवाज़ रोक दी गई।";
+    });
+})();
+</script>
+<!-- END STEP 8 -->
+<!-- STEP 9 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
