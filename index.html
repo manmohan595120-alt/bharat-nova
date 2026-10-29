@@ -5323,5 +5323,393 @@ if ("serviceWorker" in navigator) {
       }
 
       const preview
+     <!-- PADDDAR PREMIUM DISCOUNT REQUEST -->
+<section id="paddarDiscountRequest" style="background:#101b31;color:white;padding:18px;border-radius:16px;margin:16px 0;font-family:Arial">
+  <h2>🏔️ Paddar Special Discount</h2>
+  <p>Eligible residents can request special Premium pricing.</p>
+
+  <label>Village / गाँव</label>
+  <input id="pdVillage" placeholder="Enter village name" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <label>Tehsil / तहसील</label>
+  <input id="pdTehsil" placeholder="Enter tehsil" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <label>District / जिला</label>
+  <input id="pdDistrict" placeholder="Enter district" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <label>PIN Code</label>
+  <input id="pdPincode" inputmode="numeric" maxlength="6"
+    placeholder="6-digit PIN code" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <button type="button" onclick="paddarGetGPS()"
+    style="width:100%;padding:12px;border:0;border-radius:8px">
+    📍 Share Current GPS Location
+  </button>
+
+  <p id="pdGpsStatus">GPS permission is requested only when you tap the button.</p>
+
+  <label style="display:block;margin:12px 0">
+    <input type="checkbox" id="pdConsent">
+    I consent to sharing my location for discount eligibility verification.
+  </label>
+
+  <button type="button" onclick="paddarSubmitRequest()"
+    style="width:100%;padding:13px;background:#e8bd58;border:0;border-radius:8px;font-weight:bold">
+    Submit Discount Request
+  </button>
+
+  <p id="pdResult" role="status"></p>
+</section>
+
+<script>
+let pdCoordinates = null;
+
+function paddarGetGPS() {
+  const status = document.getElementById("pdGpsStatus");
+
+  if (!document.getElementById("pdConsent").checked) {
+    status.textContent = "Please give consent first.";
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    status.textContent = "GPS is not supported by this browser.";
+    return;
+  }
+
+  status.textContent = "Requesting location permission…";
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      pdCoordinates = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracyMeters: Math.round(position.coords.accuracy)
+      };
+      status.textContent =
+        "Location captured (accuracy about " +
+        pdCoordinates.accuracyMeters + " metres).";
+    },
+    error => {
+      pdCoordinates = null;
+      status.textContent =
+        "Location unavailable. Check browser permission and try again.";
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
+
+async function paddarSubmitRequest() {
+  const result = document.getElementById("pdResult");
+  const village = document.getElementById("pdVillage").value.trim();
+  const tehsil = document.getElementById("pdTehsil").value.trim();
+  const district = document.getElementById("pdDistrict").value.trim();
+  const pincode = document.getElementById("pdPincode").value.trim();
+
+  if (!village || !tehsil || !district ||
+      !/^[0-9]{6}$/.test(pincode)) {
+    result.textContent = "Enter village, tehsil, district and a valid 6-digit PIN code.";
+    return;
+  }
+
+  if (!document.getElementById("pdConsent").checked || !pdCoordinates) {
+    result.textContent = "Please consent and capture GPS location before submitting.";
+    return;
+  }
+
+  /*
+   * IMPORTANT:
+   * Connect this form to a secure backend before launch.
+   * Do not store approval requests or approve discounts in localStorage.
+   */
+  result.textContent =
+    "Form is ready, but secure submission is not connected yet. " +
+    "Connect Firebase/server verification before using it.";
+}
+</script>
+<!-- END PADDDAR DISCOUNT REQUEST -->
+ <!-- BHARAT NOVA PADDDAR PREMIUM GPAY -->
+<section id="novaPaddarPremiumPayment"
+  style="background:#101b31;color:white;padding:18px;border-radius:16px;margin:16px 0;font-family:Arial,sans-serif">
+
+  <h2>⭐ Bharat Nova Premium</h2>
+  <p>Admin approval के बाद लागू होने वाला प्लान चुनें:</p>
+
+  <select id="novaPaddarPlan"
+    style="width:100%;padding:12px;margin-bottom:12px;border-radius:8px">
+    <option value="49">Regular Monthly — ₹49 / 30 Days</option>
+    <option value="129">Regular 90 Days — ₹129</option>
+    <option value="39">Paddar Monthly — ₹39 / 30 Days</option>
+    <option value="119">Paddar 90 Days — ₹119</option>
+  </select>
+
+  <button type="button" onclick="novaPaddarPay()"
+    style="width:100%;padding:14px;background:#e8bd58;color:#101b31;border:0;border-radius:9px;font-weight:bold">
+    Pay with Google Pay / UPI
+  </button>
+
+  <p id="novaPaddarPayStatus" role="status"></p>
+</section>
+
+<script>
+function novaPaddarPay() {
+  const select = document.getElementById("novaPaddarPlan");
+  const amount = select.value;
+
+  // Paddar discount must not be self-selected.
+  if (amount === "39" || amount === "119") {
+    const approved =
+      window.bharatNovaPaddarDiscountApproved === true;
+
+    if (!approved) {
+      document.getElementById("novaPaddarPayStatus").textContent =
+        "Paddar Discount अभी Admin द्वारा verify नहीं हुआ है.";
+      return;
+    }
+  }
+
+  const planNames = {
+    "49": "Bharat Nova Monthly Premium",
+    "129": "Bharat Nova 90 Days Premium",
+    "39": "Bharat Nova Paddar Monthly Premium",
+    "119": "Bharat Nova Paddar 90 Days Premium"
+  };
+
+  const params = new URLSearchParams({
+    pa: "manmohan595120@okicici",
+    pn: "Bharat Nova",
+    tn: planNames[amount],
+    am: Number(amount).toFixed(2),
+    cu: "INR"
+  });
+
+  document.getElementById("novaPaddarPayStatus").textContent =
+    "UPI app खुल रहा है। भुगतान से पहले receiver और amount जाँच लें.";
+
+  window.location.href = "upi://pay?" + params.toString();
+}
+</script>
+<!-- END BHARAT NOVA PADDDAR PREMIUM GPAY -->
+<!-- BHARAT NOVA STEP 22: PREMIUM PAYMENT STATUS -->
+<section id="novaPremiumPaymentStatus" style="max-width:600px;margin:20px auto;padding:18px;background:#101a30;color:white;border:1px solid #c9a227;border-radius:16px;font-family:Arial,sans-serif;">
+  <h2 style="color:#f5cc55;margin-top:0;">💎 Premium Status</h2>
+
+  <p>अपना Premium प्लान और भुगतान की स्थिति देखें।</p>
+
+  <label for="novaPremiumStatusPlan">Premium Plan चुनें</label>
+  <select id="novaPremiumStatusPlan" style="display:block;width:100%;padding:12px;margin:10px 0;background:#172642;color:white;border-radius:8px;">
+    <option value="49">Monthly — ₹49 / 30 Days</option>
+    <option value="129">90 Days — ₹129</option>
+    <option value="39">Paddar Monthly — ₹39 / 30 Days</option>
+    <option value="119">Paddar 90 Days — ₹119</option>
+  </select>
+
+  <button type="button" onclick="novaPremiumShowPaymentInfo()" style="width:100%;padding:12px;background:#d8b13d;color:#101a30;border:0;border-radius:8px;font-weight:bold;">
+    Check Payment Instructions
+  </button>
+
+  <div id="novaPremiumPaymentInfo" role="status" aria-live="polite" style="margin-top:14px;line-height:1.6;"></div>
+</section>
+
+<script>
+(function () {
+  const planSelect = document.getElementById("novaPremiumStatusPlan");
+  const info = document.getElementById("novaPremiumPaymentInfo");
+
+  window.novaPremiumShowPaymentInfo = function () {
+    const amount = planSelect.value;
+    const isPaddarPlan = amount === "39" || amount === "119";
+
+    if (isPaddarPlan &&
+        window.bharatNovaPaddarDiscountApproved !== true) {
+      info.textContent =
+        "Paddar discount के लिए पहले Admin approval जरूरी है। अभी Premium activate नहीं हुआ है।";
+      return;
+    }
+
+    const planNames = {
+      "49": "Monthly Premium — 30 Days",
+      "129": "Premium — 90 Days",
+      "39": "Paddar Monthly Premium — 30 Days",
+      "119": "Paddar Premium — 90 Days"
+    };
+
+    info.replaceChildren();
+
+    const message = document.createElement("p");
+    message.textContent =
+      "चुना गया प्लान: " + planNames[amount] +
+      ". भुगतान के लिए UPI ऐप खुलेगा। भुगतान की पुष्टि और Premium activation अभी अलग Backend verification पर निर्भर हैं।";
+    info.appendChild(message);
+
+    const payButton = document.createElement("button");
+    payButton.type = "button";
+    payButton.textContent = "Open UPI Payment";
+    payButton.style.cssText =
+      "width:100%;padding:12px;background:#16865c;color:white;border:0;border-radius:8px;font-weight:bold;";
+
+    payButton.addEventListener("click", function () {
+      const params = new URLSearchParams({
+        pa: "manmohan595120@okicici",
+        pn: "Bharat Nova",
+        tn: planNames[amount],
+        am: Number(amount).toFixed(2),
+        cu: "INR"
+      });
+
+      window.location.href = "upi://pay?" + params.toString();
+    });
+
+    info.appendChild(payButton);
+  };
+})();
+</script>
+<!-- END BHARAT NOVA STEP 22 -->
+ !-- BHARAT NOVA STEP 23: ACCOUNT SECURITY -->
+<section id="novaAccountSecurity" style="max-width:600px;margin:20px auto;padding:18px;background:#101a30;color:#fff;border:1px solid #c9a227;border-radius:16px;font-family:Arial,sans-serif;">
+  <h2 style="color:#f5cc55;margin-top:0;">🔐 Account Security</h2>
+  <p id="novaAccountStatus" role="status" aria-live="polite">Login status जाँचा जा रहा है...</p>
+
+  <button type="button" id="novaCheckAccount"
+    style="padding:11px;margin:5px;background:#c9a227;color:#101a30;border:0;border-radius:8px;">
+    Refresh Status
+  </button>
+
+  <button type="button" id="novaSecureLogout"
+    style="padding:11px;margin:5px;background:#a83232;color:white;border:0;border-radius:8px;">
+    Logout
+  </button>
+
+  <p style="font-size:13px;color:#cbd5e1;">
+    सुरक्षा के लिए अपना पासवर्ड किसी के साथ साझा न करें। Premium भुगतान की पुष्टि केवल अधिकृत सर्वर से करें।
+  </p>
+</section>
+
+<script>
+(function () {
+  const status = document.getElementById("novaAccountStatus");
+  const check = document.getElementById("novaCheckAccount");
+  const logout = document.getElementById("novaSecureLogout");
+
+  function refreshNovaAccountStatus() {
+    try {
+      if (window.firebase && firebase.auth &&
+          typeof firebase.auth === "function") {
+        const auth = firebase.auth();
+
+        status.textContent = auth.currentUser
+          ? "Login है: " + (auth.currentUser.email || "Email उपलब्ध नहीं")
+          : "अभी Login नहीं है।";
+        return;
+      }
+
+      status.textContent =
+        "Firebase Auth इस पेज पर उपलब्ध नहीं है। मौजूदा Login सिस्टम की जाँच करें।";
+    } catch (error) {
+      status.textContent =
+        "Login status नहीं पढ़ा जा सका। मौजूदा Authentication configuration जाँचें।";
+    }
+  }
+
+  check.addEventListener("click", refreshNovaAccountStatus);
+
+  logout.addEventListener("click", async function () {
+    try {
+      if (window.firebase && firebase.auth &&
+          typeof firebase.auth === "function") {
+        await firebase.auth().signOut();
+        status.textContent = "Logout हो गया।";
+        return;
+      }
+
+      status.textContent =
+        "Logout स्वतः नहीं हो सका। अपने मौजूदा Login सिस्टम का Logout बटन इस्तेमाल करें।";
+    } catch (error) {
+      status.textContent =
+        "Logout असफल रहा। कृपया दोबारा प्रयास करें।";
+    }
+  });
+
+  refreshNovaAccountStatus();
+})();
+</script>
+<!-- END BHARAT NOVA STEP 23 -->
+<!-- BHARAT NOVA STEP 24: AI USAGE DASHBOARD -->
+<section id="novaUsageDashboard" style="max-width:600px;margin:20px auto;padding:18px;background:#101a30;color:white;border:1px solid #c9a227;border-radius:16px;font-family:Arial,sans-serif;">
+  <h2 style="color:#f5cc55;margin-top:0;">📊 AI Usage Dashboard</h2>
+  <p id="novaUsagePlan">Plan: जाँच की जा रही है...</p>
+
+  <div style="margin:14px 0;">
+    <label>💬 AI Requests</label>
+    <div style="height:12px;background:#263650;border-radius:8px;overflow:hidden;">
+      <div id="novaTextUsageBar" style="height:100%;width:0%;background:#39c68a;"></div>
+    </div>
+    <p id="novaTextUsageText">0 / 5 requests</p>
+  </div>
+
+  <div style="margin:14px 0;">
+    <label>🖼️ Image Requests</label>
+    <div style="height:12px;background:#263650;border-radius:8px;overflow:hidden;">
+      <div id="novaImageUsageBar" style="height:100%;width:0%;background:#e4bd49;"></div>
+    </div>
+    <p id="novaImageUsageText">0 / 5 requests</p>
+  </div>
+
+  <button id="novaRefreshUsage" type="button" style="width:100%;padding:12px;background:#c9a227;color:#101a30;border:0;border-radius:8px;font-weight:bold;">
+    Refresh Usage
+  </button>
+
+  <p style="font-size:12px;color:#cbd5e1;">
+    यह शुरुआती display है। वास्तविक usage और Premium limits सुरक्षित रूप से लागू करने के लिए server-side usage tracking आवश्यक है।
+  </p>
+</section>
+
+<script>
+(function () {
+  const STORAGE_KEY = "bharatNovaUsageDisplayV1";
+
+  function loadUsage() {
+    let usage = { text: 0, image: 0 };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      usage.text = Math.max(0, Number(saved.text) || 0);
+      usage.image = Math.max(0, Number(saved.image) || 0);
+    } catch (error) {}
+
+    return usage;
+  }
+
+  function renderUsage() {
+    const usage = loadUsage();
+    const textLimit = 5;
+    const imageLimit = 5;
+
+    document.getElementById("novaUsagePlan").textContent =
+      "Plan: Free (प्रदर्शन के लिए)";
+
+    document.getElementById("novaTextUsageBar").style.width =
+      Math.min(100, usage.text / textLimit * 100) + "%";
+    document.getElementById("novaImageUsageBar").style.width =
+      Math.min(100, usage.image / imageLimit * 100) + "%";
+
+    document.getElementById("novaTextUsageText").textContent =
+      usage.text + " / " + textLimit + " requests";
+
+    document.getElementById("novaImageUsageText").textContent =
+      usage.image + " / " + imageLimit + " requests";
+  }
+
+  document.getElementById("novaRefreshUsage")
+    .addEventListener("click", renderUsage);
+
+  renderUsage();
+})();
+</script>
+<!-- END BHARAT NOVA STEP 24 -->
 </body>
 </html>
