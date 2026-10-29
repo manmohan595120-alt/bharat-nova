@@ -1347,5 +1347,213 @@ button:disabled {
 </script>
 <!-- END STEP 8 -->
 <!-- STEP 9 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 9: IMAGE STUDIO INTERFACE -->
+<style>
+.nova-image-studio {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel);
+}
+.nova-image-preview {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  margin-top: 12px;
+  border-radius: 12px;
+  background: var(--bg);
+}
+.nova-image-prompt {
+  width: 100%;
+  min-height: 85px;
+  padding: 12px;
+  margin-top: 12px;
+  resize: vertical;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.nova-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.nova-image-actions .btn {
+  flex: 1 1 130px;
+}
+.nova-image-status {
+  margin-top: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const main = document.getElementById("mainContent");
+  if (!main || document.getElementById("novaImageStudio")) return;
+
+  const studio = document.createElement("section");
+  studio.id = "novaImageStudio";
+  studio.className = "nova-image-studio nova-view";
+  studio.hidden = true;
+
+  studio.innerHTML = `
+    <h2>🎨 Bharat Nova Image Studio</h2>
+    <p class="muted">
+      इमेज चुनें और बताएं कि उसमें क्या बदलाव करना चाहते हैं।
+    </p>
+
+    <label for="novaStudioImageInput">इमेज चुनें</label>
+    <input id="novaStudioImageInput" type="file"
+      accept="image/jpeg,image/png,image/webp"
+      class="btn" style="width:100%;margin-top:8px">
+
+    <img id="novaStudioPreview" class="nova-image-preview"
+      alt="Selected image preview" hidden>
+
+    <label for="novaStudioImagePrompt"
+      style="display:block;margin-top:14px">
+      एडिटिंग निर्देश
+    </label>
+    <textarea id="novaStudioImagePrompt"
+      class="nova-image-prompt"
+      maxlength="2000"
+      placeholder="उदाहरण: बैकग्राउंड को पहाड़ों में बदलें।"></textarea>
+
+    <div class="nova-image-actions">
+      <button type="button" class="btn btn-primary"
+        id="novaStudioEditImage">✨ Edit Image</button>
+      <button type="button" class="btn"
+        id="novaStudioResetImage">↺ Reset</button>
+      <button type="button" class="btn"
+        id="novaStudioDownloadImage" disabled>⬇ Download</button>
+    </div>
+
+    <div id="novaStudioImageStatus"
+      class="nova-image-status" role="status">
+      इमेज एडिटिंग के लिए समर्थित AI बैकएंड आवश्यक है।
+    </div>
+  `;
+
+  main.appendChild(studio);
+
+  const fileInput = studio.querySelector("#novaStudioImageInput");
+  const preview = studio.querySelector("#novaStudioPreview");
+  const prompt = studio.querySelector("#novaStudioImagePrompt");
+  const status = studio.querySelector("#novaStudioImageStatus");
+  const download = studio.querySelector("#novaStudioDownloadImage");
+
+  let originalUrl = "";
+  let resultUrl = "";
+  let currentFileName = "bharat-nova-image";
+
+  function clearUrl(url) {
+    if (url && url.startsWith("blob:")) {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      status.textContent = "कृपया JPG, PNG या WebP इमेज चुनें।";
+      fileInput.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      status.textContent = "इमेज 10 MB से बड़ी है। छोटी इमेज चुनें।";
+      fileInput.value = "";
+      return;
+    }
+
+    clearUrl(originalUrl);
+    clearUrl(resultUrl);
+    originalUrl = URL.createObjectURL(file);
+    resultUrl = "";
+    currentFileName = file.name.replace(/\.[^.]+$/, "") || "image";
+
+    preview.src = originalUrl;
+    preview.hidden = false;
+    download.disabled = true;
+    status.textContent =
+      "इमेज लोड हो गई। एडिटिंग के लिए निर्देश लिखें।";
+  });
+
+  studio.querySelector("#novaStudioEditImage")
+    .addEventListener("click", () => {
+      if (!fileInput.files || !fileInput.files[0]) {
+        status.textContent = "पहले इमेज चुनें।";
+        return;
+      }
+
+      if (!prompt.value.trim()) {
+        status.textContent = "बताएं कि इमेज में क्या बदलना है।";
+        prompt.focus();
+        return;
+      }
+
+      status.textContent =
+        "इमेज प्रीव्यू तैयार है, लेकिन वास्तविक AI एडिटिंग अभी कनेक्ट नहीं है। " +
+        "Step 10 में समर्थित इमेज API का कनेक्शन जोड़ा जाएगा।";
+    });
+
+  studio.querySelector("#novaStudioResetImage")
+    .addEventListener("click", () => {
+      clearUrl(originalUrl);
+      clearUrl(resultUrl);
+      originalUrl = "";
+      resultUrl = "";
+      fileInput.value = "";
+      prompt.value = "";
+      preview.removeAttribute("src");
+      preview.hidden = true;
+      download.disabled = true;
+      status.textContent = "इमेज स्टूडियो रीसेट हो गया।";
+    });
+
+  download.addEventListener("click", () => {
+    if (!resultUrl) {
+      status.textContent = "डाउनलोड करने के लिए एडिट की गई इमेज उपलब्ध नहीं है।";
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = resultUrl;
+    link.download = currentFileName + "-edited.png";
+    link.click();
+  });
+
+  window.bharatNovaOpenView = (function(previous) {
+    return function(id) {
+      if (typeof previous === "function") previous(id);
+
+      studio.hidden = id !== "images";
+
+      if (id === "images") {
+        const home = document.getElementById("homeSection");
+        if (home) home.hidden = true;
+
+        const chat = document.getElementById("novaChatPanel");
+        if (chat) chat.hidden = true;
+
+        const history = document.getElementById("novaHistoryPanel");
+        if (history) history.hidden = true;
+      }
+    };
+  })(window.bharatNovaOpenView);
+})();
+</script>
+<!-- END STEP 9 -->
+<!-- STEP 10 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
