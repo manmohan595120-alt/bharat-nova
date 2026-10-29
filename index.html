@@ -5139,8 +5139,37 @@ if ("serviceWorker" in navigator) {
           "इस फॉर्मेट में और compression या छोटे dimensions " +
           "की जरूरत हो सकती है।";
       }
+     const previewBox = document.createElement("div");
+previewBox.style.marginTop = "12px";
 
-      const preview
+  const image = document.createElement("img");
+  image.src = URL.createObjectURL(result.blob);
+  image.alt = "Resized Bharat Nova image";
+  image.style.cssText =
+    "display:block;max-width:100%;height:auto;border-radius:10px;";
+
+  const downloadLink = downloadResult(
+    result.blob,
+    options.format
+  );
+
+  previewBox.appendChild(image);
+  previewBox.appendChild(downloadLink.a);
+  status.appendChild(previewBox);
+
+} catch (error) {
+  status.textContent =
+    "फोटो प्रोसेस नहीं हुई: " + error.message;
+} finally {
+  busy = false;
+  send.disabled = false;
+}
+
+}
+
+send.addEventListener("click", runResize, true);
+})();
+</script>
      <!-- PADDDAR PREMIUM DISCOUNT REQUEST -->
 <section id="paddarDiscountRequest" style="background:#101b31;color:white;padding:18px;border-radius:16px;margin:16px 0;font-family:Arial">
   <h2>🏔️ Paddar Special Discount</h2>
