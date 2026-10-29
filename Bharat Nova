@@ -2014,5 +2014,95 @@ button:disabled {
 </script>
 <!-- END STEP 14 -->
 <!-- STEP 15 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 15: BHARAT NOVA PREMIUM -->
+<section id="novaPremiumSection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>💎 Bharat Nova Premium</h2>
+ <p>Unlock more productivity features with Bharat Nova Premium.</p>
+
+ <div class="nova-premium-plan"
+  style="padding:15px;margin:12px 0;border:1px solid #b59b55;border-radius:14px;">
+  <h3>Monthly Premium</h3>
+  <p><strong>₹49 / 30 days</strong></p>
+  <ul>
+   <li>Premium account status</li>
+   <li>Higher usage limits where supported</li>
+   <li>Priority feature access where available</li>
+  </ul>
+  <button type="button" data-nova-plan="monthly">Choose Monthly</button>
+ </div>
+
+ <div class="nova-premium-plan"
+  style="padding:15px;margin:12px 0;border:1px solid #b59b55;border-radius:14px;">
+  <h3>3 Months Premium</h3>
+  <p><strong>₹129 / 90 days</strong></p>
+  <ul>
+   <li>Premium account status for 90 days</li>
+   <li>Higher usage limits where supported</li>
+   <li>Access to eligible premium features</li>
+  </ul>
+  <button type="button" data-nova-plan="quarterly">Choose 3 Months</button>
+ </div>
+
+ <p id="novaPremiumStatus" role="status" aria-live="polite">
+  Select a plan to continue.
+ </p>
+
+ <p style="font-size:13px;">
+  Payment and activation require a verified payment backend.
+  Selecting a plan does not charge you or activate Premium automatically.
+ </p>
+</section>
+
+<script>
+(function () {
+ const section = document.getElementById("novaPremiumSection");
+ const status = document.getElementById("novaPremiumStatus");
+
+ if (!section || !status) return;
+
+ const plans = {
+  monthly: {
+   name: "Monthly Premium",
+   price: 49,
+   days: 30
+  },
+  quarterly: {
+   name: "3 Months Premium",
+   price: 129,
+   days: 90
+  }
+ };
+
+ section.querySelectorAll("[data-nova-plan]").forEach(function (button) {
+  button.addEventListener("click", function () {
+   const plan = plans[button.dataset.novaPlan];
+   if (!plan) return;
+
+   status.textContent =
+    plan.name + " selected — ₹" + plan.price +
+    " for " + plan.days +
+    " days. Secure payment backend connection is required to continue.";
+
+   /*
+    * SECURITY:
+    * Do not activate Premium using localStorage or a browser-only flag.
+    * A trusted server must verify payment and subscription expiry.
+    * Do not put payment secrets in this HTML file.
+    */
+   window.dispatchEvent(new CustomEvent("bharatnova:premium-plan-selected", {
+    detail: {
+     plan: button.dataset.novaPlan,
+     price: plan.price,
+     days: plan.days
+    }
+   }));
+  });
+ });
+})();
+</script>
+<!-- END STEP 15 -->
+<!-- STEP 16 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
