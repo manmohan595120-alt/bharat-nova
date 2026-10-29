@@ -1738,5 +1738,92 @@ button:disabled {
 </script>
 <!-- END STEP 11 -->
 <!-- STEP 12 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 12: PRIVACY AND SECURITY -->
+<section id="novaPrivacySection" class="nova-card"
+  style="margin:16px 0;padding:16px;border-radius:16px;">
+
+  <h2>🔐 Privacy & Security</h2>
+  <p>Your privacy matters. Manage your browser-stored Bharat Nova data below.</p>
+
+  <details>
+    <summary><strong>Privacy Policy</strong></summary>
+    <h3>Information and Storage</h3>
+    <p>Bharat Nova may store settings and chat history in your browser when those
+    features are enabled. Browser storage can be deleted from this section.</p>
+
+    <h3>AI Requests</h3>
+    <p>When you send a message to an AI service, the message may be sent to the
+    configured server for processing. Do not submit passwords, payment details,
+    or other sensitive information.</p>
+
+    <h3>Third-Party Services</h3>
+    <p>Search, AI, hosting, and other connected services may have their own
+    privacy policies and data practices.</p>
+
+    <h3>Security</h3>
+    <p>Keep your browser updated. Never share passwords or private API keys.
+    This page alone cannot guarantee protection against malware or hacking.</p>
+
+    <p>Contact the app administrator for questions about this policy.</p>
+  </details>
+
+  <details style="margin-top:12px;">
+    <summary><strong>Security Checklist</strong></summary>
+    <ul>
+      <li>Use HTTPS when hosting the app.</li>
+      <li>Keep API keys and secrets on the server, never in HTML or JavaScript.</li>
+      <li>Validate uploads and enforce file-size limits on the server.</li>
+      <li>Use server-side authorization for admin and premium features.</li>
+      <li>Never treat browser storage as secure authentication.</li>
+    </ul>
+  </details>
+
+  <hr>
+
+  <h3>🧹 Clear Local App Data</h3>
+  <p>This removes Bharat Nova's saved browser chat history and settings
+  if they use the storage keys listed below. It does not delete server data.</p>
+
+  <button type="button" id="novaClearLocalData">
+    Clear Local App Data
+  </button>
+  <p id="novaPrivacyStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+  const button = document.getElementById("novaClearLocalData");
+  const status = document.getElementById("novaPrivacyStatus");
+
+  if (!button || !status) return;
+
+  button.addEventListener("click", function () {
+    const confirmed = window.confirm(
+      "Clear Bharat Nova saved chat history and settings on this browser?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      [
+        "bharatNovaSettings",
+        "bharatNovaChatHistory",
+        "bharatNovaHistory",
+        "novaChatHistory"
+      ].forEach(function (key) {
+        localStorage.removeItem(key);
+      });
+
+      status.textContent =
+        "Selected local app data cleared. Reload the page if needed.";
+    } catch (error) {
+      status.textContent =
+        "Could not clear browser storage. Check browser permissions.";
+    }
+  });
+})();
+</script>
+<!-- END STEP 12 -->
+<!-- STEP 13 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
