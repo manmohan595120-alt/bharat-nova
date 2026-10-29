@@ -2789,5 +2789,67 @@ async function paddarSubmitRequest() {
 }
 </script>
 <!-- END PADDDAR DISCOUNT REQUEST -->
+<!-- BHARAT NOVA PADDDAR PREMIUM GPAY -->
+<section id="novaPaddarPremiumPayment"
+  style="background:#101b31;color:white;padding:18px;border-radius:16px;margin:16px 0;font-family:Arial,sans-serif">
+
+  <h2>⭐ Bharat Nova Premium</h2>
+  <p>Admin approval के बाद लागू होने वाला प्लान चुनें:</p>
+
+  <select id="novaPaddarPlan"
+    style="width:100%;padding:12px;margin-bottom:12px;border-radius:8px">
+    <option value="49">Regular Monthly — ₹49 / 30 Days</option>
+    <option value="129">Regular 90 Days — ₹129</option>
+    <option value="39">Paddar Monthly — ₹39 / 30 Days</option>
+    <option value="119">Paddar 90 Days — ₹119</option>
+  </select>
+
+  <button type="button" onclick="novaPaddarPay()"
+    style="width:100%;padding:14px;background:#e8bd58;color:#101b31;border:0;border-radius:9px;font-weight:bold">
+    Pay with Google Pay / UPI
+  </button>
+
+  <p id="novaPaddarPayStatus" role="status"></p>
+</section>
+
+<script>
+function novaPaddarPay() {
+  const select = document.getElementById("novaPaddarPlan");
+  const amount = select.value;
+
+  // Paddar discount must not be self-selected.
+  if (amount === "39" || amount === "119") {
+    const approved =
+      window.bharatNovaPaddarDiscountApproved === true;
+
+    if (!approved) {
+      document.getElementById("novaPaddarPayStatus").textContent =
+        "Paddar Discount अभी Admin द्वारा verify नहीं हुआ है.";
+      return;
+    }
+  }
+
+  const planNames = {
+    "49": "Bharat Nova Monthly Premium",
+    "129": "Bharat Nova 90 Days Premium",
+    "39": "Bharat Nova Paddar Monthly Premium",
+    "119": "Bharat Nova Paddar 90 Days Premium"
+  };
+
+  const params = new URLSearchParams({
+    pa: "manmohan595120@okicici",
+    pn: "Bharat Nova",
+    tn: planNames[amount],
+    am: Number(amount).toFixed(2),
+    cu: "INR"
+  });
+
+  document.getElementById("novaPaddarPayStatus").textContent =
+    "UPI app खुल रहा है। भुगतान से पहले receiver और amount जाँच लें.";
+
+  window.location.href = "upi://pay?" + params.toString();
+}
+</script>
+<!-- END BHARAT NOVA PADDDAR PREMIUM GPAY -->
 </body>
 </html>
