@@ -482,5 +482,294 @@ button:disabled {
 </script>
 <!-- END STEP 3 -->
 <!-- STEP 4 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 4: BHARAT NOVA AI CHAT INTERFACE -->
+<style>
+.nova-chat-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-top: 18px;
+}
+.nova-chat-heading {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.nova-chat-heading h2 {
+  margin: 0 0 6px;
+}
+.nova-chat-heading p {
+  margin: 0;
+}
+.nova-chat-messages {
+  flex: 1;
+  min-height: 240px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nova-message {
+  max-width: 92%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.nova-message.user {
+  align-self: flex-end;
+  background: var(--panel2);
+}
+.nova-message.ai {
+  align-self: flex-start;
+}
+.nova-message-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 5px;
+}
+.nova-chat-compose {
+  border-top: 1px solid var(--border);
+  padding: 12px;
+}
+.nova-chat-input {
+  width: 100%;
+  min-height: 85px;
+  max-height: 220px;
+  resize: vertical;
+  padding: 12px;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.nova-chat-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.nova-chat-tools .btn {
+  flex: 0 1 auto;
+}
+.nova-chat-status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.nova-chat-empty {
+  color: var(--muted);
+  text-align: center;
+  margin: auto;
+  line-height: 1.8;
+}
+@media(max-width:480px) {
+  .nova-message { max-width: 98%; }
+  .nova-chat-tools .btn { flex: 1 1 42%; }
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const main = document.getElementById("mainContent");
+  if (!main || document.getElementById("novaChatPanel")) return;
+
+  const panel = document.createElement("section");
+  panel.id = "novaChatPanel";
+  panel.className = "nova-chat-panel nova-view";
+  panel.hidden = true;
+
+  panel.innerHTML = `
+    <div class="nova-chat-heading">
+      <h2>✦ Bharat Nova AI</h2>
+      <p class="muted">पूछें, समझें और नए विचार बनाएँ।</p>
+    </div>
+
+    <div id="novaChatMessages" class="nova-chat-messages"
+         aria-live="polite" aria-label="Chat messages">
+      <div class="nova-chat-empty" id="novaChatWelcome">
+        <strong>नमस्ते! Bharat Nova AI में आपका स्वागत है।</strong>
+        <br>आज आप क्या जानना या बनाना चाहते हैं?
+      </div>
+    </div>
+
+    <div class="nova-chat-compose">
+      <label for="novaChatInput">अपना सवाल लिखें</label>
+      <textarea id="novaChatInput" class="nova-chat-input"
+        placeholder="यहाँ अपना सवाल लिखें..."
+        maxlength="12000"></textarea>
+
+      <div class="nova-chat-tools">
+        <button type="button" class="btn btn-primary"
+          id="novaChatSend">➤ Send</button>
+        <button type="button" class="btn"
+          id="novaChatVoice">🎙️ Voice</button>
+        <button type="button" class="btn"
+          id="novaChatAttach">📎 Attach</button>
+        <button type="button" class="btn"
+          id="novaChatNew">＋ New Chat</button>
+      </div>
+
+      <input type="file" id="novaChatFile"
+        accept=".txt,.csv,.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.webp"
+        hidden>
+
+      <div id="novaChatFileName" class="status"></div>
+      <div id="novaChatStatus" class="nova-chat-status"
+        role="status">AI कनेक्शन अगले स्टेप में जोड़ा जाएगा।</div>
+    </div>
+  `;
+
+  main.appendChild(panel);
+
+  const messages = panel.querySelector("#novaChatMessages");
+  const input = panel.querySelector("#novaChatInput");
+  const status = panel.querySelector("#novaChatStatus");
+  const fileInput = panel.querySelector("#novaChatFile");
+  const fileName = panel.querySelector("#novaChatFileName");
+
+  function addMessage(role, text) {
+    const welcome = panel.querySelector("#novaChatWelcome");
+    if (welcome) welcome.remove();
+
+    const bubble = document.createElement("div");
+    bubble.className = "nova-message " + role;
+
+    const label = document.createElement("span");
+    label.className = "nova-message-label";
+    label.textContent = role === "user" ? "आप" : "Bharat Nova AI";
+
+    const content = document.createElement("div");
+    content.textContent = text;
+
+    bubble.append(label, content);
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  panel.querySelector("#novaChatSend").addEventListener("click", () => {
+    const text = input.value.trim();
+
+    if (!text) {
+      status.textContent = "पहले अपना सवाल लिखें।";
+      input.focus();
+      return;
+    }
+
+    addMessage("user", text);
+    input.value = "";
+
+    status.textContent =
+      "AI सर्वर कनेक्शन Step 5 में जोड़ा जाएगा। आपका सवाल अभी भेजा नहीं गया है।";
+  });
+
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      panel.querySelector("#novaChatSend").click();
+    }
+  });
+
+  panel.querySelector("#novaChatAttach").addEventListener("click", () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      fileName.textContent = "";
+      return;
+    }
+
+    const maxBytes = 10 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      status.textContent = "फाइल 10 MB से बड़ी है। छोटी फाइल चुनें।";
+      fileInput.value = "";
+      fileName.textContent = "";
+      return;
+    }
+
+    fileName.textContent = "चुनी गई फाइल: " + file.name;
+    status.textContent =
+      "फाइल चुनी गई है। इसका विश्लेषण बैकएंड कनेक्शन जुड़ने के बाद होगा।";
+  });
+
+  panel.querySelector("#novaChatNew").addEventListener("click", () => {
+    messages.replaceChildren();
+
+    const welcome = document.createElement("div");
+    welcome.id = "novaChatWelcome";
+    welcome.className = "nova-chat-empty";
+    welcome.textContent = "नई बातचीत शुरू करें।";
+    messages.appendChild(welcome);
+
+    input.value = "";
+    fileInput.value = "";
+    fileName.textContent = "";
+    status.textContent = "नई बातचीत तैयार है।";
+  });
+
+  panel.querySelector("#novaChatVoice").addEventListener("click", () => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      status.textContent =
+        "इस ब्राउज़र में Voice Input उपलब्ध नहीं है। Chrome में प्रयास करें।";
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "hi-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    status.textContent = "सुन रहा है… अब बोलें।";
+
+    recognition.onresult = event => {
+      input.value = event.results[0][0].transcript;
+      status.textContent = "आपकी आवाज़ टेक्स्ट में बदल गई है। Send दबाएँ।";
+      input.focus();
+    };
+
+    recognition.onerror = () => {
+      status.textContent = "Voice Input नहीं चल पाया। माइक्रोफोन अनुमति जाँचें।";
+    };
+
+    recognition.start();
+  });
+
+  window.bharatNovaOpenView = function(id) {
+    const home = document.getElementById("homeSection");
+
+    panel.hidden = id !== "chat";
+    if (home) home.hidden = id !== "home";
+
+    if (id === "chat") {
+      panel.hidden = false;
+      input.focus();
+    } else if (id === "home" && home) {
+      home.scrollIntoView({ behavior: "smooth" });
+    }
+
+    if (typeof window.bharatNovaSetActiveMenu === "function") {
+      window.bharatNovaSetActiveMenu(id);
+    }
+  };
+})();
+</script>
+<!-- END STEP 4 -->
+<!-- STEP 5 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
