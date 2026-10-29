@@ -951,5 +951,224 @@ button:disabled {
 </script>
 <!-- END STEP 5 -->
 <!-- STEP 6 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 6: CHAT HISTORY -->
+<style>
+.nova-history-panel {
+  margin: 18px 0;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.nova-history-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.nova-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.nova-history-title {
+  flex: 1;
+  min-width: 120px;
+  overflow-wrap: anywhere;
+}
+.nova-history-item button {
+  padding: 8px 10px;
+}
+</style>
+
+<script>
+(() => {
+  "use strict";
+
+  const KEY = "bharatNovaChatHistoryV1";
+  const panel = document.getElementById("novaChatPanel");
+  if (!panel || document.getElementById("novaHistoryPanel")) return;
+
+  const historyPanel = document.createElement("section");
+  historyPanel.id = "novaHistoryPanel";
+  historyPanel.className = "nova-history-panel";
+  historyPanel.hidden = true;
+
+  historyPanel.innerHTML = `
+    <h2>🕘 Chat History</h2>
+    <p class="muted">
+      आपकी सेव की गई बातचीत इसी ब्राउज़र में रखी जाती है।
+    </p>
+    <div class="nova-chat-tools">
+      <button type="button" class="btn" id="novaSaveChat">
+        💾 Save Current Chat
+      </button>
+      <button type="button" class="btn" id="novaClearHistory">
+        🗑️ Clear History
+      </button>
+    </div>
+    <div id="novaHistoryStatus" class="status" role="status"></div>
+    <div id="novaHistoryList" class="nova-history-list"></div>
+  `;
+
+  panel.parentNode.insertBefore(historyPanel, panel.nextSibling);
+
+  const list = historyPanel.querySelector("#novaHistoryList");
+  const status = historyPanel.querySelector("#novaHistoryStatus");
+
+  function readHistory() {
+    try {
+      const value = JSON.parse(localStorage.getItem(KEY) || "[]");
+      return Array.isArray(value) ? value : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeHistory(items) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(items.slice(0, 50)));
+      return true;
+    } catch (_) {
+      status.textContent =
+        "ब्राउज़र स्टोरेज उपलब्ध नहीं है या जगह भर गई है।";
+      return false;
+    }
+  }
+
+  function currentMessages() {
+    return Array.from(
+      panel.querySelectorAll(".nova-message")
+    ).map(node => ({
+      role: node.classList.contains("user") ? "user" : "assistant",
+      text: node.querySelector("div:last-child")?.textContent || ""
+    })).filter(item => item.text.trim());
+  }
+
+  function renderHistory() {
+    list.replaceChildren();
+
+    const items = readHistory();
+
+    if (!items.length) {
+      const empty = document.createElement("p");
+      empty.className = "muted";
+      empty.textContent = "अभी कोई सेव की गई चैट नहीं है।";
+      list.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "nova-history-item";
+
+      const title = document.createElement("div");
+      title.className = "nova-history-title";
+      title.textContent = item.title || "पुरानी बातचीत";
+
+      const open = document.createElement("button");
+      open.type = "button";
+      open.className = "btn";
+      open.textContent = "Open";
+
+      open.addEventListener("click", () => {
+        const messages = panel.querySelector("#novaChatMessages");
+        messages.replaceChildren();
+
+        (Array.isArray(item.messages) ? item.messages : [])
+          .forEach(message => {
+            const bubble = document.createElement("div");
+            bubble.className = "nova-message " +
+              (message.role === "user" ? "user" : "ai");
+
+            const label = document.createElement("span");
+            label.className = "nova-message-label";
+            label.textContent =
+              message.role === "user" ? "आप" : "Bharat Nova AI";
+
+            const text = document.createElement("div");
+            text.textContent = String(message.text || "");
+
+            bubble.append(label, text);
+            messages.appendChild(bubble);
+          });
+
+        panel.hidden = false;
+        historyPanel.hidden = true;
+
+        const input = document.getElementById("novaChatInput");
+        if (input) input.focus();
+
+        messages.scrollTop = messages.scrollHeight;
+      });
+
+      row.append(title, open);
+      list.appendChild(row);
+    });
+  }
+
+  historyPanel.querySelector("#novaSaveChat")
+    .addEventListener("click", () => {
+      const messages = currentMessages();
+
+      if (!messages.length) {
+        status.textContent = "सेव करने के लिए पहले बातचीत करें।";
+        return;
+      }
+
+      const firstUser = messages.find(m => m.role === "user");
+      const items = readHistory();
+
+      items.unshift({
+        id: Date.now(),
+        title: (firstUser?.text || "नई बातचीत").slice(0, 70),
+        savedAt: new Date().toISOString(),
+        messages
+      });
+
+      if (writeHistory(items)) {
+        status.textContent = "चैट सेव हो गई।";
+        renderHistory();
+      }
+    });
+
+  historyPanel.querySelector("#novaClearHistory")
+    .addEventListener("click", () => {
+      if (!confirm("क्या आप इसी ब्राउज़र की सभी सेव चैट हटाना चाहते हैं?")) {
+        return;
+      }
+
+      try {
+        localStorage.removeItem(KEY);
+        status.textContent = "सेव की गई चैट हटा दी गई हैं।";
+        renderHistory();
+      } catch (_) {
+        status.textContent = "हिस्ट्री हटाई नहीं जा सकी।";
+      }
+    });
+
+  window.bharatNovaOpenView = (function(previous) {
+    return function(id) {
+      if (typeof previous === "function") previous(id);
+
+      historyPanel.hidden = id !== "history";
+
+      if (id === "history") {
+        panel.hidden = true;
+        const home = document.getElementById("homeSection");
+        if (home) home.hidden = true;
+        renderHistory();
+      }
+    };
+  })(window.bharatNovaOpenView);
+
+  renderHistory();
+})();
+</script>
+<!-- END STEP 6 -->
+<!-- STEP 7 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
