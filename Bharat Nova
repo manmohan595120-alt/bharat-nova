@@ -2610,5 +2610,75 @@ button:disabled {
 })();
 </script>
 <!-- END STEP 20 -->
+<!-- BHARAT NOVA: PREMIUM UPI PAYMENT -->
+<section id="novaGpaySection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>💎 Premium Payment</h2>
+
+ <label for="novaGpayPlan">Choose Premium Plan</label>
+ <select id="novaGpayPlan">
+  <option value="monthly">Monthly — ₹49 / 30 days</option>
+  <option value="quarterly">3 Months — ₹129 / 90 days</option>
+ </select>
+
+ <button type="button" id="novaGpayButton">
+  Pay with GPay / UPI
+ </button>
+
+ <p id="novaGpayStatus" role="status" aria-live="polite"></p>
+
+ <p style="font-size:13px">
+  Premium activates only after payment is verified.
+ </p>
+</section>
+
+<script>
+(function () {
+ const button = document.getElementById("novaGpayButton");
+ const planSelect = document.getElementById("novaGpayPlan");
+ const status = document.getElementById("novaGpayStatus");
+
+ if (!button || !planSelect || !status) return;
+
+ // Replace with your own valid UPI ID.
+ const MERCHANT_UPI_ID = "YOUR_GPAY_UPI_ID";
+ const MERCHANT_NAME = "Bharat Nova";
+
+ button.addEventListener("click", function () {
+  if (
+   !MERCHANT_UPI_ID ||
+   MERCHANT_UPI_ID === "YOUR_GPAY_UPI_ID"
+  ) {
+   status.textContent =
+    "Payment setup pending. Pehle apni verified merchant UPI ID configure karein.";
+   return;
+  }
+
+  const plans = {
+   monthly: { amount: "49", label: "Monthly Premium" },
+   quarterly: { amount: "129", label: "3 Months Premium" }
+  };
+
+  const plan = plans[planSelect.value];
+  if (!plan) return;
+
+  const params = new URLSearchParams({
+   pa: MERCHANT_UPI_ID,
+   pn: MERCHANT_NAME,
+   am: plan.amount,
+   cu: "INR",
+   tn: "Bharat Nova " + plan.label
+  });
+
+  const paymentUrl = "upi://pay?" + params.toString();
+
+  status.textContent =
+   "Payment app khulne ki request bheji ja rahi hai. Payment complete hone ke baad server verification zaroori hai.";
+
+  window.location.href = paymentUrl;
+ });
+})();
+</script>
 </body>
 </html>
