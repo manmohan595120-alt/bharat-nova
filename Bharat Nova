@@ -1825,5 +1825,81 @@ button:disabled {
 </script>
 <!-- END STEP 12 -->
 <!-- STEP 13 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 13: SHARE AND INSTALL -->
+<section id="novaShareInstallSection" class="nova-card"
+  style="margin:16px 0;padding:16px;border-radius:16px;">
+  <h2>📲 Share & Install Bharat Nova</h2>
+
+  <button type="button" id="novaShareButton">Share Bharat Nova</button>
+  <button type="button" id="novaInstallButton">Install App</button>
+
+  <p id="novaShareInstallStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+  const shareButton = document.getElementById("novaShareButton");
+  const installButton = document.getElementById("novaInstallButton");
+  const status = document.getElementById("novaShareInstallStatus");
+
+  if (!shareButton || !installButton || !status) return;
+
+  let installPrompt = null;
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    installPrompt = event;
+    installButton.hidden = false;
+    status.textContent = "App install ke liye available hai.";
+  });
+
+  window.addEventListener("appinstalled", function () {
+    installPrompt = null;
+    status.textContent = "Bharat Nova install ho gaya.";
+    installButton.hidden = true;
+  });
+
+  shareButton.addEventListener("click", async function () {
+    const shareData = {
+      title: "Bharat Nova",
+      text: "Explore Bharat Nova AI and tools.",
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+        await navigator.share(shareData);
+        status.textContent = "Share request complete.";
+      } else if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareData.url);
+        status.textContent = "App link copied. Ab ise share kar sakte hain.";
+      } else {
+        status.textContent = "Browser menu se link copy karke share karein.";
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        status.textContent = "Share nahi ho paya. Browser menu try karein.";
+      }
+    }
+  });
+
+  installButton.addEventListener("click", async function () {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const result = await installPrompt.userChoice;
+      status.textContent = result.outcome === "accepted"
+        ? "Installation accepted."
+        : "Installation cancel kar di gayi.";
+      installPrompt = null;
+      return;
+    }
+
+    status.textContent =
+      "Chrome menu (⋮) kholein aur 'Install app' ya 'Add to Home screen' chunein. Install ke liye HTTPS aur valid manifest zaroori hain.";
+  });
+})();
+</script>
+<!-- END STEP 13 -->
+<!-- STEP 14 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
