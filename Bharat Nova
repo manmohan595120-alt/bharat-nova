@@ -2525,5 +2525,90 @@ button:disabled {
 </script>
 <!-- END STEP 19 -->
 <!-- STEP 20 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 20: BHARAT NOVA ADMIN CONTROL -->
+<section id="novaAdminSection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>🛡️ Bharat Nova Admin Control</h2>
+ <p>Admin access requires server-verified authorization.</p>
+
+ <button type="button" id="novaAdminCheck">
+  Verify Admin Access
+ </button>
+
+ <p id="novaAdminStatus" role="status" aria-live="polite">
+  Admin verification required.
+ </p>
+
+ <div id="novaAdminTools" hidden>
+  <h3>Admin Dashboard</h3>
+  <p>Authorized admin tools will appear here after server verification.</p>
+  <button type="button" id="novaAdminRefresh">Refresh Dashboard</button>
+ </div>
+</section>
+
+<script>
+(function () {
+ const section = document.getElementById("novaAdminSection");
+ const checkButton = document.getElementById("novaAdminCheck");
+ const refreshButton = document.getElementById("novaAdminRefresh");
+ const tools = document.getElementById("novaAdminTools");
+ const status = document.getElementById("novaAdminStatus");
+
+ if (!section || !checkButton || !tools || !status) return;
+
+ /*
+  * Replace this path with a real protected backend endpoint.
+  * The server must verify the authenticated user's identity and role.
+  * Never put an admin password or secret in this HTML file.
+  */
+ const ADMIN_VERIFY_ENDPOINT = "";
+
+ async function verifyAdmin() {
+  tools.hidden = true;
+  status.textContent = "Checking admin authorization...";
+  checkButton.disabled = true;
+
+  try {
+   if (!ADMIN_VERIFY_ENDPOINT) {
+    status.textContent =
+     "Admin backend endpoint configure nahi hai. Dashboard locked hai.";
+    return;
+   }
+
+   const response = await fetch(ADMIN_VERIFY_ENDPOINT, {
+    method: "GET",
+    credentials: "include",
+    headers: { "Accept": "application/json" }
+   });
+
+   if (!response.ok) {
+    throw new Error("Admin verification failed");
+   }
+
+   const result = await response.json();
+
+   if (result && result.authorized === true && result.role === "admin") {
+    tools.hidden = false;
+    status.textContent = "Admin access verified by server.";
+   } else {
+    status.textContent = "Access denied. Admin permission required.";
+   }
+  } catch (error) {
+   status.textContent =
+    "Admin verification unavailable. Dashboard remains locked.";
+  } finally {
+   checkButton.disabled = false;
+  }
+ }
+
+ checkButton.addEventListener("click", verifyAdmin);
+
+ if (refreshButton) {
+  refreshButton.addEventListener("click", verifyAdmin);
+ }
+})();
+</script>
+<!-- END STEP 20 -->
 </body>
 </html>
