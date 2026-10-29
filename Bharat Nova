@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#061429">
+<meta name="description" content="Bharat Nova — AI Chat, Smart Search, Voice and Productivity">
+<meta name="application-name" content="Bharat Nova">
+<title>Bharat Nova — AI & Smart Search</title>
+<link rel="manifest" href="./manifest.json">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #061429;
+  --panel: #0c203a;
+  --panel2: #102945;
+  --text: #f4f7ff;
+  --muted: #a9bad1;
+  --gold: #f4c542;
+  --border: #29425f;
+  --danger: #ff7373;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, Arial, sans-serif;
+  min-height: 100vh;
+}
+button, input, textarea, select {
+  font: inherit;
+}
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible,
+textarea:focus-visible, a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+a { color: var(--gold); }
+[hidden] { display: none !important; }
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 16px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+}
+.btn {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: var(--panel2);
+  color: var(--text);
+}
+.btn-primary {
+  background: var(--gold);
+  color: #171717;
+  border-color: var(--gold);
+  font-weight: 700;
+}
+.muted { color: var(--muted); }
+.status { font-size: .9rem; color: var(--muted); }
+body.light {
+  color-scheme: light;
+  --bg: #f3f6fb;
+  --panel: #ffffff;
+  --panel2: #eaf0f8;
+  --text: #15243a;
+  --muted: #52647b;
+  --border: #d4deea;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="appHeader"></header>
+  <main id="mainContent" class="container">
+    <section id="homeSection" class="card">
+      <h1>Bharat Nova</h1>
+      <p class="muted">Search Smarter. Think Bigger.</p>
+      <p>आपका AI और Smart Search प्लेटफॉर्म।</p>
+      <p class="status" id="appStatus" role="status">
+        Bharat Nova तैयार हो रहा है…
+      </p>
+    </section>
+  </main>
+  <footer id="appFooter" class="container muted">
+    Bharat Nova · Privacy · Help
+  </footer>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+"use strict";
+(() => {
+  const status = document.getElementById("appStatus");
+  if (status) {
+    status.textContent =
+      "Bharat Nova का आधार तैयार है। अगला स्टेप नीचे जोड़ें।";
+  }
+})();
+</script>
+<!-- STEP 2 CODE WILL BE PASTED BELOW THIS LINE -->
+</body>
+</html>
