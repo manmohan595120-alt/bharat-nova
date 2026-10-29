@@ -2104,5 +2104,136 @@ button:disabled {
 </script>
 <!-- END STEP 15 -->
 <!-- STEP 16 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 16: HELP AND SUPPORT -->
+<section id="novaHelpSection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>❓ Help & Support</h2>
+ <p>Find answers to common Bharat Nova questions.</p>
+
+ <input id="novaHelpSearch" type="search"
+  placeholder="Search help topics..."
+  aria-label="Search help topics"
+  style="width:100%;box-sizing:border-box;padding:12px;margin:8px 0;">
+
+ <div id="novaHelpTopics">
+  <details data-help-topic>
+   <summary>AI is not responding</summary>
+   <p>Check your internet connection. The configured AI backend must be online,
+   accept the request format, and return a supported response.</p>
+  </details>
+
+  <details data-help-topic>
+   <summary>Voice input is not working</summary>
+   <p>Use a supported browser, allow microphone permission, and check your
+   internet connection. Voice recognition availability varies by browser.</p>
+  </details>
+
+  <details data-help-topic>
+   <summary>App installation is unavailable</summary>
+   <p>Open the site over HTTPS. Check that the web app manifest is valid
+   and the service worker is registered. You may also try the browser menu.</p>
+  </details>
+
+  <details data-help-topic>
+   <summary>Image editing is not working</summary>
+   <p>Image upload and preview do not guarantee AI editing. A compatible
+   image-generation or editing backend must be configured.</p>
+  </details>
+
+  <details data-help-topic>
+   <summary>How do I protect my account?</summary>
+   <p>Never share passwords or API keys. Admin and premium permissions must
+   be verified by the server, not by browser-only settings.</p>
+  </details>
+
+  <details data-help-topic>
+   <summary>Do I need a Firebase account to use AI?</summary>
+   <p>The app can be designed to allow general AI use without Firebase signup.
+   Some account-based features may still require authentication.</p>
+  </details>
+ </div>
+
+ <hr>
+
+ <h3>✉️ Contact Support</h3>
+ <label for="novaSupportIssue">Describe your issue</label>
+ <textarea id="novaSupportIssue" rows="4" maxlength="2000"
+  placeholder="Describe what happened..."
+  style="width:100%;box-sizing:border-box;padding:12px;margin:8px 0;"></textarea>
+
+ <button type="button" id="novaPrepareSupport">Prepare Support Message</button>
+ <button type="button" id="novaCopySupport">Copy Message</button>
+
+ <textarea id="novaSupportOutput" rows="5" readonly
+  aria-label="Prepared support message"
+  style="width:100%;box-sizing:border-box;padding:12px;margin-top:10px;"></textarea>
+
+ <p id="novaHelpStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+ const search = document.getElementById("novaHelpSearch");
+ const topics = document.querySelectorAll("#novaHelpTopics [data-help-topic]");
+ const issue = document.getElementById("novaSupportIssue");
+ const prepare = document.getElementById("novaPrepareSupport");
+ const copy = document.getElementById("novaCopySupport");
+ const output = document.getElementById("novaSupportOutput");
+ const status = document.getElementById("novaHelpStatus");
+
+ if (!search || !prepare || !copy || !output || !status) return;
+
+ search.addEventListener("input", function () {
+  const term = search.value.trim().toLowerCase();
+
+  topics.forEach(function (topic) {
+   topic.hidden = !topic.textContent.toLowerCase().includes(term);
+  });
+ });
+
+ prepare.addEventListener("click", function () {
+  const description = issue.value.trim();
+
+  if (!description) {
+   status.textContent = "Please describe your issue first.";
+   issue.focus();
+   return;
+  }
+
+  output.value =
+   "Bharat Nova Support Request\n\n" +
+   "Issue: " + description + "\n\n" +
+   "Please help me troubleshoot this issue.";
+
+  status.textContent =
+   "Support message prepared. Review it before sharing.";
+ });
+
+ copy.addEventListener("click", async function () {
+  if (!output.value.trim()) {
+   status.textContent = "Prepare a support message first.";
+   return;
+  }
+
+  try {
+   output.focus();
+   output.select();
+
+   if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(output.value);
+   } else if (!document.execCommand("copy")) {
+    throw new Error("Copy unavailable");
+   }
+
+   status.textContent = "Support message copied.";
+  } catch (error) {
+   status.textContent = "Copy failed. Select the message and copy it manually.";
+  }
+ });
+})();
+</script>
+<!-- END STEP 16 -->
+<!-- STEP 17 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
