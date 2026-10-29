@@ -2680,5 +2680,114 @@ button:disabled {
  });
 })();
 </script>
+<!-- PADDDAR PREMIUM DISCOUNT REQUEST -->
+<section id="paddarDiscountRequest" style="background:#101b31;color:white;padding:18px;border-radius:16px;margin:16px 0;font-family:Arial">
+  <h2>🏔️ Paddar Special Discount</h2>
+  <p>Eligible residents can request special Premium pricing.</p>
+
+  <label>Village / गाँव</label>
+  <input id="pdVillage" placeholder="Enter village name" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <label>Tehsil / तहसील</label>
+  <input id="pdTehsil" placeholder="Enter tehsil" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <label>District / जिला</label>
+  <input id="pdDistrict" placeholder="Enter district" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <label>PIN Code</label>
+  <input id="pdPincode" inputmode="numeric" maxlength="6"
+    placeholder="6-digit PIN code" required
+    style="width:100%;padding:11px;margin:6px 0 12px;box-sizing:border-box">
+
+  <button type="button" onclick="paddarGetGPS()"
+    style="width:100%;padding:12px;border:0;border-radius:8px">
+    📍 Share Current GPS Location
+  </button>
+
+  <p id="pdGpsStatus">GPS permission is requested only when you tap the button.</p>
+
+  <label style="display:block;margin:12px 0">
+    <input type="checkbox" id="pdConsent">
+    I consent to sharing my location for discount eligibility verification.
+  </label>
+
+  <button type="button" onclick="paddarSubmitRequest()"
+    style="width:100%;padding:13px;background:#e8bd58;border:0;border-radius:8px;font-weight:bold">
+    Submit Discount Request
+  </button>
+
+  <p id="pdResult" role="status"></p>
+</section>
+
+<script>
+let pdCoordinates = null;
+
+function paddarGetGPS() {
+  const status = document.getElementById("pdGpsStatus");
+
+  if (!document.getElementById("pdConsent").checked) {
+    status.textContent = "Please give consent first.";
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    status.textContent = "GPS is not supported by this browser.";
+    return;
+  }
+
+  status.textContent = "Requesting location permission…";
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      pdCoordinates = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracyMeters: Math.round(position.coords.accuracy)
+      };
+      status.textContent =
+        "Location captured (accuracy about " +
+        pdCoordinates.accuracyMeters + " metres).";
+    },
+    error => {
+      pdCoordinates = null;
+      status.textContent =
+        "Location unavailable. Check browser permission and try again.";
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
+
+async function paddarSubmitRequest() {
+  const result = document.getElementById("pdResult");
+  const village = document.getElementById("pdVillage").value.trim();
+  const tehsil = document.getElementById("pdTehsil").value.trim();
+  const district = document.getElementById("pdDistrict").value.trim();
+  const pincode = document.getElementById("pdPincode").value.trim();
+
+  if (!village || !tehsil || !district ||
+      !/^[0-9]{6}$/.test(pincode)) {
+    result.textContent = "Enter village, tehsil, district and a valid 6-digit PIN code.";
+    return;
+  }
+
+  if (!document.getElementById("pdConsent").checked || !pdCoordinates) {
+    result.textContent = "Please consent and capture GPS location before submitting.";
+    return;
+  }
+
+  /*
+   * IMPORTANT:
+   * Connect this form to a secure backend before launch.
+   * Do not store approval requests or approve discounts in localStorage.
+   */
+  result.textContent =
+    "Form is ready, but secure submission is not connected yet. " +
+    "Connect Firebase/server verification before using it.";
+}
+</script>
+<!-- END PADDDAR DISCOUNT REQUEST -->
 </body>
 </html>
