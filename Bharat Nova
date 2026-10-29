@@ -2472,5 +2472,58 @@ button:disabled {
 </script>
 <!-- END STEP 18 -->
 <!-- STEP 19 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 19: GUEST ACCESS WITHOUT FIREBASE SIGNUP -->
+<section id="novaGuestSection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>👤 Continue as Guest</h2>
+ <p>Use general Bharat Nova features without creating a Firebase account.</p>
+
+ <button type="button" id="novaGuestContinue">
+  Continue Without Signup
+ </button>
+
+ <p id="novaGuestStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+ const button = document.getElementById("novaGuestContinue");
+ const status = document.getElementById("novaGuestStatus");
+
+ if (!button || !status) return;
+
+ button.addEventListener("click", function () {
+  /*
+   * Guest mode is a convenience setting, NOT authentication.
+   * Never use this flag to grant admin or premium privileges.
+   */
+  try {
+   sessionStorage.setItem("bharatNovaGuestMode", "true");
+   status.textContent =
+    "Guest mode enabled. General features can be used without Firebase signup.";
+
+   document.dispatchEvent(new CustomEvent("bharatnova:guest-enabled"));
+  } catch (error) {
+   status.textContent =
+    "Guest mode could not be saved. You can still try general app features.";
+  }
+ });
+
+ /*
+  * Expose a read-only helper for UI display only.
+  * This must never authorize admin or paid features.
+  */
+ window.bharatNovaIsGuest = function () {
+  try {
+   return sessionStorage.getItem("bharatNovaGuestMode") === "true";
+  } catch (error) {
+   return false;
+  }
+ };
+})();
+</script>
+<!-- END STEP 19 -->
+<!-- STEP 20 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
