@@ -2235,5 +2235,115 @@ button:disabled {
 </script>
 <!-- END STEP 16 -->
 <!-- STEP 17 CODE WILL BE PASTED BELOW THIS LINE -->
+<!-- STEP 17: DOCUMENT EXPORT -->
+<section id="novaExportSection" class="nova-card"
+ style="margin:16px 0;padding:18px;border-radius:18px;">
+
+ <h2>📄 Document Export</h2>
+ <p>Apna text paste karein aur downloadable file banayein.</p>
+
+ <label for="novaExportFilename">File name</label>
+ <input id="novaExportFilename" type="text" maxlength="80"
+  value="bharat-nova-document"
+  style="width:100%;box-sizing:border-box;padding:10px;margin:8px 0;">
+
+ <label for="novaExportFormat">File format</label>
+ <select id="novaExportFormat" style="padding:10px;margin:8px 0;">
+  <option value="txt">TXT — Text</option>
+  <option value="html">HTML — Web Document</option>
+  <option value="csv">CSV — Spreadsheet Data</option>
+ </select>
+
+ <label for="novaExportContent">Document content</label>
+ <textarea id="novaExportContent" rows="8" maxlength="500000"
+  placeholder="Paste AI response or write your document here..."
+  style="width:100%;box-sizing:border-box;padding:12px;margin:8px 0;"></textarea>
+
+ <button type="button" id="novaExportDownload">Generate & Download</button>
+ <p id="novaExportStatus" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+(function () {
+ const nameInput = document.getElementById("novaExportFilename");
+ const formatInput = document.getElementById("novaExportFormat");
+ const contentInput = document.getElementById("novaExportContent");
+ const button = document.getElementById("novaExportDownload");
+ const status = document.getElementById("novaExportStatus");
+
+ if (!nameInput || !formatInput || !contentInput || !button || !status) return;
+
+ function escapeHTML(value) {
+  return value.replace(/[&<>"']/g, function (char) {
+   return {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+   }[char];
+  });
+ }
+
+ button.addEventListener("click", function () {
+  const content = contentInput.value;
+
+  if (!content.trim()) {
+   status.textContent = "Pehle document content likhein.";
+   contentInput.focus();
+   return;
+  }
+
+  const safeName = nameInput.value.trim()
+   .replace(/[^a-zA-Z0-9_-]/g, "_")
+   .slice(0, 80) || "bharat-nova-document";
+
+  const format = formatInput.value;
+  let data = content;
+  let mime = "text/plain;charset=utf-8";
+  let extension = "txt";
+
+  if (format === "html") {
+   data = "<!doctype html><html lang='en'><meta charset='utf-8'>" +
+    "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
+    "<title>Bharat Nova Document</title><body><pre>" +
+    escapeHTML(content) + "</pre></body></html>";
+   mime = "text/html;charset=utf-8";
+   extension = "html";
+  }
+
+  if (format === "csv") {
+   const rows = content.split(/\r?\n/).map(function (line) {
+    return [line].map(function (cell) {
+     return '"' + cell.replace(/"/g, '""') + '"';
+    }).join(",");
+   });
+
+   data = "\uFEFF" + rows.join("\r\n");
+   mime = "text/csv;charset=utf-8";
+   extension = "csv";
+  }
+
+  const blob = new Blob([data], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = safeName + "." + extension;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(function () {
+   URL.revokeObjectURL(url);
+  }, 1000);
+
+  status.textContent = "File download request complete: " +
+   safeName + "." + extension;
+ });
+})();
+</script>
+<!-- END STEP 17 -->
+<!-- STEP 18 CODE WILL BE PASTED BELOW THIS LINE -->
 </body>
 </html>
