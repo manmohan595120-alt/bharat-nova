@@ -5050,5 +5050,104 @@ async function paddarSubmitRequest() {
 }
 </script>
 <!-- END PADDDAR DISCOUNT REQUEST -->
+ <!-- BHARAT NOVA AI CREATION STUDIO -->
+<section id="novaCreationStudio" class="nova-studio">
+
+  <h2>✨ Bharat Nova AI Studio</h2>
+  <p>Create videos, reels and audio with AI</p>
+
+  <div class="nova-studio-grid">
+    <button onclick="novaShowStudio('video')">
+      🎬<br>AI Video Maker
+    </button>
+
+    <button onclick="novaShowStudio('reel')">
+      📱<br>AI Reel Maker
+    </button>
+
+    <button onclick="novaShowStudio('audio')">
+      🎧<br>AI Audio Studio
+    </button>
+  </div>
+
+  <div id="novaStudioPanel" class="nova-studio-panel">
+    <h3>Welcome to AI Studio</h3>
+    <p>Select a tool to start creating.</p>
+  </div>
+
+</section>
+
+<style>
+.nova-studio {
+  background:#061429;
+  color:#fff;
+  border:1px solid #d4ad35;
+  border-radius:16px;
+  padding:18px;
+  margin:15px 0;
+  font-family:Arial,sans-serif;
+}
+
+.nova-studio h2 {
+  color:#f4c542;
+}
+
+.nova-studio-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin:18px 0;
+}
+
+.nova-studio-grid button {
+  background:#102747;
+  color:#fff;
+  border:1px solid #d4ad35;
+  border-radius:12px;
+  padding:16px 5px;
+  cursor:pointer;
+  font-size:13px;
+  line-height:2;
+}
+
+.nova-studio-panel {
+  background:#10213b;
+  border-radius:12px;
+  padding:15px;
+}
+
+.nova-studio-panel input,
+.nova-studio-panel textarea,
+.nova-studio-panel select {
+  width:100%;
+  box-sizing:border-box;
+  margin:7px 0;
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #52647d;
+  background:#061429;
+  color:white;
+}
+
+.nova-studio-panel textarea {
+  min-height:90px;
+}
+
+.nova-create-btn {
+  background:#f4c542;
+  color:#061429;
+  border:0;
+  padding:12px 20px;
+  border-radius:9px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+@media(max-width:480px) {
+  .nova-studio-grid {
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </body>
 </html>
